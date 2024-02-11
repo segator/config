@@ -1,0 +1,38 @@
+keys:
+  - &machine_xps15 age1uqfc83ppdychx7lnauqfg6656m6ecy72392jm3slyeal8ppw55lqe59lst
+  - &machine_fury age1mqva7u3g57hjz9ptsxclnkg0hsp9v83arc3gwndcwj64jj3ryd2sva0rxg
+  - &user_aymerici age1qw932v4nt3muyy7lf6f2k68627huql68duzqvq7qq0tljr37cp6sjq07f9
+  - &user_segator age1m4scguauntyz5zwu9n44jjqfzexaymr3jq4pu3ydfcfxe3gc2pfsfdx6ke
+creation_rules:
+  # common secrets for machines and users
+  - path_regex: secrets/common/.+$
+    key_groups:
+    - age:
+      - *machine_xps15
+      - *machine_fury
+      - *user_aymerici
+      - *user_segator
+
+  # secrets for fury machine
+  - path_regex: secrets/hosts/fury/.+$
+    key_groups:
+    - age:
+      - *user_aymerici
+      - *user_segator
+      - *machine_fury
+  # secrets for xps15 machine
+  - path_regex: secrets/hosts/xps15/.+$
+    key_groups:
+    - age:
+      - *user_aymerici
+      - *machine_xps15
+  # secrets for aymerici user
+  - path_regex: secrets/users/aymerici/.+$
+    key_groups:
+    - age:
+      - *user_aymerici
+  # secrets for aymerici user
+  - path_regex: secrets/users/segator/.+$
+    key_groups:
+    - age:
+      - *user_segator

@@ -1,0 +1,135 @@
+From a4793acbbcf1404fcb20e0f8896d3da8a078b17a Mon Sep 17 00:00:00 2001
+From: Aleksandrs Vinarskis <alex.vinarskis@gmail.com>
+Date: Fri, 26 Jan 2024 21:19:46 +0100
+Subject: [PATCH 1/1] backport: intel-lpss patch v4
+
+---
+ drivers/mfd/intel-lpss-pci.c | 30 +++++++++++++++++++++---------
+ drivers/mfd/intel-lpss.c     |  9 ++++++++-
+ drivers/mfd/intel-lpss.h     | 14 +++++++++++++-
+ 3 files changed, 42 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/mfd/intel-lpss-pci.c b/drivers/mfd/intel-lpss-pci.c
+index ae5759200622..3870d96fe7c7 100644
+--- a/drivers/mfd/intel-lpss-pci.c
++++ b/drivers/mfd/intel-lpss-pci.c
+@@ -18,19 +18,30 @@
+ 
+ #include "intel-lpss.h"
+ 
+-/* Some DSDTs have an unused GEXP ACPI device conflicting with I2C4 resources */
+-static const struct pci_device_id ignore_resource_conflicts_ids[] = {
+-	/* Microsoft Surface Go (version 1) I2C4 */
+-	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_INTEL, 0x9d64, 0x152d, 0x1182), },
+-	/* Microsoft Surface Go 2 I2C4 */
+-	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_INTEL, 0x9d64, 0x152d, 0x1237), },
++static const struct pci_device_id quirk_ids[] = {
++	{
++		/* Microsoft Surface Go (version 1) I2C4 */
++		PCI_DEVICE_SUB(PCI_VENDOR_ID_INTEL, 0x9d64, 0x152d, 0x1182),
++		.driver_data = QUIRK_IGNORE_RESOURCE_CONFLICTS,
++	},
++	{
++		/* Microsoft Surface Go 2 I2C4 */
++		PCI_DEVICE_SUB(PCI_VENDOR_ID_INTEL, 0x9d64, 0x152d, 0x1237),
++		.driver_data = QUIRK_IGNORE_RESOURCE_CONFLICTS,
++	},
++	{
++		/* Dell XPS 9530 (2023) */
++		PCI_DEVICE_SUB(PCI_VENDOR_ID_INTEL, 0x51fb, 0x1028, 0x0beb),
++		.driver_data = QUIRK_CLOCK_DIVIDER_UNITY,
++	},
+ 	{ }
+-};
++ };
+ 
+ static int intel_lpss_pci_probe(struct pci_dev *pdev,
+ 				const struct pci_device_id *id)
+ {
+ 	struct intel_lpss_platform_info *info;
++	const struct pci_device_id *quirk_pci_info;
+ 	int ret;
+ 
+ 	ret = pcim_enable_device(pdev);
+@@ -45,8 +56,9 @@ static int intel_lpss_pci_probe(struct pci_dev *pdev,
+ 	info->mem = &pdev->resource[0];
+ 	info->irq = pdev->irq;
+ 
+-	if (pci_match_id(ignore_resource_conflicts_ids, pdev))
+-		info->ignore_resource_conflicts = true;
++    quirk_pci_info = pci_match_id(quirk_ids, pdev);
++    if (quirk_pci_info)
++        info->quirks = quirk_pci_info->driver_data;
+ 
+ 	pdev->d3cold_delay = 0;
+ 
+diff --git a/drivers/mfd/intel-lpss.c b/drivers/mfd/intel-lpss.c
+index 9591b354072a..1e5fa60e5068 100644
+--- a/drivers/mfd/intel-lpss.c
++++ b/drivers/mfd/intel-lpss.c
+@@ -292,6 +292,7 @@ static int intel_lpss_register_clock_divider(struct intel_lpss *lpss,
+ {
+ 	char name[32];
+ 	struct clk *tmp = *clk;
++	int ret;
+ 
+ 	snprintf(name, sizeof(name), "%s-enable", devname);
+ 	tmp = clk_register_gate(NULL, name, __clk_get_name(tmp), 0,
+@@ -308,6 +309,12 @@ static int intel_lpss_register_clock_divider(struct intel_lpss *lpss,
+ 		return PTR_ERR(tmp);
+ 	*clk = tmp;
+ 
++	if (lpss->info->quirks & QUIRK_CLOCK_DIVIDER_UNITY) {
++		ret = clk_set_rate(tmp, lpss->info->clk_rate);
++		if (ret)
++			return ret;
++	}
++
+ 	snprintf(name, sizeof(name), "%s-update", devname);
+ 	tmp = clk_register_gate(NULL, name, __clk_get_name(tmp),
+ 				CLK_SET_RATE_PARENT, lpss->priv, 31, 0, NULL);
+@@ -401,7 +408,7 @@ int intel_lpss_probe(struct device *dev,
+ 		return ret;
+ 
+ 	lpss->cell->swnode = info->swnode;
+-	lpss->cell->ignore_resource_conflicts = info->ignore_resource_conflicts;
++	lpss->cell->ignore_resource_conflicts = info->quirks & QUIRK_IGNORE_RESOURCE_CONFLICTS;
+ 
+ 	intel_lpss_init_dev(lpss);
+ 
+diff --git a/drivers/mfd/intel-lpss.h b/drivers/mfd/intel-lpss.h
+index 062ce95b68b9..831f5f5bb356 100644
+--- a/drivers/mfd/intel-lpss.h
++++ b/drivers/mfd/intel-lpss.h
+@@ -11,16 +11,28 @@
+ #ifndef __MFD_INTEL_LPSS_H
+ #define __MFD_INTEL_LPSS_H
+ 
++#include <linux/bits.h>
+ #include <linux/pm.h>
+ 
++/*
++ * Some DSDTs have an unused GEXP ACPI device conflicting with I2C4 resources.
++ * Set to ignore resource conflicts with ACPI declared SystemMemory regions.
++ */
++#define QUIRK_IGNORE_RESOURCE_CONFLICTS	BIT(0)
++/*
++ * Some devices have misconfigured clock divider due to a firmware bug.
++ * Set this to force the clock divider to 1:1 ratio.
++ */
++#define QUIRK_CLOCK_DIVIDER_UNITY		BIT(1)
++
+ struct device;
+ struct resource;
+ struct software_node;
+ 
+ struct intel_lpss_platform_info {
+ 	struct resource *mem;
+-	bool ignore_resource_conflicts;
+ 	int irq;
++	unsigned int quirks;
+ 	unsigned long clk_rate;
+ 	const char *clk_con_id;
+ 	const struct software_node *swnode;
+-- 
+2.40.1
