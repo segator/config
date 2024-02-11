@@ -26,17 +26,14 @@
 
   homebrew = {
    casks = [     
-      "google-chrome"
       "discord"
       "iterm2"      
       "microsoft-remote-desktop"      
-      "slack"
       "spotify"
       "shottr" # screenshot tool      
       "vlc" # video player
       "visual-studio-code"
       "XQuartz" # X11 for macOS
-      "zoom"
     ];
   };
 
