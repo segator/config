@@ -22,6 +22,7 @@
     configureBuildUsers = true;
 
     gc = {
+      user = "aymerici"; # TODO I should set this dynamically
       automatic = true;
       interval = {
         Weekday = 0;
