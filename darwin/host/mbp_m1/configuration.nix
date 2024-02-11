@@ -5,8 +5,8 @@
   ...
 }: {
   imports = [
-    ../defaults.nix
-    ../modules/homebrew
+    ../../defaults.nix
+    ../../modules/homebrew
   ];
   nixpkgs.hostPlatform = "aarch64-darwin";
   # Use a custom configuration.nix location.
