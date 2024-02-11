@@ -58,7 +58,7 @@
   # add nerd fonts
   fonts.fontDir.enable = true;
   fonts.fonts = with pkgs; [
-    (pkgs-unstable.nerdfonts.override {fonts = ["Hack" "Monaspace"];})
+    (nerdfonts.override {fonts = ["Hack" "Monaspace"];})
   ];
 
   #system-defaults.nix
