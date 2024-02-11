@@ -15,7 +15,7 @@ in
   ];
   
   home.username = "aymerici";
-  home.homeDirectory = if pkgs.system == "x86_64-darwin"
+  home.homeDirectory = if pkgs.system == "aarch64-darwin"
                 then "/Users/aymerici"
                 else "/home/aymerici";
 
