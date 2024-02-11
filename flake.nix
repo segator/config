@@ -14,28 +14,50 @@
 
   outputs = { self, nixpkgs, nix-darwin, home-manager, sops-nix, ... } @ inputs:
   let
-    system = "x86_64-linux";
-    pkgs = import nixpkgs { inherit system; };
-    #pkgs = nixpkgs.legacyPackages.${system};
+    systems = [
+      "aarch64-linux"     
+      "x86_64-linux"
+      "aarch64-darwin"
+    ];    
+    x86_64_pkgs = import nixpkgs { 
+      system = "x86_64-linux";
+      config.allowUnfree = true;
+    };
+    aarch64_darwin_pkgs = import nixpkgs {
+      system = "aarch64-darwin";
+      config.allowUnfree = true;
+    };
+    forAllSystems = nixpkgs.lib.genAttrs systems;
   in {
     nixosConfigurations = {
          fury = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; };
+          specialArgs = { 
+            inherit inputs;
+            pkgs = x86_64_pkgs;
+          };
+          system = "x86_64-linux";
           modules = [            
             sops-nix.nixosModules.sops
             ./nixos/host/fury/configuration.nix
           ];
         };
         xps15 = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; };          
+          specialArgs = { 
+            inherit inputs;
+            pkgs = x86_64_pkgs;
+          };       
+          system = "x86_64-linux";   
           modules = [
             sops-nix.nixosModules.sops
             ./nixos/host/xps15/configuration.nix
           ];
         };
         nasnew = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; };
-          inherit system;
+          specialArgs = { 
+            inherit inputs;
+            pkgs = x86_64_pkgs;
+          };
+          system = "x86_64-linux";
           modules = [       
             sops-nix.nixosModules.sops  
             "${nixpkgs}/nixos/modules/virtualisation/proxmox-lxc.nix"   
@@ -45,12 +67,16 @@
         
     };
     darwinConfigurations."aymerici-4DVF0G" = nix-darwin.lib.darwinSystem {
-      specialArgs = { inherit inputs; };
+      specialArgs = { 
+        inherit inputs;
+        pkgs = aarch64_darwin_pkgs;
+      };
+      system = "aarch64-darwin";
       modules = [ ./darwin/host/mbp_m1/configuration.nix ];
     };
     homeConfigurations = {
       "aymerici@fury" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
+        pkgs = x86_64_pkgs;
         modules = [  
           sops-nix.homeManagerModules.sops        
           ./home-manager/configuration/aymerici/home.nix
@@ -59,7 +85,7 @@
           ];
       };
       "segator@fury" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
+        pkgs = x86_64_pkgs;
         modules = [
           sops-nix.homeManagerModules.sops
           ./home-manager/configuration/segator/home.nix
@@ -68,7 +94,7 @@
           ];
       };
       "aymerici@xps15" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
+        pkgs = x86_64_pkgs;
         modules = [ 
           sops-nix.homeManagerModules.sops
           ./home-manager/configuration/aymerici/home.nix
@@ -77,8 +103,18 @@
           ];
       };
 
+      "aymerici@aymerici-4DVF0G" = home-manager.lib.homeManagerConfiguration {
+        pkgs = aarch64_darwin_pkgs;
+        modules = [ 
+          sops-nix.homeManagerModules.sops
+          ./home-manager/configuration/aymerici/home.nix
+          ./home-manager/configuration/aymerici/host/aymerici-4DVF0G.nix
+          { nixpkgs.config.allowUnfree = true; }
+          ];
+      };
+
       "aymerici@nasnew" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
+        pkgs = x86_64_pkgs;
         modules = [ 
           sops-nix.homeManagerModules.sops
           ./home-manager/configuration/aymerici/home.nix
@@ -88,6 +124,7 @@
       };
     };
 
-    devShells.${system}.default = import ./shell.nix { inherit pkgs; };
+    devShells = forAllSystems (system: import ./shell.nix nixpkgs.legacyPackages.${system});
+    
   };
 }
