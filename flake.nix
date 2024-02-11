@@ -8,9 +8,11 @@
       home-manager.inputs.nixpkgs.follows = "nixpkgs";
       hyprland.url = "github:hyprwm/Hyprland";
       sops-nix.url = "github:Mic92/sops-nix";
+      nix-darwin.url = "github:LnL7/nix-darwin";
+      nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, sops-nix, ... } @ inputs:
+  outputs = { self, nixpkgs, nix-darwin, home-manager, sops-nix, ... } @ inputs:
   let
     system = "x86_64-linux";
     pkgs = import nixpkgs { inherit system; };
@@ -41,6 +43,10 @@
           ];
         };
         
+    };
+    darwinConfigurations."aymerici-4DVF0G" = nix-darwin.lib.darwinSystem {
+      specialArgs = { inherit inputs; };
+      modules = [ ./darwin/host/mbp_m1/configuration.nix ];
     };
     homeConfigurations = {
       "aymerici@fury" = home-manager.lib.homeManagerConfiguration {

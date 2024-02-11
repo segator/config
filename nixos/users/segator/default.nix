@@ -3,7 +3,7 @@
 {
   users.users.segator = {
    isNormalUser = true;
-   description = "Isaac";
+   description = "Segator";
    shell = pkgs.fish;
    extraGroups = [ "networkmanager" "wheel" "docker" "libvirtd" "qemu-libvirtd"  ];
   };
