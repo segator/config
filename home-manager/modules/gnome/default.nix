@@ -10,6 +10,13 @@
     gnomeExtensions.space-bar
   ];
 
+  xdg = {
+    enable = true;
+    userDirs = {
+      enable = true;
+      createDirectories = true;
+    };
+  };
   dconf.settings = {
     "org/gnome/desktop/interface" = {
       show-battery-percentage = true;
@@ -120,7 +127,7 @@
   qt = {
     enable = true;
     platformTheme = "gtk";
-    style.name = "adwaita-gtk";
+    style.name = "Catppuccin-Mocha-Standard-Pink-Dark"; # adwaita-gtk
   };
 
 }

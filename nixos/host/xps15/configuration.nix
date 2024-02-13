@@ -168,6 +168,14 @@
   };
 
 
+  networking.extraHosts =
+  ''
+  192.168.49.2 idp.edge.local
+  192.168.49.2 iam.edge.local
+  192.168.49.2 iam-console.edge.local
+  192.168.49.2 iam-client.edge.local
+  '';
+
   networking.firewall.enable = true;
   system.stateVersion = "23.11"; # Did you read the comment?
 
