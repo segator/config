@@ -59,27 +59,29 @@
         state=$1
         sleep_type=$2
 
-        now=`date +'%s'`
+        now=`${pkgs.busybox}/bin/date +'%s'`
 
-        read energy_now < /sys/class/power_supply/BAT0/charge_now #μWh
-        read energy_full < /sys/class/power_supply/BAT0/charge_full # μWh
+        read charge_now < /sys/class/power_supply/BAT0/charge_now #μAh
+        read charge_full < /sys/class/power_supply/BAT0/charge_full # μAh
         read online < /sys/class/power_supply/AC/online
-
+        voltage=$(echo "scale=2;$(cat /sys/class/power_supply/BAT0/voltage_now)/1000000" | ${pkgs.bc}/bin/bc)
+        energy_now=$(echo "scale=0;$voltage * $charge_now/1" | ${pkgs.bc}/bin/bc)
+        energy_full=$(echo "scale=0;$voltage * $charge_full/1" | ${pkgs.bc}/bin/bc)
 
         (($online)) && echo "Currently on mains."
         ((! $online)) && echo "Currently on battery."
 
         case $state in
         "pre")
-            echo "Saving time and battery energy before sleeping ($sleep_type)."
-            echo $now > $FILE
+                echo "Saving time and battery charge before sleeping ($sleep_type)."
+                echo $now > $FILE
             echo $energy_now >> $FILE
             ;;
         "post")
             exec 3<>$FILE
             read prev <&3
             read energy_prev <&3
-            rm $FILE
+            ${pkgs.busybox}/bin/rm $FILE
             time_diff=$(($now - $prev)) # seconds
             days=$(($time_diff / (3600*24)))
             hours=$(($time_diff % (3600*24) / 3600))
