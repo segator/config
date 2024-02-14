@@ -6,6 +6,7 @@
       inputs.nixos-hardware.nixosModules.common-gpu-nvidia-disable
       #inputs.nixos-hardware.nixosModules.dell-xps-15-9520-nvidia
       ./hardware-configuration.nix
+      ./s3-patch.nix
       ../../modules/common.nix
       ../../modules/battery
       ../../modules/displaylink

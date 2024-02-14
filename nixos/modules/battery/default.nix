@@ -64,7 +64,7 @@
         read charge_now < /sys/class/power_supply/BAT0/charge_now #μAh
         read charge_full < /sys/class/power_supply/BAT0/charge_full # μAh
         read online < /sys/class/power_supply/AC/online
-        voltage=$(echo "scale=2;$(cat /sys/class/power_supply/BAT0/voltage_now)/1000000" | ${pkgs.bc}/bin/bc)
+        voltage=$(echo "scale=2;$(${pkgs.busybox}/bin/cat /sys/class/power_supply/BAT0/voltage_now)/1000000" | ${pkgs.bc}/bin/bc)
         energy_now=$(echo "scale=0;$voltage * $charge_now/1" | ${pkgs.bc}/bin/bc)
         energy_full=$(echo "scale=0;$voltage * $charge_full/1" | ${pkgs.bc}/bin/bc)
 
