@@ -12,6 +12,7 @@
       ../../modules/displaylink
       ../../modules/nix
       ../../modules/wifi
+      ../../modules/vpn
       ../../modules/roche_certs  
       ../../modules/gnome
       ../../modules/hyprland

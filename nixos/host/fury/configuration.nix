@@ -9,6 +9,7 @@
       ./syncthing.nix
       ../../modules/nix
       ../../modules/gnome
+      ../../modules/vpn
       ../../modules/roche_certs   
       ../../modules/fwupd  
       ../../modules/sshd
