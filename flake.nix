@@ -3,16 +3,24 @@
 
   inputs = {
       nixpkgs.url = "nixpkgs/nixos-unstable";
+      
       nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+      
       home-manager.url = "github:nix-community/home-manager";
       home-manager.inputs.nixpkgs.follows = "nixpkgs";
+      
       hyprland.url = "github:hyprwm/Hyprland";
+      
       sops-nix.url = "github:Mic92/sops-nix";
+      
       nix-darwin.url = "github:LnL7/nix-darwin";
       nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+      
+      krew2nix.url = "github:eigengrau/krew2nix";
+      krew2nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, sops-nix, ... } @ inputs:
+  outputs = { self, nixpkgs, nix-darwin, home-manager, sops-nix, krew2nix,  ... } @ inputs:
   let
     systems = [
       "aarch64-linux"     
@@ -94,6 +102,9 @@
           ];
       };
       "aymerici@xps15" = home-manager.lib.homeManagerConfiguration {
+        extraSpecialArgs = { 
+         inherit inputs;
+        };
         pkgs = x86_64_pkgs;
         modules = [ 
           sops-nix.homeManagerModules.sops

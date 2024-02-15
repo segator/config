@@ -1,10 +1,15 @@
-{ config, pkgs, ... }:
-{
+{ config, pkgs,inputs, ... }:
+let
+  krewKubectl = inputs.krew2nix.packages."x86_64-linux".kubectl;
+in
+{  
   home.packages = with pkgs; [
       lazydocker
-      kind
-      kubectl
+      kind      
       kubernetes-helm
+      (krewKubectl.withKrewPlugins (plugins: [
+            plugins.oidc-login
+          ]))
   ];
 
   programs.k9s.enable = true;
