@@ -6,7 +6,7 @@ in
   home.packages = with pkgs; [
       lazydocker
       kind      
-      kubernetes-helm
+      kubernetes-helm      
       (krewKubectl.withKrewPlugins (plugins: [
             plugins.oidc-login
           ]))

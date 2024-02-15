@@ -4,6 +4,7 @@
     enable = true;
     userName = "Isaac Aymerich";
     userEmail = "isaac.aymerich@roche.com";
+    pull.rebase = true;
     aliases = {
       pu = "push";
       co = "checkout";
