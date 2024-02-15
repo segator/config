@@ -14,6 +14,7 @@
       ../../modules/fwupd  
       ../../modules/sshd
       ../../modules/virtualisation
+      ../../modules/gaming
 
       ../../users/aymerici
       ../../users/segator

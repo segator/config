@@ -7,9 +7,10 @@ in
       lazydocker
       kind      
       kubernetes-helm      
-      (krewKubectl.withKrewPlugins (plugins: [
-            plugins.oidc-login
-          ]))
+      kubectl
+      #(krewKubectl.withKrewPlugins (plugins: [
+      #      plugins.oidc-login
+      #    ]))
   ];
 
   programs.k9s.enable = true;
