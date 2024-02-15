@@ -13,13 +13,6 @@ in
     ../../modules/sops
     ../../modules/roche
   ];
-
-  dconf.settings = {
-    "/org/gnome/nm-applet/eap/2ec3e561-36e2-435b-82fa-dc92526c88b1" = {
-    ignore-ca-cert = false;
-    ignore-phase2-ca-cert = false;      
-    };    
-  };
   
   home.username = "aymerici";
   home.homeDirectory = if pkgs.system == "aarch64-darwin"

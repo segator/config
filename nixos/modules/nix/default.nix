@@ -8,7 +8,7 @@
   
   # Auto delete old generations
   nix.gc.automatic = true;
-  nix.gc.options = "--delete-older-than 2d";
+  nix.gc.options = "--delete-older-than 30d";
 }
   
   
