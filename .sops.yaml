@@ -1,6 +1,7 @@
 keys:
   - &machine_xps15 age1uqfc83ppdychx7lnauqfg6656m6ecy72392jm3slyeal8ppw55lqe59lst
   - &machine_fury age1mqva7u3g57hjz9ptsxclnkg0hsp9v83arc3gwndcwj64jj3ryd2sva0rxg
+  - &machine_nas age15ndvrrv36592tpmm4ekv7crg7muh2chghn4a39z5m6hsl5uzef3sw6qw2x
   - &user_aymerici age1qw932v4nt3muyy7lf6f2k68627huql68duzqvq7qq0tljr37cp6sjq07f9
   - &user_segator age1m4scguauntyz5zwu9n44jjqfzexaymr3jq4pu3ydfcfxe3gc2pfsfdx6ke
 creation_rules:
@@ -10,6 +11,7 @@ creation_rules:
     - age:
       - *machine_xps15
       - *machine_fury
+      - *machine_nas
       - *user_aymerici
       - *user_segator
 
@@ -26,6 +28,14 @@ creation_rules:
     - age:
       - *user_aymerici
       - *machine_xps15
+  # secrets for nas machine
+  - path_regex: secrets/hosts/nas/.+$
+    key_groups:
+    - age:
+      - *user_segator
+      - *user_aymerici
+      - *machine_nas
+
   # secrets for aymerici user
   - path_regex: secrets/users/aymerici/.+$
     key_groups:

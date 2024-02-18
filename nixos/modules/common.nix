@@ -2,8 +2,6 @@
 {
   imports = [
     ./nix-sops
-    ./boot
-    #./fhs.nix
   ];
   environment.systemPackages = with pkgs; [
     # Home

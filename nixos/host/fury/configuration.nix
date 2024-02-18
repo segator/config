@@ -5,6 +5,7 @@
       inputs.nixos-hardware.nixosModules.common-cpu-amd
       inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate
       ./hardware-configuration.nix
+      ../../modules/boot
       ../../modules/common.nix
       ./syncthing.nix
       ../../modules/nix
@@ -21,9 +22,24 @@
     ];
 
   # Bootloader.
-  boot.extraModprobeConfig = "options kvm_amd nested=1";
+  boot.extraModprobeConfig = ''
+  options kvm_amd nested=1
+  options nvidia NVreg_UsePageAttributeTable=1
+  options nvidia NVreg_RegistryDwords="OverrideMaxPerf=0x1"
+  options nvidia NVreg_PreserveVideoMemoryAllocations=1
+  options nvidia NVreg_TemporaryFilePath=/var/tmp
+  '';
+  boot.kernelParams = [
+        "nouveau.modeset=0"
+  ];
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernelModules = [ "kvm-amd" ];
+  boot.kernelModules = [ 
+    "kvm-amd" 
+    "nvidia"
+    "nvidia_modeset"
+    "nvidia_uvm"
+    "nvidia_drm"
+    ];
   boot.binfmt.emulatedSystems = [
     "aarch64-linux"  
   ];
@@ -100,11 +116,12 @@
 
 
   services.dbus.enable = true;
-  services.xserver.videoDrivers = ["nvidia"];
 
+
+  services.xserver.videoDrivers = ["nvidia"];
   hardware.nvidia = {
     modesetting.enable = true;
-    powerManagement.enable = false;
+    powerManagement.enable = true;
 #    open = true;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;

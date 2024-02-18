@@ -1,7 +1,13 @@
 { inputs, config, pkgs, nixpkgs, lib, ... }:
 {
         imports = [          
-          ../../modules/nix
+      ../../modules/common.nix
+      ../../modules/nix
+      ../../modules/gnome      
+      ../../modules/fwupd  
+      ../../modules/sshd      
+
+      ../../users/segator
         ];
         proxmoxLXC = {
                 # manageNetwork = false;

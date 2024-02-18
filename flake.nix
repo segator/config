@@ -60,7 +60,7 @@
             ./nixos/host/xps15/configuration.nix
           ];
         };
-        nasnew = nixpkgs.lib.nixosSystem {
+        nas = nixpkgs.lib.nixosSystem {
           specialArgs = { 
             inherit inputs;
             pkgs = x86_64_pkgs;
@@ -69,7 +69,7 @@
           modules = [       
             sops-nix.nixosModules.sops  
             "${nixpkgs}/nixos/modules/virtualisation/proxmox-lxc.nix"   
-            ./nixos/host/nasnew/configuration.nix            
+            ./nixos/host/nas/configuration.nix            
           ];
         };
         
@@ -124,12 +124,12 @@
           ];
       };
 
-      "aymerici@nasnew" = home-manager.lib.homeManagerConfiguration {
+      "segator@nas" = home-manager.lib.homeManagerConfiguration {
         pkgs = x86_64_pkgs;
         modules = [ 
           sops-nix.homeManagerModules.sops
-          ./home-manager/configuration/aymerici/home.nix
-          ./home-manager/configuration/aymerici/host/nasnew.nix
+          ./home-manager/configuration/segator/home.nix
+          ./home-manager/configuration/segator/host/nas.nix
           { nixpkgs.config.allowUnfree = true; }
          ];
       };
