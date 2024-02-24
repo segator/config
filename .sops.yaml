@@ -33,13 +33,13 @@ creation_rules:
     key_groups:
     - age:
       - *user_segator
-      - *user_aymerici
       - *machine_nas
 
   # secrets for aymerici user
   - path_regex: secrets/users/aymerici/.+$
     key_groups:
-    - age:
+    - age:    
+      - *user_segator
       - *user_aymerici
   # secrets for aymerici user
   - path_regex: secrets/users/segator/.+$

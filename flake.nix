@@ -1,26 +1,14 @@
 {
   description = "Segator NixOS Configuration";
 
-  inputs = {
-      nixpkgs.url = "nixpkgs/nixos-unstable";
-      
-      nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-      
-      home-manager.url = "github:nix-community/home-manager";
-      home-manager.inputs.nixpkgs.follows = "nixpkgs";
-      
-      hyprland.url = "github:hyprwm/Hyprland";
-      
-      sops-nix.url = "github:Mic92/sops-nix";
-      
-      nix-darwin.url = "github:LnL7/nix-darwin";
-      nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-      
-      krew2nix.url = "github:eigengrau/krew2nix";
-      krew2nix.inputs.nixpkgs.follows = "nixpkgs";
-  };
-
-  outputs = { self, nixpkgs, nix-darwin, home-manager, sops-nix, krew2nix,  ... } @ inputs:
+  outputs = { self, 
+              nixpkgs,
+              nix-darwin, 
+              home-manager, 
+              sops-nix, 
+              krew2nix,  
+              #deploy-rs,
+              ... } @ inputs:
   let
     systems = [
       "aarch64-linux"     
@@ -61,15 +49,38 @@
           ];
         };
         nas = nixpkgs.lib.nixosSystem {
+          #extraSpecialArgs = { inherit inputs; pkgs = x86_64_pkgs; };
           specialArgs = { 
             inherit inputs;
             pkgs = x86_64_pkgs;
-          };
+          };          
           system = "x86_64-linux";
           modules = [       
+            home-manager.nixosModules.default
             sops-nix.nixosModules.sops  
             "${nixpkgs}/nixos/modules/virtualisation/proxmox-lxc.nix"   
-            ./nixos/host/nas/configuration.nix            
+            ./nixos/host/nas/configuration.nix     
+            # Home manager
+            #sops-nix.homeManagerModules.sops
+            (
+              {
+                home-manager = {
+                  extraSpecialArgs = { inherit inputs; pkgs = x86_64_pkgs; };
+                  users = {
+                    "segator" = {
+                      imports = [
+                        sops-nix.homeManagerModules.sops
+                        ./home-manager/configuration/segator/home.nix
+                        #./home-manager/configuration/segator/host/nas.nix
+                      ];
+                    }; 
+                  };
+                };
+              }              
+            )
+            #./home-manager/configuration/segator/home.nix
+            #./home-manager/configuration/segator/host/nas.nix
+            #{ nixpkgs.config.allowUnfree = true; }       
           ];
         };
         
@@ -137,5 +148,26 @@
 
     devShells = forAllSystems (system: import ./shell.nix nixpkgs.legacyPackages.${system});
     
+  };
+
+  inputs = {
+      nixpkgs.url = "nixpkgs/nixos-unstable";
+      
+      nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+      
+      home-manager.url = "github:nix-community/home-manager";
+      home-manager.inputs.nixpkgs.follows = "nixpkgs";
+      
+      hyprland.url = "github:hyprwm/Hyprland";
+      
+      sops-nix.url = "github:Mic92/sops-nix";
+      
+      nix-darwin.url = "github:LnL7/nix-darwin";
+      nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+      
+      krew2nix.url = "github:eigengrau/krew2nix";
+      krew2nix.inputs.nixpkgs.follows = "nixpkgs";
+
+      #deploy-rs.url = "github:serokell/deploy-rs";
   };
 }
