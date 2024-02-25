@@ -2,7 +2,6 @@
 
 {
   imports = [
-    ../../../modules/developer
     ../../../modules/devops
   ];
 }

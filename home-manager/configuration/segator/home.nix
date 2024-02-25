@@ -9,7 +9,6 @@ in
   imports = [
     ../../modules/shell {}
     ../../modules/sops
-    ../../modules/roche
   ];
   
   home.username = "segator";

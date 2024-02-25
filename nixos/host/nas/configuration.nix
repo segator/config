@@ -3,16 +3,18 @@
         imports = [          
       ../../modules/common.nix
       ../../modules/nix
-      ../../modules/gnome      
-      ../../modules/fwupd  
-      ../../modules/sshd      
+      ../../modules/sshd    
 
       ../../users/segator
+
+      ./nextcloud.nix
+      ./samba.nix
         ];
         proxmoxLXC = {
                 # manageNetwork = false;
                 # privileged = false;
         };
+        networking.hostName = "nas";
         system.stateVersion = "23.05";
 
         environment.systemPackages = with pkgs; [
