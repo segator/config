@@ -1,15 +1,19 @@
 { inputs, config, pkgs, nixpkgs, lib, ... }:
 {
-        imports = [          
-      ../../modules/common.nix
-      ../../modules/nix
-      ../../modules/sshd    
+      imports = [          
+        ../../modules/common.nix
+        ../../modules/nix
+        ../../modules/sshd    
 
-      ../../users/segator
+        ../../users/segator
+        ../../users/daga12g
+        ../../users/carles
+        ./users.nix
 
-      ./nextcloud.nix
-      ./samba.nix
-        ];
+        #./nextcloud.nix
+        ./samba.nix
+      ];
+
         proxmoxLXC = {
                 # manageNetwork = false;
                 # privileged = false;

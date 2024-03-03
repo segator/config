@@ -12,7 +12,7 @@ in
   ];
   
   home.username = "segator";
-  home.homeDirectory = "/home/segator";
+  home.homeDirectory = lib.mkDefault "/home/segator";
 
   home.stateVersion = "23.05"; 
 

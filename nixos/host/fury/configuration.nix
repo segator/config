@@ -139,6 +139,18 @@
     ];
   };
 
+  networking.extraHosts =
+  ''
+  192.168.49.2 idp.edge.local
+  192.168.49.2 iam.edge.local
+  192.168.49.2 iam-console.edge.local
+  192.168.49.2 iam-client.edge.local
+  
+  10.21.81.122 idp.navify-anywhere.labnet.roche.com
+  10.21.81.122 iam.navify-anywhere.labnet.roche.com
+  10.21.81.122 console.navify-anywhere.labnet.roche.com
+  '';
+
   networking.firewall.enable = true;
 
   # This value determines the NixOS release from which the default
