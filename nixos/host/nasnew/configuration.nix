@@ -19,7 +19,17 @@
         proxmoxLXC = {
                 # manageNetwork = false;
                 # privileged = false;
+                manageHostName = true;
         };
+
+          systemd.suppressedSystemUnits = [
+                "dev-mqueue.mount"
+                "sys-kernel-debug.mount"
+                "sys-fs-fuse-connections.mount"
+        ];
+
+        boot.loader.grub.enable = false;
+
         networking.hostName = "nasnew";
         system.stateVersion = "23.05";
 

@@ -3,6 +3,7 @@
 {
 
   sops.secrets.backup_borg_passphrase = {
+    path = "/run/secrets/borg_passphrase";
   };
 
 
