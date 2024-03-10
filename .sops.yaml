@@ -29,7 +29,7 @@ creation_rules:
       - *user_aymerici
       - *machine_xps15
   # secrets for nas machine
-  - path_regex: secrets/hosts/nas/.+$
+  - path_regex: secrets/hosts/nasnew/.+$
     key_groups:
     - age:
       - *user_segator

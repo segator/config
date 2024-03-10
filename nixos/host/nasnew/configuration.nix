@@ -20,7 +20,7 @@
                 # manageNetwork = false;
                 # privileged = false;
         };
-        networking.hostName = "nas";
+        networking.hostName = "nasnew";
         system.stateVersion = "23.05";
 
         environment.systemPackages = with pkgs; [

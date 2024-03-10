@@ -59,7 +59,7 @@
             home-manager.nixosModules.default
             sops-nix.nixosModules.sops  
             "${nixpkgs}/nixos/modules/virtualisation/proxmox-lxc.nix"   
-            ./nixos/host/nas/configuration.nix     
+            ./nixos/host/nasnew/configuration.nix     
             # Home manager
             #sops-nix.homeManagerModules.sops
             (
