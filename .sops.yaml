@@ -33,6 +33,7 @@ creation_rules:
     key_groups:
     - age:
       - *user_segator
+      - *user_aymerici
       - *machine_nas
 
   # secrets for aymerici user

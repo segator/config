@@ -15,6 +15,18 @@
         createHome = false;  
     };
     users.groups = {
+        segator = {
+            gid = 1001;
+            members = [ "segator" ];
+        };
+        daga12g = {
+            gid = 1000;
+            members = [ "daga12g" ];
+        };
+        carles = {
+            gid = 1002;
+            members = [ "carles" ];
+        };
         isaacaina = {
             gid = 1100;
             members = [
