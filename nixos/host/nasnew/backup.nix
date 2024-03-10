@@ -3,10 +3,10 @@
 {
 
   sops.secrets.backup_borg_passphrase = {
-    path = "/run/secrets/borg_passphrase";
   };
 
-
+  sops.secrets.backup_homeassistant_webhook = {
+  };
 
   services.borgmatic = {
     enable = true;
@@ -22,16 +22,27 @@
       encryption_passcommand = "${pkgs.coreutils}/bin/cat ${config.sops.secrets.backup_borg_passphrase.path}";
       compression = "auto,zstd,10";
       ssh_command = "ssh -i /etc/ssh/ssh_host_ed25519_key";
-      # consistency checks TODO
       keep_daily = 7;
       keep_weekly = 4;
       keep_monthly = 12;
       keep_yearly = 1;
-      
+      extra_borg_options = {
+        create = "--stats --show-rc --progress";
+      };
+      checks = [{
+        name = "repository";
+        frequency = "always";
+      }];
       #before_actions = [ "${pkgs.curl}/bin/curl -fss -m 10 --retry 5 -o /dev/null $(${pkgs.coreutils}/bin/cat ${config.age.secrets.picardResticHealthCheckUrl.path})/start" ];
       #after_actions = [ "${pkgs.curl}/bin/curl -fss -m 10 --retry 5 -o /dev/null $(${pkgs.coreutils}/bin/cat ${config.age.secrets.picardResticHealthCheckUrl.path})" ];
-      #on_error = [ "${pkgs.curl}/bin/curl -fss -m 10 --retry 5 -o /dev/null $(${pkgs.coreutils}/bin/cat ${config.age.secrets.picardResticHealthCheckUrl.path})/fail" ];
+      after_backup = [
+        "${pkgs.curl}/bin/curl -fss -m 10 --retry 5 -d 'backup completed' -o /dev/null $(${pkgs.coreutils}/bin/cat ${config.sops.secrets.backup_homeassistant_webhook.path})" ];
+      after_check = [
+        "${pkgs.curl}/bin/curl -fss -m 10 --retry 5 -d 'check completed' -o /dev/null $(${pkgs.coreutils}/bin/cat ${config.sops.secrets.backup_homeassistant_webhook.path})" ];
+      on_error = [ 
+        "${pkgs.curl}/bin/curl -fss -m 10 --retry 5 -d '{repository}: {error}' -o /dev/null $(${pkgs.coreutils}/bin/cat ${config.sops.secrets.backup_homeassistant_webhook.path})" ];
       #postgresql_databases = [{ name = "all"; pg_dump_command = "${pkgs.postgresql}/bin/pg_dumpall"; pg_restore_command = "${pkgs.postgresql}/bin/pg_restore"; }];
+      #pkgs.writeShellScript "batenergy.sh" ''        '' "{repository}" "error"
     };
   };
 
