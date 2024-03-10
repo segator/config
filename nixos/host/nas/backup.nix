@@ -21,12 +21,12 @@
       encryption_passcommand = "${pkgs.coreutils}/bin/cat ${config.sops.secrets.backup_borg_passphrase.path}";
       compression = "auto,zstd,10";
       ssh_command = "ssh -i /etc/ssh/ssh_host_ed25519_key";
-      retention = {
-        keep_daily = 7;
-        keep_weekly = 4;
-        keep_monthly = 12;
-        keep_yearly = 1;
-      };
+      # consistency checks TODO
+      keep_daily = 7;
+      keep_weekly = 4;
+      keep_monthly = 12;
+      keep_yearly = 1;
+      
       #before_actions = [ "${pkgs.curl}/bin/curl -fss -m 10 --retry 5 -o /dev/null $(${pkgs.coreutils}/bin/cat ${config.age.secrets.picardResticHealthCheckUrl.path})/start" ];
       #after_actions = [ "${pkgs.curl}/bin/curl -fss -m 10 --retry 5 -o /dev/null $(${pkgs.coreutils}/bin/cat ${config.age.secrets.picardResticHealthCheckUrl.path})" ];
       #on_error = [ "${pkgs.curl}/bin/curl -fss -m 10 --retry 5 -o /dev/null $(${pkgs.coreutils}/bin/cat ${config.age.secrets.picardResticHealthCheckUrl.path})/fail" ];

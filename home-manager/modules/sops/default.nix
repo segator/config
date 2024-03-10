@@ -5,4 +5,8 @@
     #age.sshKeyPaths = [ "/home/user/path-to-ssh-key" ];
     defaultSopsFile = ../../../secrets/users/${config.home.username}/secrets.yaml;
   };
+
+  home.activation.setupEtc = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    /run/current-system/sw/bin/systemctl start --user sops-nix
+  '';
 }
