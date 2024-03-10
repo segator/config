@@ -48,7 +48,7 @@
             ./nixos/host/xps15/configuration.nix
           ];
         };
-        nas = nixpkgs.lib.nixosSystem {
+        nasnew = nixpkgs.lib.nixosSystem {
           #extraSpecialArgs = { inherit inputs; pkgs = x86_64_pkgs; };
           specialArgs = { 
             inherit inputs;
