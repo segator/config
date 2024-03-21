@@ -1,16 +1,23 @@
 { inputs, config, pkgs, nixpkgs, lib, ... }:
 {
-    environment.etc."nextcloud-admin-pass".text = "test123";
+
+    sops.secrets.nextcloud_admin_password = {
+        owner = "nextcloud";
+        group = "nextcloud";
+        restartUnits = [ "nextcloud-setup.service" ];
+
+    };
+
     services.nextcloud = {
         enable = true;
         package = pkgs.nextcloud28;
         
         extraAppsEnable = true;
         extraApps = {
-            inherit (config.services.nextcloud.package.packages.apps) news contacts calendar tasks;
+            inherit (config.services.nextcloud.package.packages.apps) contacts calendar tasks memories previewgenerator;
         };
-        hostName = "localhost";
-        config.extraTrustedDomains = [ "116.203.110.163" ];
+        hostName = "cloud.segator.es";
+        #config.extraTrustedDomains = [ "116.203.110.163" ];
 
         # Use HTTPS for links
         https = true;
@@ -19,8 +26,8 @@
         autoUpdateApps.enable = true;
         # Set what time makes sense for you
         autoUpdateApps.startAt = "05:00:00";
-        config.adminpassFile = "/etc/nextcloud-admin-pass";
-          extraOptions.enabledPreviewProviders = [
+        settings = {
+          enabledPreviewProviders = [
             "OC\\Preview\\BMP"
             "OC\\Preview\\GIF"
             "OC\\Preview\\JPEG"
@@ -32,18 +39,20 @@
             "OC\\Preview\\TXT"
             "OC\\Preview\\XBitmap"
             "OC\\Preview\\HEIC"
-        ];
-        maxUploadSize = "10G";
+          ];
+        };
+          
+        maxUploadSize = "32G";
         ## Options for the PHP worker. Extension `smbclient` is necessary for CIFS
         ## external storage. Options `opcache.<whatever>` need to be quoted to have
         ## a dot in the name of the option.
         phpExtraExtensions = p: [ p.smbclient ];
         phpOptions."opcache.interned_strings_buffer" = "16";
 
-
+    
         config = {
             adminuser = "admin";
-            adminpassFile = config.age.secrets.niolscloud-admin-password.path;
+            adminpassFile = config.sops.secrets.nextcloud_admin_password.path;
 
             dbtype = "pgsql";
             dbuser = "nextcloud";
@@ -52,27 +61,28 @@
             };
 
             settings = {
-            default_phone_region = "FR";
+            default_phone_region = "ES";
 
             ## The `file` log type allows reading logs from the NextCloud interface.
-            logType = "file";
+/*             logType = "file"; */
 
             ## Mail configuration
-            mail_sendmailmode = "smtp";
+/*             mail_sendmailmode = "smtp";
             mail_from_address = "no-reply";
-            mail_domain = "niols.fr";
+            mail_domain = "niols.fr"; */
 
             ## Mail authentication - password in secrets.
-            mail_smtpmode = "smtp";
-            mail_smtphost = "mail.infomaniak.com";
+            #mail_smtpmode = "smtp";
+            /* mail_smtphost = "mail.infomaniak.com";
             mail_smtpsecure = "ssl";
             mail_smtpport = 465;
             mail_smtpauth = 1;
-            mail_smtpname = "no-reply@niols.fr";
+            mail_smtpname = "no-reply@niols.fr"; */
         };
     };
 
     services.postgresql = {
+        enable = true;
         ensureDatabases = [ "nextcloud" ];
         ensureUsers = [{
         name = "nextcloud";

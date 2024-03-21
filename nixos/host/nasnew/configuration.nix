@@ -11,8 +11,9 @@
                 ../../users/carles
                 ./users.nix
 
-                #./nextcloud.nix
+                ./nextcloud.nix
                 ./samba.nix
+                ./nfs.nix
                 ./backup.nix
         ];
 
@@ -37,6 +38,7 @@
                 vim git
         ];
 
+        networking.firewall.enable = true;
         # Auto update
         system.autoUpgrade.enable = true;
 }
