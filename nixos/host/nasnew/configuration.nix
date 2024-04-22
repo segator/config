@@ -1,6 +1,7 @@
 { inputs, config, pkgs, nixpkgs, lib, ... }:
 {
-        imports = [          
+        imports = [    
+                ./disk-config.nix      
                 ../../modules/common.nix
                 ../../modules/nix
                 ../../modules/sshd    
@@ -17,22 +18,16 @@
                 ./backup.nix
         ];
 
-        proxmoxLXC = {
-                # manageNetwork = false;
-                # privileged = false;
-                manageHostName = true;
+
+        boot.loader.grub = {
+        # no need to set devices, disko will add all devices that have a EF02 partition to the list already
+        # devices = [ ];
+        efiSupport = true;
+        efiInstallAsRemovable = true;
         };
 
-          systemd.suppressedSystemUnits = [
-                "dev-mqueue.mount"
-                "sys-kernel-debug.mount"
-                "sys-fs-fuse-connections.mount"
-        ];
-
-        boot.loader.grub.enable = false;
-
         networking.hostName = "nasnew";
-        system.stateVersion = "23.05";
+        system.stateVersion = "23.11";
 
         environment.systemPackages = with pkgs; [
                 vim git

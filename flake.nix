@@ -6,7 +6,9 @@
               nix-darwin, 
               home-manager, 
               sops-nix, 
-              krew2nix,  
+              krew2nix, 
+              disko, 
+              impermanence,
               #deploy-rs,
               ... } @ inputs:
   let
@@ -56,6 +58,8 @@
           };          
           system = "x86_64-linux";
           modules = [       
+            disko.nixosModules.disko
+            impermanence.nixosModules.impermanence
             home-manager.nixosModules.default
             sops-nix.nixosModules.sops  
             "${nixpkgs}/nixos/modules/virtualisation/proxmox-lxc.nix"   
@@ -167,6 +171,11 @@
       
       krew2nix.url = "github:eigengrau/krew2nix";
       krew2nix.inputs.nixpkgs.follows = "nixpkgs";
+
+      disko.url = "github:nix-community/disko";
+      disko.inputs.nixpkgs.follows = "nixpkgs";
+
+      impermanence.url = "github:nix-community/impermanence"; #/create-needed-for-boot
 
       #deploy-rs.url = "github:serokell/deploy-rs";
   };
