@@ -56,14 +56,27 @@
   };
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
+  # boot.kernelPackages = pkgs.linuxPackagesFor (pkgs.linuxPackages_latest.override {
+  #   argsOverride = rec {
+  #     src = pkgs.fetchFromGithub {
+  #         owner = "torvalds";
+  #         repo = "linux";
+  #         rev = "master";
+  #         sha256 = "0rs9bxxrw4wscf4a8yl776a8g880m5gcm75q06yx2cn3lw2b7v22";
+  #       };
+
+  #     version = "6.9-rc3";
+  #     modDirVersion = "6.9-rc3";
+  #     };
+  # });
   networking.hostName = "xps15";
 
- boot.kernelPatches = [
-  {
-    name = "mfd-intel-lpss-v4";
-    patch = ./mfd-intel-lpss-v4.patch;
-  }
- ];
+# boot.kernelPatches = [
+#  {
+#    name = "mfd-intel-lpss-v4";
+#    patch = ./mfd-intel-lpss-v4.patch;
+#  }
+# ];
 
   # Enable networking
   networking.networkmanager.enable = true;
