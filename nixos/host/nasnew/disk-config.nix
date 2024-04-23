@@ -49,17 +49,33 @@
         };
         mountpoint = "none";
         #postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^zroot@blank$' || zfs snapshot zroot@blank";
-
+        # postMountHook = ''
+        #     mkdir -p /mnt/persist/system/var/lib/nixos
+        #     mkdir -p /mnt/persist/system/etc/nixos
+        #     mkdir -p /mnt/persist/system/var/log
+        #     mkdir -p /mnt/persist/system/var/lib/systemd/coredump
+        #     mkdir -p /persist/services/var/lib/acme
+        #     mkdir -p /persist/services/var/lib/nextcloud/data"
+        #     mkdir -p /persist/services/var/lib/postgresql"
+        #     '';
         datasets = {
           persist = {
             type = "zfs_fs";
             mountpoint = "/persist";
-            options."com.sun:auto-snapshot" = "true";
+            options = {
+             "com.sun:auto-snapshot" = "true"; 
+              encryption = "aes-256-gcm";
+              keyformat = "passphrase";
+            };
           };
-          persist = {
+          nix = {
             type = "zfs_fs";
             mountpoint = "/nix";
-            options."com.sun:auto-snapshot" = "true";
+            options = {
+             "com.sun:auto-snapshot" = "true"; 
+              encryption = "aes-256-gcm";
+              keyformat = "passphrase";
+            };
           };
           encrypted = {
             type = "zfs_fs";
