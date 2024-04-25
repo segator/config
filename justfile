@@ -1,5 +1,7 @@
 default_server:="localhost"
 
+build_bootstrap_iso:
+    nix build -L .#nixosConfigurations.bootstrap-iso.config.system.build.isoImage -o build/bootstrap-iso
 # User keys
 create_age_user_key user:
     age-keygen -o "./secrets/key/age_user_{{user}}_key.txt"
