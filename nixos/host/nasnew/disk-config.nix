@@ -42,13 +42,13 @@
     zpool = {
       zroot = {
         type = "zpool";
-        mode = "single";
+        mode = "mirror";
         rootFsOptions = {
           compression = "zstd";
           "com.sun:auto-snapshot" = "false";
         };
-        mountpoint = "none";
-        #postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^zroot@blank$' || zfs snapshot zroot@blank";
+        #mountpoint = "none";
+        #postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^zroot@blank$' || zfs snapshot zroot@blank";        
         # postMountHook = ''
         #     mkdir -p /mnt/persist/system/var/lib/nixos
         #     mkdir -p /mnt/persist/system/etc/nixos
@@ -66,7 +66,16 @@
              "com.sun:auto-snapshot" = "true"; 
               encryption = "aes-256-gcm";
               keyformat = "passphrase";
+              keylocation = "file:///tmp/disk.key";
             };
+            postCreateHook = ''
+              mkdir -p /persist/initrd/
+              cd /persist/initrd
+              ssh-keygen -t ed25519 -N "" -f /persist/initrd/ssh_host_ed25519_key 
+
+              # after disko creates the encrypted volume we switch to prompt for next boots
+              zfs set keylocation="prompt" "zroot/$name"; 
+            '';
           };
           nix = {
             type = "zfs_fs";
@@ -77,25 +86,9 @@
               keyformat = "passphrase";
             };
           };
-          encrypted = {
-            type = "zfs_fs";
-            options = {
-              mountpoint = "none";
-              encryption = "aes-256-gcm";
-              keyformat = "passphrase";
-              keylocation = "file:///tmp/secret.key";
-            };
-            # use this to read the key during boot
-            # postCreateHook = ''
-            #   zfs set keylocation="prompt" "zroot/$name";
-            # '';
-          };
-          "encrypted/test" = {
-            type = "zfs_fs";
-            mountpoint = "/zfs_crypted";
-          };
         };
       };
     };
   };
+  #filesystem."/persist".neededForBoot = true;
 }

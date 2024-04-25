@@ -1,8 +1,47 @@
 default_server:="localhost"
+default:
+  @just --choose
 
 build_bootstrap_iso:
     nix build -L .#nixosConfigurations.bootstrap-iso.config.system.build.isoImage -o build/bootstrap-iso
 # User keys
+
+remote_bootstrap profile server:
+    #!/usr/bin/env sh
+    temp=$(mktemp -d)
+    # Function to prompt the user for password entry securely
+    get_password() {
+        local password1 password2
+        read -s -p "Enter your disk encryption key: " password1
+        echo
+        read -s -p "Confirm:" password2
+        echo
+
+        # Check if passwords match
+        if [ "$password1" != "$password2" ]; then
+            echo "Passwords do not match. Please try again."
+            get_password
+        else
+            password="$password1"
+        fi
+    }
+
+    # Prompt the user to enter the password
+    get_password
+
+    # Specify the file to save the password
+    disk_key_file="$temp/disk.key"
+
+    # Save the password to a file
+    echo "$password" > "$disk_key_file" 
+
+    nix run github:numtide/nixos-anywhere -- \
+    --disk-encryption-keys $disk_key_file /tmp/disk.key \
+    --extra-files "$temp" \
+    --flake .#{{profile}} \
+    root@{{server}}
+    
+
 create_age_user_key user:
     age-keygen -o "./secrets/key/age_user_{{user}}_key.txt"
     @echo "Key generated at: ./secrets/key/age_user_{{user}}_key.txt"
