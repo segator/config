@@ -44,6 +44,9 @@
         type = "zpool";
         mode = "mirror";
         rootFsOptions = {
+          acltype = "posixacl";
+          xattr = "sa";
+          atime = "off";
           compression = "zstd";
           "com.sun:auto-snapshot" = "false";
         };
@@ -62,11 +65,13 @@
           persist = {
             type = "zfs_fs";
             mountpoint = "/persist";
+            
             options = {
              "com.sun:auto-snapshot" = "true"; 
               encryption = "aes-256-gcm";
               keyformat = "passphrase";
               keylocation = "file:///tmp/disk.key";
+              #mountpoint = "legacy";
             };
             postCreateHook = ''
               mkdir -p /persist/initrd/
