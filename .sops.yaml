@@ -10,6 +10,7 @@ creation_rules:
     key_groups:
     - age:
       - *machine_xps15
+      - *nasnew
       - *machine_fury
       - *machine_nas
       - *user_aymerici
@@ -20,6 +21,7 @@ creation_rules:
     key_groups:
     - age:
       - *user_aymerici
+      - *nasnew
       - *user_segator
       - *machine_fury
   # secrets for xps15 machine
@@ -27,12 +29,14 @@ creation_rules:
     key_groups:
     - age:
       - *user_aymerici
+      - *nasnew
       - *machine_xps15
   # secrets for nas machine
   - path_regex: secrets/hosts/nasnew/.+$
     key_groups:
     - age:
       - *user_segator
+      - *nasnew
       - *user_aymerici
       - *machine_nas
 
@@ -41,9 +45,11 @@ creation_rules:
     key_groups:
     - age:    
       - *user_segator
+      - *nasnew
       - *user_aymerici
   # secrets for aymerici user
   - path_regex: secrets/users/segator/.+$
     key_groups:
     - age:
       - *user_segator
+      - *nasnew

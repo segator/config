@@ -112,9 +112,11 @@ green "Installing NixOS on remote host $target_hostname at $target_destination"
 green "Preparing a new ssh_host_ed25519_key pair for $target_hostname."
 # Create the directory where sshd expects to find the host keys
 install -d -m755 "$temp/$persist_dir/etc/ssh"
+install -d -m755 "$temp/$persist_dir/initrd"
 
 # Generate host keys without a passphrase
 ssh-keygen -t ed25519 -f "$temp/$persist_dir/etc/ssh/ssh_host_ed25519_key" -C "$target_user"@"$target_hostname" -N ""
+ssh-keygen -t ed25519 -f "$temp/$persist_dir/initrd/ssh_host_ed25519_key" -C "$target_user"@"$target_hostname" -N ""
 
 # Set the correct permissions so sshd will accept the key
 chmod 600 "$temp/$persist_dir/etc/ssh/ssh_host_ed25519_key"
@@ -137,7 +139,8 @@ get_password() {
 }
 
 # Prompt the user to enter the password
-get_password
+#get_password
+password="holahola"
 
 # Specify the file to save the password
 disk_key_file="$temp/disk.key"
@@ -146,7 +149,7 @@ disk_key_file="$temp/disk.key"
 echo "$password" > "$disk_key_file"
 
 nix run github:nix-community/nixos-anywhere -- \
-    --disk-encryption-keys $disk_key_file /tmp/disk.key \
+    --disk-encryption-keys /tmp/disk.key $disk_key_file \
     --extra-files "$temp" \
     --flake .#"$target_hostname" \
     "$target_user"@"$target_destination"
@@ -166,8 +169,7 @@ else
 	echo "$age_key"
 fi
 
-green "Updating nix-secrets/.sops.yaml"
-cd ../nix-secrets
+green "Updating .sops.yaml"
 
 SOPS_FILE=".sops.yaml"
 sed -i "{
@@ -179,8 +181,6 @@ sed -i "{
 	# Inject a new hosts: entry
 	/&hosts:/{n; p; s/\(.*- &\).*/\1$target_hostname $age_key/}
 	}" $SOPS_FILE
-
-green "Updating nix-secrets/.sops.yaml"
 
 just update_secrets_keys
 

@@ -2,7 +2,7 @@
 {
   disko.devices = {
     disk.main = {
-      device = "/dev/disk/by-id/ata-Samsung_SSD_860_EVO_500GB_S3Z1NB0K303456L";
+      device = lib.mkDefault "/dev/sda"; # /dev/disk/by-id/ata-Samsung_SSD_860_EVO_500GB_S3Z1NB0K303456L"
       type = "disk";
       content = {
         type = "gpt";
@@ -42,7 +42,7 @@
     zpool = {
       zroot = {
         type = "zpool";
-        mode = "mirror";
+        mode = ""; # mirror
         rootFsOptions = {
           acltype = "posixacl";
           xattr = "sa";
@@ -52,15 +52,15 @@
         };
         #mountpoint = "none";
         #postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^zroot@blank$' || zfs snapshot zroot@blank";        
-        # postMountHook = ''
-        #     mkdir -p /mnt/persist/system/var/lib/nixos
-        #     mkdir -p /mnt/persist/system/etc/nixos
-        #     mkdir -p /mnt/persist/system/var/log
-        #     mkdir -p /mnt/persist/system/var/lib/systemd/coredump
-        #     mkdir -p /persist/services/var/lib/acme
-        #     mkdir -p /persist/services/var/lib/nextcloud/data"
-        #     mkdir -p /persist/services/var/lib/postgresql"
-        #     '';
+        postMountHook = ''
+            mkdir -p /mnt/persist/system/var/lib/nixos
+            mkdir -p /mnt/persist/system/etc/nixos
+            mkdir -p /mnt/persist/system/var/log
+            mkdir -p /mnt/persist/system/var/lib/systemd/coredump
+            mkdir -p /persist/services/var/lib/acme
+            mkdir -p /persist/services/var/lib/nextcloud/data"
+            mkdir -p /persist/services/var/lib/postgresql"
+            '';
         datasets = {
           persist = {
             type = "zfs_fs";
@@ -74,12 +74,8 @@
               #mountpoint = "legacy";
             };
             postCreateHook = ''
-              mkdir -p /persist/initrd/
-              cd /persist/initrd
-              ssh-keygen -t ed25519 -N "" -f /persist/initrd/ssh_host_ed25519_key 
-
               # after disko creates the encrypted volume we switch to prompt for next boots
-              zfs set keylocation="prompt" "zroot/$name"; 
+              zfs set keylocation="prompt" "zroot/persist"; 
             '';
           };
           nix = {
@@ -87,8 +83,9 @@
             mountpoint = "/nix";
             options = {
              "com.sun:auto-snapshot" = "true"; 
-              encryption = "aes-256-gcm";
-              keyformat = "passphrase";
+              #encryption = "aes-256-gcm";
+              #keyformat = "passphrase";
+              #keylocation = "file:///tmp/disk.key";
             };
           };
         };

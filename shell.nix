@@ -1,7 +1,7 @@
 { pkgs, ...}:{    
     default =  pkgs.mkShell {
         buildInputs = with pkgs; [
-            git just age ssh-to-age sops moreutils fzf
+            git just age ssh-to-age sops moreutils fzf nixos-rebuild
         ];
 
         shellHook = ''

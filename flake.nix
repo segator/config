@@ -62,10 +62,9 @@
             impermanence.nixosModules.impermanence
             home-manager.nixosModules.default
             sops-nix.nixosModules.sops  
-            "${nixpkgs}/nixos/modules/virtualisation/proxmox-lxc.nix"   
+            #"${nixpkgs}/nixos/modules/virtualisation/proxmox-lxc.nix"   
             ./nixos/host/nasnew/configuration.nix     
             # Home manager
-            #sops-nix.homeManagerModules.sops
             (
               {
                 home-manager = {
@@ -82,9 +81,6 @@
                 };
               }              
             )
-            #./home-manager/configuration/segator/home.nix
-            #./home-manager/configuration/segator/host/nas.nix
-            #{ nixpkgs.config.allowUnfree = true; }       
           ];
         };
         bootstrap-iso = nixpkgs.lib.nixosSystem {
@@ -94,6 +90,9 @@
               + "/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix")
             (nixpkgs + "/nixos/modules/installer/cd-dvd/channel.nix")
             ({ pkgs, ... }: {
+              environment.systemPackages = with pkgs; [
+                rsync
+              ];
               systemd.services.sshd.wantedBy =
                 pkgs.lib.mkForce [ "multi-user.target" ];
               users.users.root.initialPassword = "nixos";
