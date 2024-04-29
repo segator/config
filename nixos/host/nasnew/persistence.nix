@@ -1,6 +1,7 @@
 { inputs, config, pkgs, nixpkgs, lib, ... }:
 {
   fileSystems."/persist".neededForBoot = true;
+  fileSystems."/nas".neededForBoot = true;
   environment.persistence."/persist/system" = {
     hideMounts = false;
     directories = [

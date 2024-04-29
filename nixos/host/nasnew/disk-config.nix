@@ -2,7 +2,7 @@
 {
   disko.devices = {
     disk.main = {
-      device = lib.mkDefault "/dev/sda"; # /dev/disk/by-id/ata-Samsung_SSD_860_EVO_500GB_S3Z1NB0K303456L"
+      device = lib.mkDefault "/dev/sda"; 
       type = "disk";
       content = {
         type = "gpt";
@@ -31,6 +31,22 @@
         };
       };
     };
+    disk.nas = {
+      device = "/dev/sdb"; # /dev/disk/by-id/ata-Samsung_SSD_860_EVO_500GB_S3Z1NB0K303456L"
+      type = "disk";
+      content = {
+        type = "gpt";
+        partitions = {
+          zfs = {
+            size = "100%";
+            content = {
+              type = "zfs";
+              pool = "nas";
+            };
+          };          
+        };
+      };
+    };
     nodev."/" = {
       fsType = "tmpfs";
       mountOptions = [
@@ -44,13 +60,14 @@
         type = "zpool";
         mode = ""; # mirror
         rootFsOptions = {
+          mountpoint = "none";
           acltype = "posixacl";
           xattr = "sa";
           atime = "off";
           compression = "zstd";
           "com.sun:auto-snapshot" = "false";
         };
-        #mountpoint = "none";
+        
         #postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^zroot@blank$' || zfs snapshot zroot@blank";        
         postMountHook = ''
             mkdir -p /mnt/persist/system/var/lib/nixos
@@ -86,6 +103,39 @@
               #encryption = "aes-256-gcm";
               #keyformat = "passphrase";
               #keylocation = "file:///tmp/disk.key";
+            };
+          };
+        };
+      };
+      nas = {
+        type = "zpool";
+        mode = ""; # mirror
+        rootFsOptions = {
+          mountpoint = "/nas";
+          acltype = "posixacl";
+          xattr = "sa";
+          atime = "off";
+          compression = "zstd";
+          "com.sun:auto-snapshot" = "false";
+          encryption = "aes-256-gcm";
+          keyformat = "passphrase";
+          keylocation = "file:///tmp/disk.key";
+        };
+        postCreateHook = ''
+          # after disko creates the encrypted volume we switch to prompt for next boots
+          zfs set keylocation="prompt" "nas"; 
+        '';
+        datasets = {
+          homes = {
+            type = "zfs_fs";
+            mountpoint = "/nas/homes";            
+            options = {            
+            };
+          };
+          photos = {
+            type = "zfs_fs";
+            mountpoint = "/nas/photos";            
+            options = {            
             };
           };
         };

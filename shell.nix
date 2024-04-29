@@ -1,7 +1,10 @@
 { pkgs, ...}:{    
     default =  pkgs.mkShell {
         buildInputs = with pkgs; [
-            git just age ssh-to-age sops moreutils fzf nixos-rebuild
+            yq git just age ssh-to-age sops moreutils fzf nixos-rebuild
+            (pkgs.python3.withPackages (python-pkgs: [
+              python-pkgs.ruamel-yaml
+            ]))
         ];
 
         shellHook = ''

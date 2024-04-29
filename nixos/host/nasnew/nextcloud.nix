@@ -47,9 +47,9 @@ in
 
   services = {
     nginx.virtualHosts = {
-      "cloud-test.segator.es" = {
-        forceSSL = true;
-        enableACME = true;
+      "cloud-192.168.0.121.traefik.me" = {
+        forceSSL = false;
+        enableACME = false;
         # From [1] this should fix downloading of big files. [2] seems to indicate that buffering
         # happens at multiple places anyway, so disabling one place should be okay.
         extraConfig = ''
@@ -66,7 +66,7 @@ in
 
     nextcloud = {
       enable = true;
-      hostName = "cloud-test.segator.es";
+      hostName = "cloud-192.168.0.121.traefik.me";
       package = pkgs.nextcloud28;
       autoUpdateApps = {
         enable = true;

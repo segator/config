@@ -4,15 +4,8 @@ set -eo pipefail
 target_hostname=""
 target_destination=""
 target_user="root"
-persist_dir=""
-# Create a temp directory for generated host keys
-temp=$(mktemp -d)
+persist_dir="/persist"
 
-# Function to cleanup temporary directory on exit
-cleanup() {
-	rm -rf "$temp"
-}
-trap cleanup exit
 
 # terminal output coloring
 function red() {
@@ -54,74 +47,17 @@ function help_and_exit() {
 	echo
 	echo "Remotely installs NixOS on a target machine using this nix-config."
 	echo
-	echo "USAGE: $0 -n=<target_hostname> -d=<target_destination> -k=<ssh_key> [OPTIONS]"
+	echo "USAGE: $0 -n=<target_hostname>"
 	echo
 	echo "ARGS:"
 	echo "  -n=<target_hostname>      specify target_hostname of the target host to deploy the nixos config on."
-	echo "  -d=<target_destination>   specify ip or url to the target host."
 	echo
 	echo "OPTIONS:"
-	echo "  -u=<target_user>          specify target_user with sudo access. nix-config will be cloned to their home."
-	echo "                            Default='ta'."
-	echo "  --impermanence            Use this flag if the target machine has impermanence enabled. WARNING: Assumes /persist path."
 	echo "  --debug                   Enable debug mode."
 	echo "  -h | --help               Print this help."
 	exit 0
 }
 
-# Handle options
-while [[ $# -gt 0 ]]; do
-	case "$1" in
-	-n=*)
-		target_hostname="${1#-n=}"
-		;;
-	-d=*)
-		target_destination="${1#-d=}"
-		;;
-	-u=*)
-		target_user="${1#-u=}"
-		;;
-	--impermanence)
-		persist_dir="/persist"
-		;;
-	--debug)
-		set -x
-		;;
-	-h | --help) help_and_exit ;;
-	*)
-		echo "Invalid option detected."
-		help_and_exit
-		;;
-	esac
-	shift
-done
-
-# Validate required options
-if [ -z "${target_hostname}" ] || [ -z "${target_destination}" ]; then
-	red "ERROR: -n, -d, and -k are all required"
-	echo
-	help_and_exit
-fi
-
-green "Installing NixOS on remote host $target_hostname at $target_destination"
-
-###
-# nixos-anywhere extra-files generation
-###
-# FIXME: Add a flag to detect if there's impermanence, and only then add /persist
-green "Preparing a new ssh_host_ed25519_key pair for $target_hostname."
-# Create the directory where sshd expects to find the host keys
-install -d -m755 "$temp/$persist_dir/etc/ssh"
-install -d -m755 "$temp/$persist_dir/initrd"
-
-# Generate host keys without a passphrase
-ssh-keygen -t ed25519 -f "$temp/$persist_dir/etc/ssh/ssh_host_ed25519_key" -C "$target_user"@"$target_hostname" -N ""
-ssh-keygen -t ed25519 -f "$temp/$persist_dir/initrd/ssh_host_ed25519_key" -C "$target_user"@"$target_hostname" -N ""
-
-# Set the correct permissions so sshd will accept the key
-chmod 600 "$temp/$persist_dir/etc/ssh/ssh_host_ed25519_key"
-
-green "Preparing root disk encryption"
 get_password() {
     local password1 password2
     read -s -p "Enter your disk encryption key: " password1
@@ -138,6 +74,55 @@ get_password() {
     fi
 }
 
+# Handle options
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+	-n=*)
+		target_hostname="${1#-n=}"
+		;;
+	--debug)
+		set -x
+		;;
+	-h | --help) help_and_exit ;;
+	*)
+		echo "Invalid option detected."
+		help_and_exit
+		;;
+	esac
+	shift
+done
+
+# Validate required options
+if [ -z "${target_hostname}" ]; then
+	red "ERROR: -n,  required"
+	echo
+	help_and_exit
+fi
+
+# Create a temp directory for generated host keys
+
+temp="$(pwd)/build/bootstrap/$target_hostname"
+mkdir -p "$temp"
+
+###
+# nixos-anywhere extra-files generation
+###
+green "Preparing a new ssh_host_ed25519_key pair for $target_hostname."
+
+# Create the directory where sshd expects to find the host keys
+install -d -m755 "$temp/$persist_dir/system/etc/ssh"
+install -d -m755 "$temp/$persist_dir/system/initrd"
+
+# Generate host keys without a passphrase
+ssh-keygen -t ed25519 -f "$temp/$persist_dir/system/etc/ssh/ssh_host_ed25519_key" -C "$target_user"@"$target_hostname" -N ""
+ssh-keygen -t ed25519 -f "$temp/$persist_dir/system/initrd/ssh_host_ed25519_key" -C "$target_user"@"$target_hostname" -N ""
+
+# Set the correct permissions so sshd will accept the key
+chmod 600 "$temp/$persist_dir/system/etc/ssh/ssh_host_ed25519_key"
+
+green "Preparing root disk encryption"
+
+
 # Prompt the user to enter the password
 #get_password
 password="holahola"
@@ -148,14 +133,6 @@ disk_key_file="$temp/disk.key"
 # Save the password to a file
 echo "$password" > "$disk_key_file"
 
-nix run github:nix-community/nixos-anywhere -- \
-    --disk-encryption-keys /tmp/disk.key $disk_key_file \
-    --extra-files "$temp" \
-    --flake .#"$target_hostname" \
-    "$target_user"@"$target_destination"
-
-yes_or_no "Do you want to generate new age keys?" || exit 0
-
 green "Generating an age key based on the new ssh_host_ed25519_key."
 
 age_key=$(nix-shell -p ssh-to-age --run "cat $temp/$persist_dir/etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age")
@@ -165,32 +142,10 @@ if grep -qv '^age1' <<<"$age_key"; then
 	echo "Result: $age_key"
 	echo "Expected format: age10000000000000000000000000000000000000000000000000000000000"
 	exit 1
-else
-	echo "$age_key"
 fi
 
-green "Updating .sops.yaml"
+green "please update your .sops.yaml file with the new host age key: "
+echo $age_key
 
-SOPS_FILE=".sops.yaml"
-sed -i "{
-	# Remove any * and & entries for this host
-	/[*&]$target_hostname/ d;
-	# Inject a new age: entry
-	# n matches the first line following age: and p prints it, then we transform it while reusing the spacing
-	/age:/{n; p; s/\(.*- \*\).*/\1$target_hostname/};
-	# Inject a new hosts: entry
-	/&hosts:/{n; p; s/\(.*- &\).*/\1$target_hostname $age_key/}
-	}" $SOPS_FILE
-
+read -rp "press any key to continue: "
 just update_secrets_keys
-
-green "Pushing new host key to secrets"
-git commit -am "feat: added key for $target_hostname"
-git push
-
-green "Updating flake lock on source machine with new .sops.yaml info"
-
-echo "Adding ssh host fingerprint at $target_destination to ~/.ssh/known_hosts"
-ssh-keyscan "$target_destination" >>~/.ssh/known_hosts
-
-echo

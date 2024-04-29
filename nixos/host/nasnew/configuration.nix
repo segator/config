@@ -42,7 +42,7 @@
         ssh = {
           enable = true;             
           port = 2222; 
-          hostKeys = [ /persist/initrd/ssh_host_rsa_key ];              
+          hostKeys = [ /persist/system/initrd/ssh_host_ed25519_key ];              
           authorizedKeys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID5vRrC3yycYEP9GoKk4nm9iTf9aFMb0pAyKbp5rcEkW segator" ];
         };
         postCommands = ''

@@ -6,9 +6,18 @@ build_bootstrap_iso:
     nix build -L .#nixosConfigurations.bootstrap-iso.config.system.build.isoImage -o build/bootstrap-iso
 # User keys
 
-remote_bootstrap profile server:
-    ./scripts/bootstrap-nixos.sh --impermanence -n={{profile}} -d={{server}}    
+bootstrap_setup profile:
+    ./scripts/bootstrap-nixos.sh -n={{profile}}
 
+bootstrap_apply profile server:
+    nix run github:nix-community/nixos-anywhere -- \
+        --disk-encryption-keys /tmp/disk.key "$(pwd)/build/bootstrap/{{profile}}/disk.key" \
+        --extra-files "$(pwd)/build/bootstrap/{{profile}}" \
+        --flake .#{{profile}} \
+        "root@{{server}}"
+
+deploy profile server:
+    nixos-rebuild switch --flake .#{{profile}} --target-host root@{{server}}
 create_age_user_key user:
     age-keygen -o "./secrets/key/age_user_{{user}}_key.txt"
     @echo "Key generated at: ./secrets/key/age_user_{{user}}_key.txt"
@@ -34,4 +43,4 @@ machine_age_pubkey server=default_server:
 # update recipents and rotate data keys
 update_secrets_keys:
     find ./secrets -type d -name key -prune -o \( -type f -not -name .gitkeep \) -exec sops updatekeys {} \;
-    find ./secrets -type d -name key -prune -o \( -type f -not -name .gitkeep \) -exec sh -c 'sops -r {} | sponge {}' \;
+    #find ./secrets -type d -name key -prune -o \( -type f -not -name .gitkeep \) -exec sh -c 'sops -r {} | sponge {}' \;
