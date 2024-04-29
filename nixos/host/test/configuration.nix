@@ -7,21 +7,15 @@
   ];
   boot = {
       supportedFilesystems = ["zfs"];
-
-      #initrd.availableKernelModules = [ "virtio-pci"];
-      #kernelParams = [
-      #  "ip=192.168.0.121::192.168.0.1:255.255.255.0:nasnew-initrd:enp6s18:none"
-        #   "ip=dhcp"
-      #];
       initrd.secrets = { 
-        "/etc/secrets/initrd/ssh_host_ed25519_key" = /persist/system/initrd/ssh_host_ed25519_key;
+        "/etc/secrets/initrd/ssh_host_ed25519_key" = lib.mkForce /persist/system/initrd/ssh_host_ed25519_key;
       };
       initrd.network = {
         enable = true;
         ssh = {
           enable = true;             
           port = 2222; 
-          hostKeys = [ /etc/secrets/initrd/ssh_host_ed25519_key ];              
+          hostKeys = [ "/etc/secrets/initrd/ssh_host_ed25519_key" ];              
           authorizedKeys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID5vRrC3yycYEP9GoKk4nm9iTf9aFMb0pAyKbp5rcEkW segator" ];
         };
         postCommands = ''
@@ -36,7 +30,6 @@
           EOF
         '';
       };
-    });
     loader.grub = {
         enable = true;
         copyKernels = true;

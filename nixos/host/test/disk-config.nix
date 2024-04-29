@@ -1,5 +1,9 @@
 { lib, ... }:
 {
+  boot.initrd.postDeviceCommands = lib.mkAfter ''
+    zfs rollback -r zroot/root@empty
+  '';
+
   disko.devices = {
     disk.main = {
       device = lib.mkDefault "/dev/sda"; 
@@ -31,14 +35,7 @@
         };
       };
     };
-    nodev."/" = {
-      fsType = "tmpfs";
-      mountOptions = [
-        "size=2G"
-        "defaults"
-        "mode=755"
-      ];
-    };
+
     zpool = {
       zroot = {
         type = "zpool";
@@ -50,42 +47,43 @@
           atime = "off";
           compression = "zstd";
           "com.sun:auto-snapshot" = "false";
+          encryption = "aes-256-gcm";
+          keyformat = "passphrase";
+          keylocation = "file:///tmp/disk.key";
+          dedup = "on";   
         };
-        
-        #postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^zroot@blank$' || zfs snapshot zroot@blank";
-        #postMountHook ??        
-        postMountHook = ''
-            mkdir -p /mnt/persist/system/var/lib/nixos
-            mkdir -p /mnt/persist/system/etc/nixos
-            mkdir -p /mnt/persist/system/var/log
-            mkdir -p /mnt/persist/system/var/lib/systemd/coredump
-            '';
+
+        postCreateHook = ''
+          # after disko creates the encrypted volume we switch to prompt for next boots
+          zfs set keylocation="prompt" "zroot";          
+        '';
+
+        # postMountHook = ''
+        #     mkdir -p /mnt/persist/system/var/lib/nixos
+        #     mkdir -p /mnt/persist/system/etc/nixos
+        #     mkdir -p /mnt/persist/system/var/log
+        #     mkdir -p /mnt/persist/system/var/lib/systemd/coredump
+        #     '';
         datasets = {
+          root = {
+            type = "zfs_fs";
+            # options = {
+            #   mountpoint = "legacy";
+            # };
+            mountpoint = "/";
+            postCreateHook = "zfs snapshot zroot/root@empty";
+          };
           persist = {
             type = "zfs_fs";
             mountpoint = "/persist";
             
             options = {
-             "com.sun:auto-snapshot" = "true"; 
-              encryption = "aes-256-gcm";
-              keyformat = "passphrase";
-              keylocation = "file:///tmp/disk.key";
-              #mountpoint = "legacy";
-            };
-            postCreateHook = ''
-              # after disko creates the encrypted volume we switch to prompt for next boots
-              zfs set keylocation="prompt" "zroot/persist"; 
-            '';
+             "com.sun:auto-snapshot" = "true";            
+             };
           };
           nix = {
             type = "zfs_fs";
             mountpoint = "/nix";
-            options = {
-             "com.sun:auto-snapshot" = "true"; 
-              #encryption = "aes-256-gcm";
-              #keyformat = "passphrase";
-              #keylocation = "file:///tmp/disk.key";
-            };
           };
         };
       };
