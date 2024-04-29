@@ -135,7 +135,7 @@ echo "$password" > "$disk_key_file"
 
 green "Generating an age key based on the new ssh_host_ed25519_key."
 
-age_key=$(nix-shell -p ssh-to-age --run "cat $temp/$persist_dir/etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age")
+age_key=$(nix-shell -p ssh-to-age --run "cat $temp/$persist_dir/system/etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age")
 
 if grep -qv '^age1' <<<"$age_key"; then
 	echo "The result from generated age key does not match the expected format."

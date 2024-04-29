@@ -21,7 +21,7 @@
               mountpoint = "/boot";
             };
           };
-          zfs = {
+          system = {
             size = "100%";
             content = {
               type = "zfs";
@@ -37,7 +37,7 @@
       content = {
         type = "gpt";
         partitions = {
-          zfs = {
+          nas = {
             size = "100%";
             content = {
               type = "zfs";
@@ -111,7 +111,6 @@
         type = "zpool";
         mode = ""; # mirror
         rootFsOptions = {
-          mountpoint = "/nas";
           acltype = "posixacl";
           xattr = "sa";
           atime = "off";
@@ -121,6 +120,7 @@
           keyformat = "passphrase";
           keylocation = "file:///tmp/disk.key";
         };
+        mountpoint = "/nas";
         postCreateHook = ''
           # after disko creates the encrypted volume we switch to prompt for next boots
           zfs set keylocation="prompt" "nas"; 

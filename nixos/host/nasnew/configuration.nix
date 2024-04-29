@@ -36,7 +36,7 @@
       };
       supportedFilesystems = ["zfs"  "btrfs"];
 
-      initrd.availableKernelModules = [ "virtio-pci"];
+      #initrd.availableKernelModules = [ "virtio-pci"];
       initrd.network = {
         enable = true;
         ssh = {

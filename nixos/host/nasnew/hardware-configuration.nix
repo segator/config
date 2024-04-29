@@ -7,9 +7,9 @@
   
   networking.useDHCP = lib.mkDefault true;
 
-  boot.initrd.availableKernelModules = [ "ahci" "xhci_pci" "virtio_pci" "sr_mod" "virtio_blk" ];
+  boot.initrd.availableKernelModules = [ "ahci" "xhci_pci" "virtio_pci" "virtio_net" "sr_mod" "virtio_blk" ];
   boot.initrd.kernelModules = [ "virtio_gpu" ];
-  #boot.kernelParams = [ "console=tty" ];
+  boot.kernelParams = [ "ip=dhcp" ];
   #boot.kernelModules = [ ];
   #boot.extraModulePackages = [ ];
 }
