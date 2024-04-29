@@ -3,44 +3,16 @@
   imports = [    
           ./hardware-configuration.nix
           ./disk-config.nix    
-          ./persistence.nix  
-          ../../modules/common.nix
-          ../../modules/nix
-          ../../modules/sshd    
-
-          ../../modules/grafana-agent
-          ../../users/segator
-          ../../users/daga12g
-          ../../users/carles
-
-          ./users.nix
-
-          ./nextcloud.nix
-          ./samba.nix
-          ./nfs.nix
-          ./backup.nix
+          ./persistence.nix            
   ];
   boot = {
-    kernelPackages = pkgs.linuxPackages_6_1.extend (_: prev: {
-      zfs_unstable = prev.zfs_unstable.overrideAttrs (old: {
-        src = pkgs.fetchFromGitHub {
-          owner = "openzfs";
-          repo = "zfs";
-          rev = "pull/14531/head";
-          sha256 = "sha256-TaptNheaiba1FBXGW2piyZjTIiScpaWuNUGvi5SglPE=";
-        };
-      });
-      zfs = {
-        package = pkgs.zfs_unstable;
-        #forceImportRoot = true;
-      };
       supportedFilesystems = ["zfs"];
 
       #initrd.availableKernelModules = [ "virtio-pci"];
-      kernelParams = [
-        "ip=192.168.0.121::192.168.0.1:255.255.255.0:nasnew-initrd:enp6s18:none"
+      #kernelParams = [
+      #  "ip=192.168.0.121::192.168.0.1:255.255.255.0:nasnew-initrd:enp6s18:none"
         #   "ip=dhcp"
-      ];
+      #];
       initrd.secrets = { 
         "/etc/secrets/initrd/ssh_host_ed25519_key" = /persist/system/initrd/ssh_host_ed25519_key;
       };

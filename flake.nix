@@ -83,6 +83,18 @@
             )
           ];
         };
+        test = nixpkgs.lib.nixosSystem {
+          specialArgs = { 
+            inherit inputs;
+            pkgs = x86_64_pkgs;
+          };          
+          system = "x86_64-linux";
+          modules = [       
+            disko.nixosModules.disko
+            impermanence.nixosModules.impermanence            
+            ./nixos/host/test/configuration.nix
+          ];
+        };
         bootstrap-iso = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           modules = [            
