@@ -43,7 +43,7 @@
       #   "ip=dhcp"
     ];
     initrd.secrets = { 
-      "/etc/secrets/initrd/ssh_host_ed25519_key" = /persist/system/initrd/ssh_host_ed25519_key;
+      "/etc/secrets/initrd/ssh_host_ed25519_key" = lib.mkForce /persist/system/initrd/ssh_host_ed25519_key;
     };
     initrd.network = {
       enable = true;
