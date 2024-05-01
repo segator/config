@@ -102,6 +102,13 @@
             ./nixos/host/test/configuration.nix
           ];
         };
+        bootstrap-iso = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [            
+            ./nixos/modules/zfs/sse4-support.nix
+            ./nixos/host/bootstrap-iso/configuration.nix
+          ];
+        };        
     };
     darwinConfigurations."aymerici-4DVF0G" = nix-darwin.lib.darwinSystem {
       specialArgs = { 
@@ -175,13 +182,7 @@
         kexec-installer = modules: (pkgs.nixos (modules ++ [ inputs.nixos-images.nixosModules.kexec-installer ])).config.system.build.kexecTarball;
       in
       {
-        bootstrap-iso = (nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [            
-            ./nixos/modules/zfs/sse4-support.nix
-            ./nixos/host/bootstrap-iso/configuration.nix
-          ];
-        }).config.system.build.isoImage;
+        bootstrap-iso = self.nixosConfigurations.bootstrap-iso.config.system.build.isoImage;
         kexec-installer-nixos = kexec-installer [
             {
               boot = {
