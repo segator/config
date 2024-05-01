@@ -3,7 +3,8 @@
   imports = [    
           ./hardware-configuration.nix
           ./disk-config.nix    
-          ./persistence.nix            
+          ./persistence.nix       
+          ../../modules/zfs/sse4-support.nix
   ];
   nixpkgs.config.packageOverrides = pkgs: {
     zfs_unstable = pkgs.zfs_unstable.override { 
@@ -17,22 +18,6 @@
     };
   };
   boot = {
-      kernelPackages = pkgs.linuxPackages_6_1.extend (_: prev: {
-        zfs_unstable = prev.zfs_unstable.overrideAttrs (old: {
-          src = pkgs.fetchFromGitHub {
-            owner = "openzfs";
-            repo = "zfs";
-            rev = "pull/14531/head";
-            sha256 = "sha256-TaptNheaiba1FBXGW2piyZjTIiScpaWuNUGvi5SglPE=";
-          };
-        });
-
-      });
-      zfs = {
-        package = pkgs.zfs_unstable;
-        #forceImportRoot = true;
-      };
-      supportedFilesystems = ["zfs"];
       initrd.secrets = { 
         "/etc/secrets/initrd/ssh_host_ed25519_key" = lib.mkForce /persist/system/initrd/ssh_host_ed25519_key;
       };

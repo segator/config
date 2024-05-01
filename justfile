@@ -3,8 +3,8 @@ default_arch:="x86_64"
 default:
   @just --choose
 
-build_bootstrap_iso:
-    nix build -L .#nixosConfigurations.bootstrap-iso.config.system.build.isoImage -o build/bootstrap-iso
+build_bootstrap_iso arch=default_arch:
+    nix build -L .#packages.{{arch}}-linux.bootstrap-iso -o build/bootstrap-iso
 # User keys
 
 bootstrap_setup profile arch=default_arch:
