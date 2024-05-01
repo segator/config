@@ -1,4 +1,5 @@
 default_server:="localhost"
+default_arch:="x86_64"
 default:
   @just --choose
 
@@ -6,11 +7,12 @@ build_bootstrap_iso:
     nix build -L .#nixosConfigurations.bootstrap-iso.config.system.build.isoImage -o build/bootstrap-iso
 # User keys
 
-bootstrap_setup profile:
+bootstrap_setup profile arch=default_arch:
     ./scripts/bootstrap-nixos.sh -n={{profile}}
 
-bootstrap_apply profile server:
+bootstrap_apply profile server arch=default_arch:
     nix run github:nix-community/nixos-anywhere -- \
+        --kexec "$(nix build --print-out-paths .#packages.{{arch}}-linux.kexec-installer-nixos)/nixos-kexec-installer-{{arch}}-linux.tar.gz" \
         --disk-encryption-keys /tmp/disk.key "$(pwd)/build/bootstrap/{{profile}}/disk.key" \
         --extra-files "$(pwd)/build/bootstrap/{{profile}}" \
         --flake .#{{profile}} \

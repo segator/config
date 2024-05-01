@@ -3,20 +3,26 @@
 
   outputs = { self, 
               nixpkgs,
+              nixpkgs-unstable-small,
               nix-darwin, 
               home-manager, 
               sops-nix, 
               krew2nix, 
               disko, 
               impermanence,
+              nixos-images,
               #deploy-rs,
               ... } @ inputs:
   let
-    systems = [
+    linuxSystems =  [
       "aarch64-linux"     
       "x86_64-linux"
+    ];
+    systems = 
+      linuxSystems ++ 
+      [
       "aarch64-darwin"
-    ];    
+      ];    
     x86_64_pkgs = import nixpkgs { 
       system = "x86_64-linux";
       config.allowUnfree = true;
@@ -25,6 +31,7 @@
       system = "aarch64-darwin";
       config.allowUnfree = true;
     };
+    forLinuxSystems =  nixpkgs.lib.genAttrs linuxSystems;
     forAllSystems = nixpkgs.lib.genAttrs systems;
   in {
     nixosConfigurations = {
@@ -204,11 +211,46 @@
     };
 
     devShells = forAllSystems (system: import ./shell.nix nixpkgs.legacyPackages.${system});
-    
+
+    packages = forLinuxSystems (system:
+      let
+        pkgs = import nixpkgs-unstable-small { 
+          inherit system;
+          config.allowUnfree = true;
+        };
+        kexec-installer = modules: (pkgs.nixos (modules ++ [ inputs.nixos-images.nixosModules.kexec-installer ])).config.system.build.kexecTarball;
+      in
+      {
+        kexec-installer-nixos = kexec-installer [
+            {
+              boot = {
+                kernelPackages = pkgs.linuxPackages_6_1.extend (_: prev: {
+                  zfs_unstable = prev.zfs_unstable.overrideAttrs (old: {
+                    src = pkgs.fetchFromGitHub {
+                      owner = "openzfs";
+                      repo = "zfs";
+                      rev = "pull/14531/head";
+                      sha256 = "sha256-TaptNheaiba1FBXGW2piyZjTIiScpaWuNUGvi5SglPE=";
+                    };
+                  });
+
+                });
+                zfs = {
+                  package = pkgs.zfs_unstable;
+                };
+                supportedFilesystems = ["zfs"];
+              };
+            }
+          ];
+      }    
+    );
   };
 
   inputs = {
       nixpkgs.url = "nixpkgs/nixos-unstable";
+
+      # TODO seems there is a bug in latests commits for kexec builds, so we need this input rev
+      nixpkgs-unstable-small.url = "nixpkgs/203fac824e2fdfed2e3a832b8123d9a64ee58b43";
       
       nixos-hardware.url = "github:NixOS/nixos-hardware/master";
       
@@ -229,6 +271,8 @@
       disko.inputs.nixpkgs.follows = "nixpkgs";
 
       impermanence.url = "github:nix-community/impermanence"; #/create-needed-for-boot
+
+      nixos-images.url = "github:nix-community/nixos-images";
 
       #deploy-rs.url = "github:serokell/deploy-rs";
   };
