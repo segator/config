@@ -9,6 +9,7 @@
       ../../modules/boot
       #./s3-patch.nix
       ../../modules/common.nix
+      ../../modules/nix-sops
       ../../modules/battery
       ../../modules/displaylink
       ../../modules/nix

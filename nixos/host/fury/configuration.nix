@@ -7,6 +7,7 @@
       ./hardware-configuration.nix
       ../../modules/boot
       ../../modules/common.nix
+      ../../modules/nix-sops
       ../../modules/hyprland
       ./syncthing.nix
       ../../modules/nix

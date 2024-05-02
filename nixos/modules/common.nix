@@ -1,8 +1,5 @@
 { inputs, config, pkgs,  lib, ... }:
 {
-  imports = [
-    ./nix-sops
-  ];
   environment.systemPackages = with pkgs; [
     # Home
     home-manager

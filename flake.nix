@@ -4,6 +4,7 @@
   outputs = { self, 
               nixpkgs,
               nixpkgs-unstable-small,
+              nixos-generators,
               nix-darwin, 
               home-manager, 
               sops-nix, 
@@ -102,13 +103,6 @@
             ./nixos/host/test/configuration.nix
           ];
         };
-        bootstrap-iso = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [            
-            ./nixos/modules/zfs/sse4-support.nix
-            ./nixos/host/bootstrap-iso/configuration.nix
-          ];
-        };        
     };
     darwinConfigurations."aymerici-4DVF0G" = nix-darwin.lib.darwinSystem {
       specialArgs = { 
@@ -182,7 +176,28 @@
         kexec-installer = modules: (pkgs.nixos (modules ++ [ inputs.nixos-images.nixosModules.kexec-installer ])).config.system.build.kexecTarball;
       in
       {
-        bootstrap-iso = self.nixosConfigurations.bootstrap-iso.config.system.build.isoImage;
+        bootstrap-iso = nixos-generators.nixosGenerate {
+          inherit system;
+          specialArgs = {
+            inherit pkgs;
+            diskSize = 20 * 1024;
+          };
+          modules = [
+            # Pin nixpkgs to the flake input, so that the packages installed
+            # come from the flake inputs.nixpkgs.url.
+            #({ ... }: { nix.registry.nixpkgs.flake = inputs.nixpkgs; })
+            # Apply the rest of the config.
+            #./nixos/host/bootstrap-iso/configuration.nix
+          ];
+          format = "iso";
+        };
+        # bootstrap-iso = (inputs.nixpkgs.lib.nixosSystem {
+        #   inherit system;
+        #   modules = [            
+        #     ./nixos/modules/zfs/sse4-support.nix
+        #     ./nixos/host/bootstrap-iso/configuration.nix
+        #   ];
+        # }).config.system.build.isoImage;
         kexec-installer-nixos = kexec-installer [
             {
               boot = {
@@ -214,6 +229,10 @@
       # TODO seems there is a bug in latests commits for kexec builds, so we need this input rev
       nixpkgs-unstable-small.url = "nixpkgs/203fac824e2fdfed2e3a832b8123d9a64ee58b43";
       
+      nixos-generators = {
+        url = "github:nix-community/nixos-generators";
+        inputs.nixpkgs.follows = "nixpkgs";
+      };
       nixos-hardware.url = "github:NixOS/nixos-hardware/master";
       
       home-manager.url = "github:nix-community/home-manager";

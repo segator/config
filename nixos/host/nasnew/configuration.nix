@@ -5,6 +5,7 @@
           ./disk-config.nix    
           ./persistence.nix  
           ../../modules/common.nix
+          ../../modules/nix-sops
           ../../modules/nix
           ../../modules/sshd    
 

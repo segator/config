@@ -1,14 +1,13 @@
 { inputs, config, pkgs, nixpkgs, lib, ... }:
 {
   imports = [    
-          (nixpkgs
-              + "/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix")
-          (nixpkgs + "/nixos/modules/installer/cd-dvd/channel.nix")
           ../../modules/zfs/sse4-support.nix          
           ../../modules/common.nix
           ../../modules/nix
           ../../modules/sshd
     ];
+
+    networking.hostId = "ae38324b";
 
     environment.systemPackages = with pkgs; [
         rsync
@@ -25,5 +24,7 @@
         usePredictableInterfaceNames = false;
         useDHCP = true;
         nameservers = [ "8.8.8.8" ];
-    };            
+    };    
+
+    system.stateVersion = "23.11";         
 }
