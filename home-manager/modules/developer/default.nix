@@ -10,7 +10,7 @@
   ];
 
   home.packages = with pkgs; [
-    jetbrains.gateway
+    #jetbrains.gateway
     vscode
 
     #Build tools

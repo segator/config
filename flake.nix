@@ -179,15 +179,10 @@
         bootstrap-iso = nixos-generators.nixosGenerate {
           inherit system;
           specialArgs = {
-            inherit pkgs;
-            diskSize = 20 * 1024;
+            pkgs= nixpkgs.legacyPackages.${system};
           };
           modules = [
-            # Pin nixpkgs to the flake input, so that the packages installed
-            # come from the flake inputs.nixpkgs.url.
-            #({ ... }: { nix.registry.nixpkgs.flake = inputs.nixpkgs; })
-            # Apply the rest of the config.
-            #./nixos/host/bootstrap-iso/configuration.nix
+            ./nixos/host/bootstrap-iso/configuration.nix
           ];
           format = "iso";
         };

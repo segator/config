@@ -126,7 +126,7 @@
   home.sessionVariables.GTK_THEME = "Catppuccin-Mocha-Standard-Pink-Dark";
   qt = {
     enable = true;
-    platformTheme = "gtk";
+    platformTheme.name = "gtk";
     style.name = "Catppuccin-Mocha-Standard-Pink-Dark"; # adwaita-gtk
   };
 
