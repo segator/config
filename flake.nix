@@ -186,33 +186,9 @@
           ];
           format = "iso";
         };
-        # bootstrap-iso = (inputs.nixpkgs.lib.nixosSystem {
-        #   inherit system;
-        #   modules = [            
-        #     ./nixos/modules/zfs/sse4-support.nix
-        #     ./nixos/host/bootstrap-iso/configuration.nix
-        #   ];
-        # }).config.system.build.isoImage;
-        kexec-installer-nixos = kexec-installer [
-            {
-              boot = {
-                kernelPackages = pkgs.linuxPackages_6_1.extend (_: prev: {
-                  zfs_unstable = prev.zfs_unstable.overrideAttrs (old: {
-                    src = pkgs.fetchFromGitHub {
-                      owner = "openzfs";
-                      repo = "zfs";
-                      rev = "pull/14531/head";
-                      sha256 = "sha256-TaptNheaiba1FBXGW2piyZjTIiScpaWuNUGvi5SglPE=";
-                    };
-                  });
 
-                });
-                zfs = {
-                  package = pkgs.zfs_unstable;
-                };
-                supportedFilesystems = ["zfs"];
-              };
-            }
+        kexec-installer-nixos = kexec-installer [
+            ( import ./nixos/modules/zfs/sse4-support.nix)
           ];
       }    
     );
