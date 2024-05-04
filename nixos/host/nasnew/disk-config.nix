@@ -1,5 +1,9 @@
 { lib, ... }:
 {
+  boot.initrd.postDeviceCommands = lib.mkAfter ''
+    zfs rollback -r zroot/root@empty
+  '';
+
   disko.devices = {
     disk.main = {
       device = lib.mkDefault "/dev/sda"; 
@@ -31,6 +35,7 @@
         };
       };
     };
+
     disk.nas = {
       device = "/dev/sdb"; # /dev/disk/by-id/ata-Samsung_SSD_860_EVO_500GB_S3Z1NB0K303456L"
       type = "disk";
@@ -47,14 +52,7 @@
         };
       };
     };
-    nodev."/" = {
-      fsType = "tmpfs";
-      mountOptions = [
-        "size=2G"
-        "defaults"
-        "mode=755"
-      ];
-    };
+
     zpool = {
       zroot = {
         type = "zpool";
@@ -66,52 +64,50 @@
           atime = "off";
           compression = "zstd";
           "com.sun:auto-snapshot" = "false";
+          encryption = "aes-256-gcm";
+          keyformat = "passphrase";
+          keylocation = "file:///tmp/disk.key";
+          dedup = "on";   
         };
-        
-        #postCreateHook = "zfs list -t snapshot -H -o name | grep -E '^zroot@blank$' || zfs snapshot zroot@blank";
-        #postMountHook ??        
+
         postCreateHook = ''
-            mkdir -p /mnt/persist/system/var/lib/nixos
-            mkdir -p /mnt/persist/system/etc/nixos
-            mkdir -p /mnt/persist/system/var/log
-            mkdir -p /mnt/persist/system/var/lib/systemd/coredump
-            mkdir -p /persist/services/var/lib/acme
-            mkdir -p /persist/services/var/lib/nextcloud/data"
-            mkdir -p /persist/services/var/lib/postgresql"
-            '';
+          # after disko creates the encrypted volume we switch to prompt for next boots
+          zfs set keylocation="prompt" "zroot";          
+        '';
+
+        # postMountHook = ''
+        #     mkdir -p /mnt/persist/system/var/lib/nixos
+        #     mkdir -p /mnt/persist/system/etc/nixos
+        #     mkdir -p /mnt/persist/system/var/log
+        #     mkdir -p /mnt/persist/system/var/lib/systemd/coredump
+        #     '';
         datasets = {
+          root = {
+            type = "zfs_fs";
+            mountpoint = "/";
+            postCreateHook = "zfs snapshot zroot/root@empty";
+          };
           persist = {
             type = "zfs_fs";
             mountpoint = "/persist";
             
             options = {
-             "com.sun:auto-snapshot" = "true"; 
-              encryption = "aes-256-gcm";
-              keyformat = "passphrase";
-              keylocation = "file:///tmp/disk.key";
-              #mountpoint = "legacy";
-            };
-            postCreateHook = ''
-              # after disko creates the encrypted volume we switch to prompt for next boots
-              zfs set keylocation="prompt" "zroot/persist"; 
-            '';
+             "com.sun:auto-snapshot" = "true";            
+             };
           };
           nix = {
             type = "zfs_fs";
             mountpoint = "/nix";
-            options = {
-             "com.sun:auto-snapshot" = "true"; 
-              #encryption = "aes-256-gcm";
-              #keyformat = "passphrase";
-              #keylocation = "file:///tmp/disk.key";
-            };
           };
         };
       };
+
+
       nas = {
         type = "zpool";
         mode = ""; # mirror
         rootFsOptions = {
+          mountpoint = "none";
           acltype = "posixacl";
           xattr = "sa";
           atime = "off";
@@ -120,28 +116,35 @@
           encryption = "aes-256-gcm";
           keyformat = "passphrase";
           keylocation = "file:///tmp/disk.key";
+          dedup = "on";   
         };
-        mountpoint = "/nas";
+
         postCreateHook = ''
           # after disko creates the encrypted volume we switch to prompt for next boots
-          zfs set keylocation="prompt" "nas"; 
+          zfs set keylocation="prompt" "nas";          
         '';
+
         datasets = {
+          root = {
+            type = "zfs_fs";
+            mountpoint = "/nas";
+          };
           homes = {
             type = "zfs_fs";
             mountpoint = "/nas/homes";            
-            options = {            
-            };
+            options = {
+             "com.sun:auto-snapshot" = "true";            
+             };
           };
           photos = {
             type = "zfs_fs";
             mountpoint = "/nas/photos";            
-            options = {            
-            };
+            options = {
+             "com.sun:auto-snapshot" = "true";            
+             };
           };
         };
       };
     };
   };
-  #filesystem."/persist".neededForBoot = true;
 }

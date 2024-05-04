@@ -1,7 +1,9 @@
+
 { inputs, config, pkgs, nixpkgs, lib, ... }:
 {
   fileSystems."/persist".neededForBoot = true;
   fileSystems."/nas".neededForBoot = true;
+  #fileSystems."/nas".neededForBoot = true;
   environment.persistence."/persist/system" = {
     hideMounts = false;
     directories = [
@@ -16,6 +18,7 @@
       { file = "/etc/ssh/ssh_host_ed25519_key"; parentDirectory = { mode = "u=rwx,g=,o="; }; }
     ];
   };
+
   environment.persistence."/persist/services" = {
     hideMounts = false;
     directories = [
