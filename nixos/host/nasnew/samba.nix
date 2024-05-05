@@ -5,6 +5,7 @@
   openFirewall = true;
  };
  services.samba = {
+    package = pkgs.samba4Full;
     enable = true;
     openFirewall = true;
     securityType = "user";
@@ -41,6 +42,9 @@
         "create mask" = "0700";
         "directory mask" = "0700";                                                                                                        
         "vfs objects" = "shadow_copy2";  
+
+        "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
+        "delete veto files" = "yes";
       };
 
       isaacaina = {
@@ -54,6 +58,9 @@
         "create mask" = "0770";
         "directory mask" = "0770";
         "vfs objects" = "shadow_copy2";
+
+        "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
+        "delete veto files" = "yes";
       };
 
       multimedia = {
@@ -67,6 +74,9 @@
         "create mask" = "0770";
         "directory mask" = "0770";
         "vfs objects" = "shadow_copy2";
+
+        "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
+        "delete veto files" = "yes";
       };
 
       software = {
@@ -80,6 +90,9 @@
         "create mask" = "0770";
         "directory mask" = "0770";
         "vfs objects" = "shadow_copy2";
+
+        "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
+        "delete veto files" = "yes";
       };
 
       downloads = {
@@ -93,7 +106,20 @@
         "create mask" = "0770";
         "directory mask" = "0770";
         "vfs objects" = "shadow_copy2";
+
+        "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
+        "delete veto files" = "yes";
       };
     };
+  };
+
+  services.avahi = {
+    publish.enable = true;
+    publish.userServices = true;
+    # ^^ Needed to allow samba to automatically register mDNS records (without the need for an `extraServiceFile`
+    nssmdns4 = true;
+    # ^^ Not one hundred percent sure if this is needed- if it aint broke, don't fix it
+    enable = true;
+    openFirewall = true;
   };
 }

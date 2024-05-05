@@ -1,18 +1,21 @@
 { inputs, config, pkgs, nixpkgs, lib, ... }:{ 
     users.users.daga12g = {
         uid = 1000;
-        home = "/nas/homes/daga12g";
+        shell = "/run/current-system/sw/bin/nologin";
+        #home = "/nas/homes/daga12g";
         createHome = false;  
     };
     users.users.segator = {
         uid = 1001;
-        home = "/nas/homes/segator";
+        shell = "/run/current-system/sw/bin/nologin";
+        #home = "/nas/homes/segator";
         createHome = false;    
     };
     users.users.carles = {
         uid = 1002;
-        home = "/nas/homes/carles";
-        createHome = false;  
+        shell = "/run/current-system/sw/bin/nologin";
+        #home = "/nas/homes/carles";
+        createHome = true;  
     };
     users.groups = {
         segator = {

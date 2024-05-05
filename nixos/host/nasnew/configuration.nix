@@ -58,6 +58,15 @@
         efiInstallAsRemovable = true;
     };
   };
+
+  services.zfs.autoSnapshot = {
+    enable = true;
+    frequent = 0;
+    hourly = 0;
+    daily = 7;
+    weekly = 1;
+    monthly = 1;
+  };
       
   networking.hostName = "nasnew";
   networking.hostId = "4e98920d";
