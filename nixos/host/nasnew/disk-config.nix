@@ -116,7 +116,7 @@
           encryption = "aes-256-gcm";
           keyformat = "passphrase";
           keylocation = "file:///tmp/disk.key";
-          dedup = "on";   
+          dedup = "off";
         };
 
         postCreateHook = ''
@@ -136,9 +136,38 @@
              "com.sun:auto-snapshot" = "true";            
              };
           };
-          photos = {
+          crbmc = {
             type = "zfs_fs";
-            mountpoint = "/nas/photos";            
+            mountpoint = "/nas/crbmc";            
+            options = {
+             "dedup" = "on";
+             "com.sun:auto-snapshot" = "true";            
+             };
+          };
+          photo = {
+            type = "zfs_fs";
+            mountpoint = "/nas/photo";            
+            options = {
+             "com.sun:auto-snapshot" = "true";            
+             };
+          };
+          isaacaina = {
+            type = "zfs_fs";
+            mountpoint = "/nas/isaacaina";            
+            options = {
+             "com.sun:auto-snapshot" = "true";            
+             };
+          };
+          multimedia = {
+            type = "zfs_fs";
+            mountpoint = "/nas/multimedia";            
+            options = {
+             "com.sun:auto-snapshot" = "true";            
+             };
+          };
+          software = {
+            type = "zfs_fs";
+            mountpoint = "/nas/software";            
             options = {
              "com.sun:auto-snapshot" = "true";            
              };

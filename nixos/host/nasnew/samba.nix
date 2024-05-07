@@ -47,6 +47,22 @@
         "delete veto files" = "yes";
       };
 
+      photo = {
+        comment = "photo";
+        path = "/nas/photo";
+        browseable = "yes";
+        "guest ok" = "no";
+        writeable = "yes";
+        "valid users" = "@isaacaina";
+        "read only" = "no";
+        "create mask" = "0770";
+        "directory mask" = "0770";
+        "vfs objects" = "shadow_copy2";
+
+        "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
+        "delete veto files" = "yes";
+      };
+
       isaacaina = {
         comment = "Isaacaina";
         path = "/nas/isaacaina";
@@ -79,9 +95,9 @@
         "delete veto files" = "yes";
       };
 
-      software = {
-        comment = "Software";
-        path = "/nas/software";
+      crbmc = {
+        comment = "CRBMC";
+        path = "/nas/crbmc";
         browseable = "yes";
         "guest ok" = "no";
         writeable = "yes";
@@ -95,9 +111,9 @@
         "delete veto files" = "yes";
       };
 
-      downloads = {
-        comment = "Downloads";
-        path = "/nas/downloads";
+      software = {
+        comment = "Software";
+        path = "/nas/software";
         browseable = "yes";
         "guest ok" = "no";
         writeable = "yes";
