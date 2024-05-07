@@ -11,19 +11,18 @@ let
    {
      "${username}_password" = { };
    };
-
+  sopsSecrets = builtins.map  (username:
+    {
+        "${username}_password" = { };
+    }) (builtins.attrNames usersConfig);
   smbpasswdCommand = username: ''
     smbPassword=$(cat "${config.sops.secrets."${username}_password".path}")
     echo -e "$smbPassword\n$smbPassword\n" | /run/current-system/sw/bin/smbpasswd -a -s ${username}
   '';
-
-
 in
 {
-  sops.secrets = builtins.map (username:
-    {
-        "${username}_password" = { };
-    }) usersConfig;
+
+  sops.secrets = builtins.listToAttrs sopsSecrets;
   users.users = lib.mapAttrs (username: userConfig: 
     userConfig // 
     {
