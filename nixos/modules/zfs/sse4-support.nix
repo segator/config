@@ -3,6 +3,7 @@
   boot = {
       kernelPackages = pkgs.linuxPackages_6_1.extend (_: prev: {
         zfs_unstable = prev.zfs_unstable.overrideAttrs (old: {
+          enableMail = true;
           src = pkgs.fetchFromGitHub {
             owner = "openzfs";
             repo = "zfs";

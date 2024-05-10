@@ -133,46 +133,34 @@ in
           };
           homes = {
             type = "zfs_fs";
-            mountpoint = "/nas/homes";            
-            options = {
-             "com.sun:auto-snapshot" = "true";            
-            };
+            mountpoint = "/nas/homes";
           };
           crbmc = {
             type = "zfs_fs";
             mountpoint = "/nas/crbmc";            
             options = {
-             "dedup" = "on";
-             "com.sun:auto-snapshot" = "true";            
+             "dedup" = "on";                    
              };
           };
           photo = {
             type = "zfs_fs";
             mountpoint = "/nas/photo";            
-            options = {
-             "com.sun:auto-snapshot" = "true";            
-             };
+
           };
           isaacaina = {
             type = "zfs_fs";
             mountpoint = "/nas/isaacaina";            
-            options = {
-             "com.sun:auto-snapshot" = "true";            
-             };
+
           };
           multimedia = {
             type = "zfs_fs";
-            mountpoint = "/nas/multimedia";            
-            options = {
-             "com.sun:auto-snapshot" = "true";            
-             };
+            mountpoint = "/nas/multimedia";           
+
           };
           software = {
             type = "zfs_fs";
             mountpoint = "/nas/software";            
-            options = {
-             "com.sun:auto-snapshot" = "true";            
-             };
+
           };
         };
       };

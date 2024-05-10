@@ -38,8 +38,9 @@
         "guest ok" = "no";
         "writeable" = "yes";
         "valid users" = "%S";
+        "force group" = "%S";
         "read only" = "no";                                                                                              
-        "create mask" = "0700";
+        "create mask" = "0600";
         "directory mask" = "0700";                                                                                                        
         "vfs objects" = "shadow_copy2";  
 
@@ -54,8 +55,9 @@
         "guest ok" = "no";
         writeable = "yes";
         "valid users" = "@isaacaina";
+        "force group" = "isaacaina";
         "read only" = "no";
-        "create mask" = "0770";
+        "create mask" = "0660";
         "directory mask" = "0770";
         "vfs objects" = "shadow_copy2";
 
@@ -70,8 +72,9 @@
         "guest ok" = "no";
         writeable = "yes";
         "valid users" = "@isaacaina";
+        "force group" = "isaacaina";
         "read only" = "no";
-        "create mask" = "0770";
+        "create mask" = "0660";
         "directory mask" = "0770";
         "vfs objects" = "shadow_copy2";
 
@@ -86,8 +89,9 @@
         "guest ok" = "no";
         writeable = "yes";
         "valid users" = "@aymerich";
+        "force group" = "aymerich";
         "read only" = "no";
-        "create mask" = "0770";
+        "create mask" = "0660";
         "directory mask" = "0770";
         "vfs objects" = "shadow_copy2";
 
@@ -102,8 +106,9 @@
         "guest ok" = "no";
         writeable = "yes";
         "valid users" = "@aymerich";
+        "force group" = "aymerich";
         "read only" = "no";
-        "create mask" = "0770";
+        "create mask" = "0660";
         "directory mask" = "0770";
         "vfs objects" = "shadow_copy2";
 
@@ -118,8 +123,9 @@
         "guest ok" = "no";
         writeable = "yes";
         "valid users" = "@aymerich";
+        "force group" = "aymerich";
         "read only" = "no";
-        "create mask" = "0770";
+        "create mask" = "0660";
         "directory mask" = "0770";
         "vfs objects" = "shadow_copy2";
 
