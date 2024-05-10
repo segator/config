@@ -42,8 +42,9 @@ in
   users.users = lib.mapAttrs (username: user:      
     {
         uid = user.uid;
-        shell = lib.mkForce "/run/current-system/sw/bin/nologin";
+        shell = "/run/current-system/sw/bin/nologin";
         createHome = false;
+        isNormalUser = true;
     }) usersConfig;
 
   users.groups = (lib.mapAttrs ( username: user:    

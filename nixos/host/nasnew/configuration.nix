@@ -11,9 +11,9 @@
           ../../modules/sshd    
 
           ../../modules/grafana-agent
-          ../../users/segator
-          ../../users/daga12g
-          ../../users/carles
+          #../../users/segator
+          #../../users/daga12g
+          #../../users/carles
 
           ./users.nix
 

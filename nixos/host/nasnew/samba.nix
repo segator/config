@@ -5,7 +5,7 @@
   openFirewall = true;
  };
  services.samba = {
-    package = pkgs.samba4Full;
+    #package = pkgs.samba4Full;
     enable = true;
     openFirewall = true;
     securityType = "user";
