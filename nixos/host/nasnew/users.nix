@@ -7,42 +7,35 @@ let
     carles = { uid = 1002; };
   };
 
-   enableSecret = username: 
-   {
-     "${username}_password" = { };
-   };
-  sopsSecrets = builtins.map  (username:
-    {
-        "${username}_password" = { };
-    }) (builtins.attrNames usersConfig);
-  smbpasswdCommand = username: ''
+
+
+  smbpasswdCommand = username: user: ''
     smbPassword=$(cat "${config.sops.secrets."${username}_password".path}")
     echo -e "$smbPassword\n$smbPassword\n" | /run/current-system/sw/bin/smbpasswd -a -s ${username}
   '';
 in
 {
 
-  sops.secrets = builtins.listToAttrs sopsSecrets;
-  users.users = lib.mapAttrs (username: userConfig: 
-    userConfig // 
+  sops.secrets = builtins.listToAttrs (
+    builtins.map (key: 
+      {name = "${key}_password"; value = {};}) (builtins.attrNames usersConfig
+    )
+  );
+  users.users = lib.mapAttrs (username: user:      
     {
+        uid = user.uid;
         shell = lib.mkForce "/run/current-system/sw/bin/nologin";
         createHome = false;
     }) usersConfig;
 
-  users.groups = {
-    segator = {
-      gid = 1001;
-      members = [ "segator" ];
-    };
-    daga12g = {
-      gid = 1000;
-      members = [ "daga12g" ];
-    };
-    carles = {
-      gid = 1002;
-      members = [ "carles" ];
-    };
+  users.groups = (lib.mapAttrs ( username: user:    
+  {
+    gid = user.uid;
+    members = [ "${username}" ];        
+  }) usersConfig)
+  //
+  {
+   
     isaacaina = {
       gid = 1100;
       members = [
