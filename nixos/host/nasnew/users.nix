@@ -7,6 +7,24 @@ let
     carles = { uid = 1002; };
   };
 
+  groupsConfig = {   
+    isaacaina = {
+      gid = 1100;
+      members = [
+        "daga12g"
+        "segator"
+      ];
+    };
+    aymerich = {
+      gid = 1101;
+      members = [
+        "daga12g"
+        "segator"
+        "carles"
+      ];
+    };
+  };
+
 
 
   smbpasswdCommand = username: user: ''
@@ -34,24 +52,7 @@ in
     members = [ "${username}" ];        
   }) usersConfig)
   //
-  {
-   
-    isaacaina = {
-      gid = 1100;
-      members = [
-        "daga12g"
-        "segator"
-      ];
-    };
-    aymerich = {
-      gid = 1101;
-      members = [
-        "daga12g"
-        "segator"
-        "carles"
-      ];
-    };
-  };
+  groupsConfig;
 
   system.activationScripts.samba_user_create = ''
     ${lib.concatStringsSep "\n" (lib.mapAttrsToList smbpasswdCommand usersConfig)}
