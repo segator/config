@@ -157,8 +157,8 @@ in
 
     };
     onlyoffice = {
-      enable = false;
-      hostname = "office-test.segator.es";
+      enable = true;
+      hostname = "office-192.168.0.121.traefik.me";
     };
   };
   systemd.services = {

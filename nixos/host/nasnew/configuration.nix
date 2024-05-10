@@ -19,8 +19,8 @@
 
           ./nextcloud.nix
           ./samba.nix
-          ./nfs.nix
-          ./backup.nix
+          #./nfs.nix
+          #./backup.nix
   ];
 
   boot = {

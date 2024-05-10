@@ -1,4 +1,6 @@
-{ lib, ... }:
+{ lib, config, ... }:
+let
+in
 {
   boot.initrd.postDeviceCommands = lib.mkAfter ''
     zfs rollback -r zroot/root@empty
@@ -134,7 +136,7 @@
             mountpoint = "/nas/homes";            
             options = {
              "com.sun:auto-snapshot" = "true";            
-             };
+            };
           };
           crbmc = {
             type = "zfs_fs";
@@ -176,4 +178,30 @@
       };
     };
   };
+
+  # Set proper permissions for NAS base shares
+  system.activationScripts.nas_share_permissions = ''
+    ${lib.concatStringsSep "\n" (lib.mapAttrsToList (_: value: 
+        "chown nobody:users ${value.mountpoint};
+         chmod 0770 ${value.mountpoint};"
+      ) 
+      (lib.filterAttrs (n: v: v.mountpoint!=null) config.disko.devices.zpool.nas.datasets )
+      )
+    }
+  '';
+
+  # Create homes folders if not exists
+  system.activationScripts.nas_share_homes = ''
+    ${lib.concatStringsSep "\n" (lib.mapAttrsToList (username: _:
+        let
+          homePath = "${config.disko.devices.zpool.nas.datasets.homes.mountpoint}/${username}";          
+        in
+        "mkdir -p ${homePath};
+         chown ${username}:${username} ${homePath};
+         chmod 0700 ${homePath};"
+      ) 
+      (lib.filterAttrs (n: v: v.isNormalUser==true) config.users.users)
+      )
+    }
+  '';
 }

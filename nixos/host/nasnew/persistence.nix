@@ -3,7 +3,6 @@
 {
   fileSystems."/persist".neededForBoot = true;
   fileSystems."/nas".neededForBoot = true;
-  #fileSystems."/nas".neededForBoot = true;
   environment.persistence."/persist/system" = {
     hideMounts = false;
     directories = [
@@ -23,7 +22,7 @@
     hideMounts = false;
     directories = [
       "/var/lib/acme"
-      "/var/lib/nextcloud/data"
+      "/var/lib/nextcloud"
       "/var/lib/postgresql"
     ];
   };

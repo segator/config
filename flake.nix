@@ -65,30 +65,31 @@
             pkgs = x86_64_pkgs;
           };          
           system = "x86_64-linux";
-          modules = [       
+          modules = [
             disko.nixosModules.disko
             impermanence.nixosModules.impermanence
-            home-manager.nixosModules.default
+            
             sops-nix.nixosModules.sops  
             #"${nixpkgs}/nixos/modules/virtualisation/proxmox-lxc.nix"   
+            #home-manager.nixosModules.default
             ./nixos/host/nasnew/configuration.nix     
             # Home manager
-            (
-              {
-                home-manager = {
-                  extraSpecialArgs = { inherit inputs; pkgs = x86_64_pkgs; };
-                  users = {
-                    "segator" = {
-                      imports = [
-                        sops-nix.homeManagerModules.sops
-                        ./home-manager/configuration/segator/home.nix
-                        #./home-manager/configuration/segator/host/nas.nix
-                      ];
-                    }; 
-                  };
-                };
-              }              
-            )
+            # (
+            #   {
+            #     home-manager = {
+            #       extraSpecialArgs = { inherit inputs; pkgs = x86_64_pkgs; };
+            #       users = {
+            #         "segator" = {
+            #           imports = [
+            #             sops-nix.homeManagerModules.sops
+            #             ./home-manager/configuration/segator/home.nix
+            #             #./home-manager/configuration/segator/host/nas.nix
+            #           ];
+            #         }; 
+            #       };
+            #     };
+            #   }              
+            # )
           ];
         };
     };
@@ -140,16 +141,6 @@
           ./home-manager/configuration/aymerici/host/aymerici-4DVF0G.nix
           { nixpkgs.config.allowUnfree = true; }
           ];
-      };
-
-      "segator@nas" = home-manager.lib.homeManagerConfiguration {
-        pkgs = x86_64_pkgs;
-        modules = [ 
-          sops-nix.homeManagerModules.sops
-          ./home-manager/configuration/segator/home.nix
-          ./home-manager/configuration/segator/host/nas.nix
-          { nixpkgs.config.allowUnfree = true; }
-         ];
       };
     };
 
