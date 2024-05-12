@@ -26,14 +26,14 @@
       [
       "aarch64-darwin"
       ];    
-    
+    configureNixpkgs = system: (import nixpkgs { 
+      inherit system;
+      config.allowUnfree = true;
+      inherit overlays;
+    });
     mkHome = userHostname: attrs @ {system ? default_system,modules ? []}:
       let
-        pkgs = import nixpkgs { 
-            inherit system;
-            config.allowUnfree = true;
-            inherit overlays;
-          };
+        pkgs = configureNixpkgs system;
         user = pkgs.lib.head(pkgs.lib.splitString "@" userHostname);
         hostname = pkgs.lib.last(pkgs.lib.splitString "@" userHostname);
       in
@@ -52,11 +52,7 @@
         inherit system;
         specialArgs = { 
           inherit inputs;
-          pkgs = import nixpkgs { 
-            inherit system;
-            config.allowUnfree = true;
-            inherit overlays;
-          };
+          pkgs = configureNixpkgs system;
         };          
         modules = modules ++ [                       
           sops-nix.nixosModules.sops
