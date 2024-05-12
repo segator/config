@@ -26,23 +26,42 @@
       [
       "aarch64-darwin"
       ];    
+    
+    mkHome = userHostname: attrs @ {system ? default_system,modules ? []}:
+      let
+        user = builtins.substringBefore userHostname "@";
+        hostname = builtins.substringAfter userHostname "@";
+      in
+      home-manager.lib.homeManagerConfiguration {
+        pkgs = import nixpkgs { 
+            inherit system;
+            config.allowUnfree = true;
+            inherit overlays;
+          };
+        modules = modules ++ [  
+          sops-nix.homeManagerModules.sops        
+          ./home-manager/configuration/${user}/home.nix
+          ./home-manager/configuration/${user}/host/${hostname}.nix
+          { nixpkgs.config.allowUnfree = true; }
+          ];
+      };
 
     mkNixosSystem = hostname: attrs @ {system ? default_system, modules ? [], ...}:
-    nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = { 
-            inherit inputs;
-            pkgs = import nixpkgs { 
-              inherit system;
-              config.allowUnfree = true;
-              inherit overlays;
-            };
-          };          
-          modules = modules ++ [                       
-            sops-nix.nixosModules.sops
-            ./nixos/host/${hostname}/configuration.nix
-          ];
-        };
+      nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { 
+          inherit inputs;
+          pkgs = import nixpkgs { 
+            inherit system;
+            config.allowUnfree = true;
+            inherit overlays;
+          };
+        };          
+        modules = modules ++ [                       
+          sops-nix.nixosModules.sops
+          ./nixos/host/${hostname}/configuration.nix
+        ];
+      };
     
     
 
@@ -84,46 +103,10 @@
       modules = [ ./darwin/host/mbp_m1/configuration.nix ];
     };
     homeConfigurations = {
-      "aymerici@fury" = home-manager.lib.homeManagerConfiguration {
-        pkgs = x86_64_pkgs;
-        modules = [  
-          sops-nix.homeManagerModules.sops        
-          ./home-manager/configuration/aymerici/home.nix
-          ./home-manager/configuration/aymerici/host/fury.nix
-          { nixpkgs.config.allowUnfree = true; }
-          ];
-      };
-      "segator@fury" = home-manager.lib.homeManagerConfiguration {
-        pkgs = x86_64_pkgs;
-        modules = [
-          sops-nix.homeManagerModules.sops
-          ./home-manager/configuration/segator/home.nix
-          ./home-manager/configuration/segator/host/fury.nix
-          { nixpkgs.config.allowUnfree = true; }
-          ];
-      };
-      "aymerici@xps15" = home-manager.lib.homeManagerConfiguration {
-        extraSpecialArgs = { 
-         inherit inputs;
-        };
-        pkgs = x86_64_pkgs;
-        modules = [ 
-          sops-nix.homeManagerModules.sops
-          ./home-manager/configuration/aymerici/home.nix
-          ./home-manager/configuration/aymerici/host/xps15.nix
-          { nixpkgs.config.allowUnfree = true; }
-          ];
-      };
-
-      "aymerici@aymerici-4DVF0G" = home-manager.lib.homeManagerConfiguration {
-        pkgs = aarch64_darwin_pkgs;
-        modules = [ 
-          sops-nix.homeManagerModules.sops
-          ./home-manager/configuration/aymerici/home.nix
-          ./home-manager/configuration/aymerici/host/aymerici-4DVF0G.nix
-          { nixpkgs.config.allowUnfree = true; }
-          ];
-      };
+      "aymerici@fury" = mkHome "aymerici@fury" { system = "x86_64-linux"; };
+      "segator@fury" = mkHome "segator@fury" { system = "x86_64-linux"; };
+      "aymerici@xps15" = mkHome "aymerici@xps15" { system = "x86_64-linux"; };
+      "aymerici@aymerici-4DVF0G" = mkHome "aymerici@aymerici-4DVF0G" { system = "aarch64-darwin"; };
     };
 
     devShells = forAllSystems (system: import ./shell.nix nixpkgs.legacyPackages.${system});
