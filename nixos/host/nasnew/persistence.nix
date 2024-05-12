@@ -24,6 +24,7 @@
       "/var/lib/acme"
       "/var/lib/nextcloud"
       "/var/lib/postgresql"
+      "/var/lib/samba"
     ];
   };
 }

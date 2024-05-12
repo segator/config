@@ -24,7 +24,7 @@ in
             autoprune = true;
 
             frequently = 0;
-            hourly = 0;
+            hourly = 1;
             daily = 6;
             weekly = 1;            
             monthly = 12;
@@ -33,7 +33,11 @@ in
   };
   # zfs notifications
   # TODO example https://github.com/JulienMalka/nix-config/blob/eab2d71e07131a28782dd34fb56f8ee68ffc0578/modules/zfs-mails/default.nix#L56
+  environment.systemPackages = with pkgs; [
+        mailhook
+  ];
   services.zfs.zed.settings = {
+    #https://github.com/leoj3n/zedhook/blob/master/zedhook
     ZED_DEBUG_LOG = "/tmp/zed.debug.log";
     ZED_EMAIL_ADDR = [ "root" ];
     ZED_EMAIL_PROG = "${pkgs.msmtp}/bin/msmtp";

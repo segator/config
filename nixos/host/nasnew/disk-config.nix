@@ -54,7 +54,14 @@ in
         };
       };
     };
-
+    nodev."/" = {
+      fsType = "tmpfs";
+      mountOptions = [
+        "size=512M"
+        "defaults"
+        "mode=755"
+      ];
+    };
     zpool = {
       zroot = {
         type = "zpool";
@@ -65,7 +72,6 @@ in
           xattr = "sa";
           atime = "off";
           compression = "zstd";
-          "com.sun:auto-snapshot" = "false";
           encryption = "aes-256-gcm";
           keyformat = "passphrase";
           keylocation = "file:///tmp/disk.key";
@@ -84,18 +90,16 @@ in
         #     mkdir -p /mnt/persist/system/var/lib/systemd/coredump
         #     '';
         datasets = {
-          root = {
-            type = "zfs_fs";
-            mountpoint = "/";
-            postCreateHook = "zfs snapshot zroot/root@empty";
-          };
+          # root = {
+          #   type = "zfs_fs";
+          #   mountpoint = "/";
+          #   postCreateHook = "zfs snapshot zroot/root@empty";
+          # };
           persist = {
             type = "zfs_fs";
             mountpoint = "/persist";
-            
-            options = {
-             "com.sun:auto-snapshot" = "true";            
-             };
+           
+
           };
           nix = {
             type = "zfs_fs";
@@ -114,7 +118,6 @@ in
           xattr = "sa";
           atime = "off";
           compression = "zstd";
-          "com.sun:auto-snapshot" = "false";
           encryption = "aes-256-gcm";
           keyformat = "passphrase";
           keylocation = "file:///tmp/disk.key";
@@ -168,7 +171,9 @@ in
   };
 
   # Set proper permissions for NAS base shares
-  system.activationScripts.nas_share_permissions = ''
+  system.activationScripts.nas_share_permissions = { 
+    deps = [ "users" "groups"];
+    text=''
     ${lib.concatStringsSep "\n" (lib.mapAttrsToList (_: value: 
         "chown nobody:users ${value.mountpoint};
          chmod 0770 ${value.mountpoint};"
@@ -177,9 +182,13 @@ in
       )
     }
   '';
+  };
 
   # Create homes folders if not exists
-  system.activationScripts.nas_share_homes = ''
+  system.activationScripts.nas_share_homes = 
+  {
+    deps = [ "nas_share_permissions" ];
+    text = ''
     ${lib.concatStringsSep "\n" (lib.mapAttrsToList (username: _:
         let
           homePath = "${config.disko.devices.zpool.nas.datasets.homes.mountpoint}/${username}";          
@@ -192,4 +201,5 @@ in
       )
     }
   '';
+  };
 }

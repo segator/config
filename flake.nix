@@ -15,6 +15,8 @@
               #deploy-rs,
               ... } @ inputs:
   let
+    default_system = "x86_64-linux";
+    overlays = map (name: (import ./overlays/${name})) (builtins.attrNames (builtins.readDir ./overlays)); 
     linuxSystems =  [
       "aarch64-linux"     
       "x86_64-linux"
@@ -24,75 +26,55 @@
       [
       "aarch64-darwin"
       ];    
+
+    mkNixosSystem = hostname: attrs @ {system ? default_system, modules ? [], ...}:
+    nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { 
+            inherit inputs;
+            pkgs = import nixpkgs { 
+              inherit system;
+              config.allowUnfree = true;
+              inherit overlays;
+            };
+          };          
+          modules = modules ++ [                       
+            sops-nix.nixosModules.sops
+            ./nixos/host/${hostname}/configuration.nix
+          ];
+        };
+    
+    
+
     x86_64_pkgs = import nixpkgs { 
       system = "x86_64-linux";
       config.allowUnfree = true;
+      inherit overlays;
     };
     aarch64_darwin_pkgs = import nixpkgs {
       system = "aarch64-darwin";
       config.allowUnfree = true;
+      inherit overlays;
     };
     forLinuxSystems =  nixpkgs.lib.genAttrs linuxSystems;
     forAllSystems = nixpkgs.lib.genAttrs systems;
   in {
     nixosConfigurations = {
-         fury = nixpkgs.lib.nixosSystem {
-          specialArgs = { 
-            inherit inputs;
-            pkgs = x86_64_pkgs;
-          };
-          system = "x86_64-linux";
-          modules = [            
-            sops-nix.nixosModules.sops
-            ./nixos/host/fury/configuration.nix
-          ];
+        fury = mkNixosSystem "fury" {
+          system = "x86_64-linux";          
         };
-        xps15 = nixpkgs.lib.nixosSystem {
-          specialArgs = { 
-            inherit inputs;
-            pkgs = x86_64_pkgs;
-          };       
-          system = "x86_64-linux";   
-          modules = [
-            sops-nix.nixosModules.sops
-            ./nixos/host/xps15/configuration.nix
-          ];
+        xps15 = mkNixosSystem "xps15" {
+          system = "x86_64-linux";          
         };
-        nasnew = nixpkgs.lib.nixosSystem {
-          #extraSpecialArgs = { inherit inputs; pkgs = x86_64_pkgs; };
-          specialArgs = { 
-            inherit inputs;
-            pkgs = x86_64_pkgs;
-          };          
+        nasnew = mkNixosSystem "nasnew" {
           system = "x86_64-linux";
           modules = [
             disko.nixosModules.disko
-            impermanence.nixosModules.impermanence
-            
-            sops-nix.nixosModules.sops  
-            #"${nixpkgs}/nixos/modules/virtualisation/proxmox-lxc.nix"   
-            #home-manager.nixosModules.default
-            ./nixos/host/nasnew/configuration.nix     
-            # Home manager
-            # (
-            #   {
-            #     home-manager = {
-            #       extraSpecialArgs = { inherit inputs; pkgs = x86_64_pkgs; };
-            #       users = {
-            #         "segator" = {
-            #           imports = [
-            #             sops-nix.homeManagerModules.sops
-            #             ./home-manager/configuration/segator/home.nix
-            #             #./home-manager/configuration/segator/host/nas.nix
-            #           ];
-            #         }; 
-            #       };
-            #     };
-            #   }              
-            # )
+            impermanence.nixosModules.impermanence 
           ];
         };
-    };
+    };              
+
     darwinConfigurations."aymerici-4DVF0G" = nix-darwin.lib.darwinSystem {
       specialArgs = { 
         inherit inputs;

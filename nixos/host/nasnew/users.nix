@@ -25,12 +25,6 @@ let
     };
   };
 
-
-
-  smbpasswdCommand = username: user: ''
-    smbPassword=$(cat "${config.sops.secrets."${username}_password".path}")
-    echo -e "$smbPassword\n$smbPassword\n" | /run/current-system/sw/bin/smbpasswd -a -s ${username}
-  '';
 in
 {
 
@@ -55,7 +49,4 @@ in
   //
   groupsConfig;
 
-  system.activationScripts.samba_user_create = ''
-    ${lib.concatStringsSep "\n" (lib.mapAttrsToList smbpasswdCommand usersConfig)}
-  '';
 }

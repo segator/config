@@ -48,31 +48,60 @@
       scrape_interval = "60s";
     };
 
-    logs.configs = [{
+    logs.configs = [
+      {
       name = "default";
       scrape_configs = [
+        # {
+        #   job_name = "syslog";
+        #   static_configs = [{
+        #     targets = [ "localhost" ];
+        #     journal = {
+        #       labels.job = "syslog";
+        #       labels."__path__" = "/var/log/syslog";
+        #     };
+        #   }];          
+        # }
         {
-          job_name = "journal";
+          job_name = "systemd-journal";
           journal = {
             max_age = "12h";
             labels.job = "systemd-journal";
           };
-          relabel_configs = [
+          relabel_configs = [            
             {
               source_labels = [ "__journal__systemd_unit" ];
               target_label = "systemd_unit";
             }
             {
               source_labels = [ "__journal__hostname" ];
-              target_label = "nodename";
+              target_label = "hostname";
             }
             {
               source_labels = [ "__journal_syslog_identifier" ];
               target_label = "syslog_identifier";
             }
+            {
+              source_labels = [ "__journal__pid" ];
+              target_label = "pid";
+            }
+            {
+              source_labels = [ "__journal__uid" ];
+              target_label = "uid";
+            }
+            {
+              source_labels = [ "__journal__transport" ];
+              target_label = "transport";
+            }
           ];
         }
       ];
+
+
+
+
+
+
       positions.filename = "\${STATE_DIRECTORY}/loki_positions.yaml";
       clients = [{
         url = "\${LOGS_REMOTE_WRITE_URL}";

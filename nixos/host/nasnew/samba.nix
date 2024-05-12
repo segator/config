@@ -1,4 +1,10 @@
 { inputs, config, pkgs, nixpkgs, lib, ... }:
+let
+  smbpasswdCommand = username: _: ''
+    smbPassword=$(${pkgs.busybox}/bin/cat "${config.sops.secrets."${username}_password".path}")
+    ${pkgs.busybox}/bin/echo -e "$smbPassword\n$smbPassword\n" | ${pkgs.samba}/bin/smbpasswd -a -s ${username}
+  '';
+in
 {
  services.samba-wsdd = {
   enable = true;
@@ -144,4 +150,20 @@
     enable = true;
     openFirewall = true;
   };
+
+  # Configure smb users  after samba is running
+  systemd.services.samba-user-setup = {
+    enable = true;
+    description = "Configure samba users";
+    script = ''
+    ${lib.concatStringsSep "\n" (lib.mapAttrsToList smbpasswdCommand (lib.filterAttrs (n: v: v.isNormalUser==true) config.users.users))}
+    '';
+
+    serviceConfig.Type = "oneshot";
+    requires = [ "samba-smbd.service" ];
+    restartIfChanged = true;
+    wantedBy = [ "samba-smbd.service" ];
+    after = [ "samba-smbd.service" ];
+  };
+
 }
