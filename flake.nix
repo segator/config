@@ -29,15 +29,16 @@
     
     mkHome = userHostname: attrs @ {system ? default_system,modules ? []}:
       let
-        user = builtins.substringBefore userHostname "@";
-        hostname = builtins.substringAfter userHostname "@";
-      in
-      home-manager.lib.homeManagerConfiguration {
         pkgs = import nixpkgs { 
             inherit system;
             config.allowUnfree = true;
             inherit overlays;
           };
+        user = pkgs.lib.head(pkgs.lib.splitString "@" userHostname);
+        hostname = pkgs.lib.last(pkgs.lib.splitString "@" userHostname);
+      in
+      home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
         modules = modules ++ [  
           sops-nix.homeManagerModules.sops        
           ./home-manager/configuration/${user}/home.nix
