@@ -9,7 +9,7 @@
       ../../modules/common.nix
       ../../modules/nix-sops
       ../../modules/hyprland
-      ./syncthing.nix
+      #./syncthing.nix
       ../../modules/nix
       ../../modules/gnome
       ../../modules/vpn
@@ -23,7 +23,7 @@
       ../../users/segator
     ];
 
-  # Bootloader.
+  # Bootloade
   boot.extraModprobeConfig = ''
   options kvm_amd nested=1
   options nvidia NVreg_UsePageAttributeTable=1
@@ -42,6 +42,7 @@
     "nvidia_uvm"
     "nvidia_drm"
     ];
+  boot.supportedFilesystems = [ "ntfs" ];
   boot.binfmt.emulatedSystems = [
     "aarch64-linux"  
   ];
