@@ -15,63 +15,13 @@
               #deploy-rs,
               ... } @ inputs:
   let
-    default_system = "x86_64-linux";
-    overlays = map (name: (import ./overlays/${name})) (builtins.attrNames (builtins.readDir ./overlays)); 
-    linuxSystems =  [
-      "aarch64-linux"     
-      "x86_64-linux"
-    ];
-    systems = 
-      linuxSystems ++ 
-      [
-      "aarch64-darwin"
-      ];    
-    configureNixpkgs = system: (import nixpkgs { 
-      inherit system;
-      config.allowUnfree = true;
-      inherit overlays;
-    });
-    mkHome = userHostname: attrs @ {system ? default_system,modules ? []}:
-      let
-        pkgs = configureNixpkgs system;
-        user = pkgs.lib.head(pkgs.lib.splitString "@" userHostname);
-        hostname = pkgs.lib.last(pkgs.lib.splitString "@" userHostname);
-      in
-      home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        modules = modules ++ [  
-          sops-nix.homeManagerModules.sops        
-          ./home-manager/configuration/${user}/home.nix
-          ./home-manager/configuration/${user}/host/${hostname}.nix
-          { nixpkgs.config.allowUnfree = true; }
-          ];
-      };
-
-    mkNixosSystem = hostname: attrs @ {system ? default_system, modules ? [], ...}:
-      nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = { 
-          inherit inputs;
-          pkgs = configureNixpkgs system;
-        };          
-        modules = modules ++ [                       
-          sops-nix.nixosModules.sops
-          ./nixos/host/${hostname}/configuration.nix
-        ];
-      };
-
-    forLinuxSystems =  nixpkgs.lib.genAttrs linuxSystems;
-    forAllSystems = nixpkgs.lib.genAttrs systems;
+    libx = import ./lib { inherit inputs; };
   in {
+    # Nixos Systems
     nixosConfigurations = {
-        fury = mkNixosSystem "fury" {
-          system = "x86_64-linux";          
-        };
-        xps15 = mkNixosSystem "xps15" {
-          system = "x86_64-linux";          
-        };
-        nasnew = mkNixosSystem "nasnew" {
-          system = "x86_64-linux";
+        fury = libx.mkNixosSystem "fury" { system = "x86_64-linux"; };
+        xps15 = libx.mkNixosSystem "xps15" { system = "x86_64-linux"; };
+        nasnew = libx.mkNixosSystem "nasnew" { system = "x86_64-linux";          
           modules = [
             disko.nixosModules.disko
             impermanence.nixosModules.impermanence 
@@ -79,24 +29,27 @@
         };
     };              
 
-    darwinConfigurations."aymerici-4DVF0G" = nix-darwin.lib.darwinSystem {
-      specialArgs = { 
-        inherit inputs;
-        pkgs = configureNixpkgs "aarch64-darwin";
+    # MacOS systems
+    darwinConfigurations = {
+      "aymerici-4DVF0G" = libx.mkDarwinSystem "mbp_m1" {
+        system = "aarch64-darwin";
       };
-      system = "aarch64-darwin";
-      modules = [ ./darwin/host/mbp_m1/configuration.nix ];
     };
+
+    # User configurations
     homeConfigurations = {
-      "aymerici@fury" = mkHome "aymerici@fury" { system = "x86_64-linux"; };
-      "segator@fury" = mkHome "segator@fury" { system = "x86_64-linux"; };
-      "aymerici@xps15" = mkHome "aymerici@xps15" { system = "x86_64-linux"; };
-      "aymerici@aymerici-4DVF0G" = mkHome "aymerici@aymerici-4DVF0G" { system = "aarch64-darwin"; };
+      "aymerici@fury" = libx.mkHome "aymerici@fury" { system = "x86_64-linux"; };
+      "segator@fury" = libx.mkHome "segator@fury" { system = "x86_64-linux"; };
+      "aymerici@xps15" = libx.mkHome "aymerici@xps15" { system = "x86_64-linux"; };
+      "aymerici@aymerici-4DVF0G" = libx.mkHome "aymerici@aymerici-4DVF0G" { system = "aarch64-darwin"; };
     };
 
-    devShells = forAllSystems (system: import ./shell.nix nixpkgs.legacyPackages.${system});
+    devShells = libx.forAllSystems (system: 
+      let pkgs = nixpkgs.legacyPackages.${system};
+      in import ./shell.nix { inherit pkgs;}
+    );
 
-    packages = forLinuxSystems (system:
+    packages = libx.forLinuxSystems (system:
       let
         pkgs = import nixpkgs-unstable-small { 
           inherit system;
