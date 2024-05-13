@@ -12,7 +12,6 @@
               disko, 
               impermanence,
               nixos-images,
-              #deploy-rs,
               ... } @ inputs:
   let
     libx = import ./lib { inherit inputs; };
@@ -104,10 +103,8 @@
       disko.url = "github:nix-community/disko";
       disko.inputs.nixpkgs.follows = "nixpkgs";
 
-      impermanence.url = "github:nix-community/impermanence"; #/create-needed-for-boot
+      impermanence.url = "github:nix-community/impermanence";
 
       nixos-images.url = "github:nix-community/nixos-images";
-
-      #deploy-rs.url = "github:serokell/deploy-rs";
   };
 }
