@@ -10,7 +10,7 @@ let
       [
       "aarch64-darwin"
       ];  
-    overlays = map (name: (import ./overlays/${name})) (builtins.attrNames (builtins.readDir ./overlays)); 
+    overlays = map (name: (import ../overlays/${name})) (builtins.attrNames (builtins.readDir ../overlays)); 
     configureNixpkgs = system: (import inputs.nixpkgs { 
       inherit system;
       config.allowUnfree = true;
@@ -29,8 +29,8 @@ in
         inherit pkgs;
         modules = modules ++ [  
           inputs.sops-nix.homeManagerModules.sops        
-          ./home-manager/configuration/${user}/home.nix
-          ./home-manager/configuration/${user}/host/${hostname}.nix
+          ../home-manager/configuration/${user}/home.nix
+          ../home-manager/configuration/${user}/host/${hostname}.nix
           { inputs.nixpkgs.config.allowUnfree = true; }
           ];
       };
@@ -42,7 +42,7 @@ in
           pkgs = configureNixpkgs system;
         };
         system = "aarch64-darwin";
-        modules = modules ++ [ ./darwin/host/${hostname}/configuration.nix];
+        modules = modules ++ [ ../darwin/host/${hostname}/configuration.nix];
       };
 
     mkNixosSystem = hostname: attrs @ {system ? default_system, modules ? [], ...}:
@@ -54,7 +54,10 @@ in
         };          
         modules = modules ++ [                       
           inputs.sops-nix.nixosModules.sops
-          ./nixos/host/${hostname}/configuration.nix
+          ../nixos/host/${hostname}/configuration.nix
+          ({
+            networking.hostName = hostname;
+          })
         ];
       };
     

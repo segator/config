@@ -59,7 +59,6 @@
     };
   };
       
-  networking.hostName = "nasnew";
   networking.hostId = "4e98920d";
   system.stateVersion = "23.05";
 
