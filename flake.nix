@@ -59,19 +59,7 @@
           ./nixos/host/${hostname}/configuration.nix
         ];
       };
-    
-    
 
-    x86_64_pkgs = import nixpkgs { 
-      system = "x86_64-linux";
-      config.allowUnfree = true;
-      inherit overlays;
-    };
-    aarch64_darwin_pkgs = import nixpkgs {
-      system = "aarch64-darwin";
-      config.allowUnfree = true;
-      inherit overlays;
-    };
     forLinuxSystems =  nixpkgs.lib.genAttrs linuxSystems;
     forAllSystems = nixpkgs.lib.genAttrs systems;
   in {
@@ -94,7 +82,7 @@
     darwinConfigurations."aymerici-4DVF0G" = nix-darwin.lib.darwinSystem {
       specialArgs = { 
         inherit inputs;
-        pkgs = aarch64_darwin_pkgs;
+        pkgs = configureNixpkgs "aarch64-darwin";
       };
       system = "aarch64-darwin";
       modules = [ ./darwin/host/mbp_m1/configuration.nix ];
