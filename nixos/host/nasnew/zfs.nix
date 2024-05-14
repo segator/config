@@ -2,7 +2,7 @@
 { inputs, config, pkgs, nixpkgs, lib, ... }:
 let
   nas_snapshot_shares = [ "homes" "crbmc" "photo" "isaacaina" "multimedia" "software" ];
-  mailpkg= (pkgs.mailtelegram.override { 
+  mail= (pkgs.mailtelegram.override { 
           telegram_bot_token = config.sops.secrets.telegram_bot_token.path; 
           telegram_chatid = config.sops.secrets.telegram_chatid.path;
           name = "mail";
@@ -50,12 +50,12 @@ in
     #ZED_DEBUG_LOG = "/tmp/zed.debug.log";
     ZED_EMAIL_ADDR = [ "root" ];
     ZED_EMAIL_PROG = "${mailpkg}/bin/mail";
-    ZED_EMAIL_OPTS = "-s 'zfs'";
+    #ZED_EMAIL_OPTS = "-s 'zfs @SUBJECT@'";
 
-    ZED_NOTIFY_INTERVAL_SECS = 3600;
+    ZED_NOTIFY_INTERVAL_SECS = 300;
     ZED_NOTIFY_VERBOSE = true;
 
-    ZED_USE_ENCLOSURE_LEDS = true;
+    #ZED_USE_ENCLOSURE_LEDS = true;
     #ZED_SCRUB_AFTER_RESILVER = true;
   };
   
