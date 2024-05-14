@@ -19,6 +19,8 @@
           ./zfs.nix
           ./nextcloud.nix
           ./samba.nix
+          ./mail_telegram.nix
+          ./smartd.nix
           #./nfs.nix
           #./backup.nix
   ];

@@ -1,12 +1,19 @@
 {pkgs,
- telegram_bot_token ? "/etc/mailtelegram/telegram_bot_token",
- telegram_chatid ? "/etc/mailtelegram/secrets/telegram_chatid",
+ config_source_path ? "/etc/mailtelegram/config.ini",
  name ? "mailtelegram",
  ...}:
 pkgs.writeShellApplication { 
   inherit name;
   runtimeInputs = [pkgs.busybox];
-  text=''
+  text=''    
+    if [ -f "${config_source_path}" ]; then
+        # shellcheck disable=SC1091
+        source "${config_source_path}"        
+    else
+        echo "missing config file ${config_source_path}"
+        exit 1 
+    fi
+    
     # Program name.
     prog_name="''${0##*/}"
 
@@ -14,14 +21,6 @@ pkgs.writeShellApplication {
     opt_message=""
     opt_subject="''${prog_name} alert"
     opt_hostname="''$(hostname)"
-    if [ -f "${telegram_bot_token}" ]; then
-        opt_telegram_bot_token=''$(cat ${telegram_bot_token})
-    fi
-
-    if [ -f "${telegram_chatid}" ]; then
-        opt_telegram_chatid=''$(cat ${telegram_chatid})
-    fi
-
     opt_file="/var/log/''${prog_name}.log"
 
     # Usage.
