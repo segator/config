@@ -1,6 +1,7 @@
 { self, config, lib, pkgs, ... }:
 let
   nextcloudAdminUser = "admin";
+  fqdn = "cloud-192.168.0.121.traefik.me";
   occ = lib.getExe config.services.nextcloud.occ;
 in
 {
@@ -47,7 +48,7 @@ in
 
   services = {
     nginx.virtualHosts = {
-      "cloud-192.168.0.121.traefik.me" = {
+      fqdn = {
         forceSSL = false;
         enableACME = false;
         # From [1] this should fix downloading of big files. [2] seems to indicate that buffering
@@ -66,11 +67,11 @@ in
 
     nextcloud = {
       enable = true;
-      hostName = "cloud-192.168.0.121.traefik.me";
+      hostName = fqdn;
       package = pkgs.nextcloud28;
       autoUpdateApps = {
         enable = true;
-        startAt = "20:00";
+        startAt = "22:35";
       };
       # Let NixOS install and configure the database automatically.
       database.createLocally = true;
@@ -81,11 +82,11 @@ in
       webfinger = true;
       # Increase the maximum file upload size to avoid problems uploading videos.
       maxUploadSize = "16G";
-      https = true;
+      https = false;
       extraAppsEnable = false;
-      #appstoreEnable = true;
+      appstoreEnable = true;
       extraApps = with config.services.nextcloud.package.packages.apps; {
-        # List of apps we want to install and are already packaged in
+        # List of apps we want to install and are already packaged ins
         # https://github.com/NixOS/nixpkgs/blob/master/pkgs/servers/nextcloud/packages/nextcloud-apps.json
         inherit  mail maps notes tasks previewgenerator memories; # onlyoffice calendar contacts
         recognize = pkgs.fetchNextcloudApp rec {
@@ -103,7 +104,9 @@ in
       };
       phpExtraExtensions = ex: [ ex.zip ex.zlib ex.tidy ex.smbclient ];
       settings = {
-        overwriteProtocol = "https";
+        "trusted_domains" = [ fqdn ];
+        "trusted_proxies" = [ "127.0.0.1" ];
+        overwriteProtocol = "http";
         defaultPhoneRegion = "ES";
         log_type = "file";
         enabledPreviewProviders = [
@@ -137,7 +140,7 @@ in
 
       };
       config = {
-        adminuser = config.sops.secrets.nextcloud_admin_user.path;
+        adminuser = nextcloudAdminUser;
         adminpassFile = config.sops.secrets.nextcloud_admin_password.path;
 
         dbtype = "pgsql";
@@ -168,9 +171,16 @@ in
         ${occ} app:install files_external || ${occ} app:enable files_external
         ${occ} app:install suspicious_login || ${occ} app:enable suspicious_login
         ${occ} app:install bruteforcesettings || ${occ} app:enable bruteforcesettings
+        ${occ} app:install tasks || ${occ} app:enable tasks
+        ${occ} app:install memories || ${occ} app:enable memories
+        ${occ} app:install previewgenerator || ${occ} app:enable previewgenerator
+        ${occ} app:install recognize || ${occ} app:enable recognize
+
+        # Disable default apps
         ${occ} app:disable dashboard
         ${occ} app:disable comments
         ${occ} app:disable photos
+        ${occ} app:disable activity
 
         # Missing indices
         ${occ} db:add-missing-indices
