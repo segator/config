@@ -11,12 +11,7 @@ in
         restartUnits = [ "nextcloud-setup.service" ];
 
     };
-    sops.secrets.nextcloud_admin_user = {
-        owner = "nextcloud";
-        group = "nextcloud";
-        restartUnits = [ "nextcloud-setup.service" ];
-    };
-    
+   
 
   #https://carjorvaz.com/posts/the-holy-grail-nextcloud-setup-made-easy-by-nixos/
   networking.firewall = {
