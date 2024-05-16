@@ -80,18 +80,18 @@ in
       https = false;
       extraAppsEnable = false;
       appstoreEnable = true;
-      extraApps = with config.services.nextcloud.package.packages.apps; {
-        # List of apps we want to install and are already packaged ins
-        # https://github.com/NixOS/nixpkgs/blob/master/pkgs/servers/nextcloud/packages/nextcloud-apps.json
-        inherit  mail maps notes tasks previewgenerator memories; # onlyoffice calendar contacts
-        recognize = pkgs.fetchNextcloudApp rec {
-          sha256 = "sha256-ziUc4J2y1lW1BwygwOKedOWbeAnPpBDwT9wh35R0MYk=";
-          url = "https://github.com/nextcloud/recognize/releases/download/v6.1.1/recognize-6.1.1.tar.gz";
-          license = "gpl3";
-          appName = "recognize";
-          appVersion = "6.1.1";
-        };
-      };
+      # extraApps = with config.services.nextcloud.package.packages.apps; {
+      #   # List of apps we want to install and are already packaged ins
+      #   # https://github.com/NixOS/nixpkgs/blob/master/pkgs/servers/nextcloud/packages/nextcloud-apps.json
+      #   inherit  mail maps notes tasks previewgenerator memories; # onlyoffice calendar contacts
+      #   recognize = pkgs.fetchNextcloudApp rec {
+      #     sha256 = "sha256-ziUc4J2y1lW1BwygwOKedOWbeAnPpBDwT9wh35R0MYk=";
+      #     url = "https://github.com/nextcloud/recognize/releases/download/v6.1.1/recognize-6.1.1.tar.gz";
+      #     license = "gpl3";
+      #     appName = "recognize";
+      #     appVersion = "6.1.1";
+      #   };
+      # };
       phpOptions = {
         "opcache.interned_strings_buffer" = "48";
         "opcache.jit" = 1255;
@@ -204,6 +204,60 @@ in
       requires = ["postgresql.service"];
       after = [ "postgresql.service" ];
     };
+
+  nextcloud-user-setup = {
+      enable = true;
+      description = "Configure nextcloud users";
+      script = (
+              let
+              userPassword = username: "$(cat ${config.sops.secrets."${username}_password".path})";
+              userCommands = lib.mapAttrsToList (username: _:
+                    ''
+                    
+                    if ${occ} user:list | grep -q "${username}"; then
+                        echo "User ${username} does exists, updating..."
+                        OC_PASS="${userPassword username}" ${occ} user:resetpassword --password-from-env segator                        
+                    else
+                        echo "User ${username} does not exists, creating..."
+                        OC_PASS="${userPassword username}" ${occ} user:add ${username} --password-from-env
+                    fi           
+                    ''
+                    ) 
+                    (lib.filterAttrs (n: v: v.isNormalUser==true) config.users.users);
+              groupMembersCommands = groupName: members: 
+                    map (member: ''
+                      ${occ} group:adduser "${groupName}" "${member}"
+                    '') members;
+              groupCommands = lib.mapAttrsToList (groupName: group: ''                        
+                    ${occ} group:list | grep -q "${groupName}" || {
+                        echo "group ${groupName} does not exists, creating..."
+                        ${occ} group:add "${groupName}"
+                    }                    
+                    ${lib.concatStringsSep "\n" (groupMembersCommands groupName group.members )}
+              '')
+              (lib.filterAttrs (n: v: (builtins.isInt v.gid && v.gid >= 1100 && v.gid <= 1200)) config.users.groups);  
+
+
+                  
+              in 
+              ''
+              echo "Configuring users"
+              ${lib.concatStringsSep "\n" userCommands}            
+              
+              echo "Configuring groups"
+              ${lib.concatStringsSep "\n" groupCommands}
+              '');
+
+      serviceConfig = {
+        Type = "oneshot";
+        User = "root";
+      };
+      requires = [ "nextcloud-setup.service" ];
+      restartIfChanged = true;
+      wantedBy = [ "nextcloud-setup.service" ];
+      after = [ "nextcloud-setup.service" ];
+    };
+
     nextcloud-cron-preview-generator = {
       environment.NEXTCLOUD_CONFIG_DIR = "${config.services.nextcloud.datadir}/config";
       serviceConfig = {

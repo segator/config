@@ -175,7 +175,7 @@ in
     deps = [ "users" "groups"];
     text=''
     ${lib.concatStringsSep "\n" (lib.mapAttrsToList (_: value: 
-        "chown nobody:users ${value.mountpoint};
+        "chown nobody:nasservices ${value.mountpoint};
          chmod 0770 ${value.mountpoint};"
       ) 
       (lib.filterAttrs (n: v: v.mountpoint!=null) config.disko.devices.zpool.nas.datasets )
@@ -194,8 +194,8 @@ in
           homePath = "${config.disko.devices.zpool.nas.datasets.homes.mountpoint}/${username}";          
         in
         "mkdir -p ${homePath};
-         chown ${username}:${username} ${homePath};
-         chmod 0700 ${homePath};"
+         chown ${username}:nasservices ${homePath};
+         chmod 0770 ${homePath};"
       ) 
       (lib.filterAttrs (n: v: v.isNormalUser==true) config.users.users)
       )

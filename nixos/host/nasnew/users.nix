@@ -7,7 +7,13 @@ let
     carles = { uid = 1002; };
   };
 
-  groupsConfig = {   
+
+
+  groupsConfig = {  
+    nasservices = {
+      gid = 2000;
+      members = (builtins.attrNames usersConfig) ++ lib.optionals config.services.nextcloud.enable [ "nextcloud" ];
+    };
     isaacaina = {
       gid = 1100;
       members = [
