@@ -182,7 +182,25 @@ in
 
         # Enable cron mode (nixos by default enables the systemd cron to 5min but not enabled on the app)
         ${occ} background:cron
-      '';
+
+        # Configure external mountpoints
+      '' + (
+      let
+          escape = x: builtins.replaceStrings ["/"] [''\\\/''] x;
+          rootMountName = "/";
+          dataHomesDirectory = config.disko.devices.zpool.nas.datasets.homes.mountpoint+"/$user";
+        in
+          ''
+          ${occ} files_external:list \
+                   | grep '${rootMountName}' \
+                   | grep '${dataHomesDirectory}' \
+          || ${occ} files_external:create \
+                   '${rootMountName}' \
+                   local \
+                   null::null \
+                   --config datadir='${dataHomesDirectory}'
+          '');
+
       requires = ["postgresql.service"];
       after = [ "postgresql.service" ];
     };
