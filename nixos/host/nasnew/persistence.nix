@@ -25,6 +25,8 @@
       "/var/lib/nextcloud"
       "/var/lib/postgresql"
       "/var/lib/samba"
+      "/var/lib/onlyoffice"
+      "/var/lib/rabbitmq"
     ];
   };
 }

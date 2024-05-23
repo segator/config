@@ -3,6 +3,13 @@ let
   nextcloudAdminUser = "admin";
   fqdn = "cloud-192.168.0.121.traefik.me";
   occ = lib.getExe config.services.nextcloud.occ;
+  exifToolMemories = pkgs.exiftool.overrideAttrs (oldAttrs: rec {
+            version = "12.70";
+            src = builtins.fetchurl  {
+                url = "https://exiftool.org/Image-ExifTool-${version}.tar.gz";
+                sha256 = "sha256-TLJSJEXMPj870TkExq6uraX8Wl4kmNerrSlX3LQsr/4=";  # Update the hash accordingly
+            };
+        }); 
 in
 {
     sops.secrets.nextcloud_admin_password = {
@@ -28,42 +35,48 @@ in
   };
   environment.systemPackages = with pkgs; [
     # for nextcloud memories
-    exiftool
+    exifToolMemories
     exif
     ffmpeg-headless
-    perl536Packages.ImageExifTool
-
+    perl
+    #perl536Packages.ImageExifTool
+    
     # for recognize
     gnumake # installation requirement
-    nodejs_18 # runtime and installation requirement
-    nodejs_18.pkgs.node-pre-gyp # installation requirement
+    nodejs_20 # runtime and installation requirement
+    nodejs_20.pkgs.node-pre-gyp # installation requirement
     python3 # requirement for node-pre-gyp otherwise fails with exit code 236
     util-linux # runtime requirement for taskset
-    ];
+  ];
 
   services = {
-    nginx.virtualHosts = {
-      fqdn = {
-        forceSSL = false;
-        enableACME = false;
-        # From [1] this should fix downloading of big files. [2] seems to indicate that buffering
-        # happens at multiple places anyway, so disabling one place should be okay.
-        extraConfig = ''
-          proxy_buffering off;
-        '';
-      };
+    nginx = {
+      recommendedGzipSettings = true;
+      recommendedOptimisation = true;
+      recommendedTlsSettings = true;
+      virtualHosts = {
+        "${fqdn}" = {
+          forceSSL = false;
+          enableACME = false;
+          # From [1] this should fix downloading of big files. [2] seems to indicate that buffering
+          # happens at multiple places anyway, so disabling one place should be okay.
+          extraConfig = ''
+            proxy_buffering off;
+          '';
+        };
 
-      # "office-test.segator.es" = {
-      #   forceSSL = true;
-      #   enableACME = true;
-      # };
+        # "office-test.segator.es" = {
+        #   forceSSL = true;
+        #   enableACME = true;
+        # };
+      };
     };
 
 
     nextcloud = {
       enable = true;
       hostName = fqdn;
-      package = pkgs.nextcloud28;
+      package = pkgs.nextcloud29;
       autoUpdateApps = {
         enable = true;
         startAt = "22:35";
@@ -102,7 +115,8 @@ in
         "trusted_domains" = [ fqdn ];
         "trusted_proxies" = [ "127.0.0.1" ];
         overwriteProtocol = "http";
-        defaultPhoneRegion = "ES";
+        "localstorage.umask" = "0007";
+        default_phone_region = "ES";
         log_type = "file";
         enabledPreviewProviders = [
           "OC\\Preview\\BMP"
@@ -120,13 +134,15 @@ in
           "OC\\Preview\\TIFF"
           "OC\\Preview\\Movie"
         ];
+        allow_user_to_change_display_name = false;
+        lost_password_link = "disabled";
         jpeg_quality = 60;
         preview_max_filesize_image = 128; # MB
         preview_max_memory = 512; # MB
         preview_max_x = 2048; # px
         preview_max_y = 2048; # px
         # More info https://github.com/Shawn8901/nix-configuration/blob/8b59d8953e7cb1fd38ec6987bbd18f05406d0ace/modules/nixos/private/nextcloud/memories.nix
-        "memories.exiftool" = lib.getExe pkgs.exiftool;
+        "memories.exiftool" = lib.getExe exifToolMemories;
         "memories.vod.ffmpeg" = lib.getExe pkgs.ffmpeg-headless;
         "memories.vod.ffprobe" = "${pkgs.ffmpeg-headless}/bin/ffprobe";
         recognize = {
@@ -155,7 +171,7 @@ in
 
     };
     onlyoffice = {
-      enable = true;
+      enable = false;
       hostname = "office-192.168.0.121.traefik.me";
     };
   };
@@ -171,6 +187,21 @@ in
         ${occ} app:install previewgenerator || ${occ} app:enable previewgenerator
         ${occ} app:install recognize || ${occ} app:enable recognize
 
+
+        # Memories 
+        #${occ} memories:places-setup
+
+        #  Recognize configuration
+        if [[ ! -e "${config.services.nextcloud.datadir}/store-apps/recognize/node_modules/@tensorflow/tfjs-node/lib/napi-v8/tfjs_binding.node" ]]; then
+            if [[ -d "${config.services.nextcloud.datadir}/store-apps/recognize/node_modules/" ]]; then
+              cd "${config.services.nextcloud.datadir}/store-apps/recognize/node_modules/"
+              ${pkgs.nodejs_20}/bin/npm rebuild @tensorflow/tfjs-node --build-addon-from-source
+            fi
+        fi
+        mkdir -p "${config.services.nextcloud.datadir}/store-apps/recognize/models"
+        if [ -z "$(ls -A "${config.services.nextcloud.datadir}/store-apps/recognize/models")" ]; then
+          ${occ} recognize:download-models
+        fi
         # Disable default apps
         ${occ} app:disable dashboard
         ${occ} app:disable comments
@@ -199,6 +230,9 @@ in
                    local \
                    null::null \
                    --config datadir='${dataHomesDirectory}'
+
+          # Enable file sharing
+          ${occ} files_external:option 1 enable_sharing true
           '');
 
       requires = ["postgresql.service"];

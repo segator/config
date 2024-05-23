@@ -46,99 +46,30 @@ in
         "valid users" = "%S";
         "force group" = "%S";
         "read only" = "no";                                                                                              
-        "create mask" = "0600";
-        "directory mask" = "0700";                                                                                                        
+        "create mask" = "0660";
+        "directory mask" = "0770";                                                                                                        
         "vfs objects" = "shadow_copy2";  
 
         "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
         "delete veto files" = "yes";
       };
+    } //
+    lib.mapAttrs (shareName: shareConfig: {
+      comment = shareName;
+      path = shareConfig.path;
+      browseable = "yes";
+      "guest ok" = "no";
+      writeable = "yes";
+      "valid users" = "${lib.concatStringsSep " " (map (groupName: "@${groupName}") shareConfig.groups)}";
+      "force group" = "${lib.concatStringsSep " " shareConfig.groups}";
+      "read only" = "no";
+      "create mask" = "0660";
+      "directory mask" = "0770";
+      "vfs objects" = "shadow_copy2";
+      "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
+      "delete veto files" = "yes";
+      }) config.nas.shares;
 
-      photo = {
-        comment = "photo";
-        path = "/nas/photo";
-        browseable = "yes";
-        "guest ok" = "no";
-        writeable = "yes";
-        "valid users" = "@isaacaina";
-        "force group" = "isaacaina";
-        "read only" = "no";
-        "create mask" = "0660";
-        "directory mask" = "0770";
-        "vfs objects" = "shadow_copy2";
-
-        "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
-        "delete veto files" = "yes";
-      };
-
-      isaacaina = {
-        comment = "Isaacaina";
-        path = "/nas/isaacaina";
-        browseable = "yes";
-        "guest ok" = "no";
-        writeable = "yes";
-        "valid users" = "@isaacaina";
-        "force group" = "isaacaina";
-        "read only" = "no";
-        "create mask" = "0660";
-        "directory mask" = "0770";
-        "vfs objects" = "shadow_copy2";
-
-        "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
-        "delete veto files" = "yes";
-      };
-
-      multimedia = {
-        comment = "Multimedia";
-        path = "/nas/multimedia";
-        browseable = "yes";
-        "guest ok" = "no";
-        writeable = "yes";
-        "valid users" = "@aymerich";
-        "force group" = "aymerich";
-        "read only" = "no";
-        "create mask" = "0660";
-        "directory mask" = "0770";
-        "vfs objects" = "shadow_copy2";
-
-        "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
-        "delete veto files" = "yes";
-      };
-
-      crbmc = {
-        comment = "CRBMC";
-        path = "/nas/crbmc";
-        browseable = "yes";
-        "guest ok" = "no";
-        writeable = "yes";
-        "valid users" = "@aymerich";
-        "force group" = "aymerich";
-        "read only" = "no";
-        "create mask" = "0660";
-        "directory mask" = "0770";
-        "vfs objects" = "shadow_copy2";
-
-        "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
-        "delete veto files" = "yes";
-      };
-
-      software = {
-        comment = "Software";
-        path = "/nas/software";
-        browseable = "yes";
-        "guest ok" = "no";
-        writeable = "yes";
-        "valid users" = "@aymerich";
-        "force group" = "aymerich";
-        "read only" = "no";
-        "create mask" = "0660";
-        "directory mask" = "0770";
-        "vfs objects" = "shadow_copy2";
-
-        "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
-        "delete veto files" = "yes";
-      };
-    };
   };
 
   services.avahi = {

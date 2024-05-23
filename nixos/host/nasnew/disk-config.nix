@@ -57,7 +57,7 @@ in
     nodev."/" = {
       fsType = "tmpfs";
       mountOptions = [
-        "size=512M"
+        "size=2048M"
         "defaults"
         "mode=755"
       ];
@@ -145,11 +145,10 @@ in
              "dedup" = "on";                    
              };
           };
-          photo = {
-            type = "zfs_fs";
-            mountpoint = "/nas/photo";            
-
-          };
+          # photo = {
+          #   type = "zfs_fs";
+          #   mountpoint = "/nas/photo";
+          # };
           isaacaina = {
             type = "zfs_fs";
             mountpoint = "/nas/isaacaina";            
@@ -175,8 +174,11 @@ in
     deps = [ "users" "groups"];
     text=''
     ${lib.concatStringsSep "\n" (lib.mapAttrsToList (_: value: 
-        "chown nobody:nasservices ${value.mountpoint};
-         chmod 0770 ${value.mountpoint};"
+        ''
+        chown nobody:nasservices "${value.mountpoint}";
+        chmod 0770 "${value.mountpoint}";
+        chmod g+s "${value.mountpoint}";
+        ''
       ) 
       (lib.filterAttrs (n: v: v.mountpoint!=null) config.disko.devices.zpool.nas.datasets )
       )
@@ -193,9 +195,11 @@ in
         let
           homePath = "${config.disko.devices.zpool.nas.datasets.homes.mountpoint}/${username}";          
         in
-        "mkdir -p ${homePath};
-         chown ${username}:nasservices ${homePath};
-         chmod 0770 ${homePath};"
+        ''
+        mkdir -p "${homePath}";
+        chown ${username}:nasservices "${homePath}";
+        chmod 0770 "${homePath}";
+        ''
       ) 
       (lib.filterAttrs (n: v: v.isNormalUser==true) config.users.users)
       )

@@ -14,7 +14,7 @@
           #../../users/segator
           #../../users/daga12g
           #../../users/carles
-
+          ./shares.nix
           ./users.nix
           ./zfs.nix
           ./nextcloud.nix
@@ -25,6 +25,30 @@
           #./backup.nix
   ];
 
+  nas = {
+    shares = {
+      isaacaina = {
+        path = "/nas/isaacaina";      
+        groups = [ "isaacaina" ];        
+      };
+
+      multimedia = {
+        path = "/nas/multimedia";
+       groups = [ "aymerich" ];     
+      };
+
+      crbmc = {
+        path = "/nas/crbmc" ;
+        groups = [ "aymerich" ];        
+      };
+
+      software = {
+        path = "/nas/software" ;
+        groups = [ "aymerich" ];
+      
+      };     
+    }; 
+  };
   boot = {
       initrd.secrets = { 
         "/etc/secrets/initrd/ssh_host_ed25519_key" = lib.mkForce /persist/system/initrd/ssh_host_ed25519_key;
