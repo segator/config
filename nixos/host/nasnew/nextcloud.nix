@@ -4,12 +4,12 @@ let
   fqdn = "cloud-192.168.0.121.traefik.me";
   occ = lib.getExe config.services.nextcloud.occ;
   exifToolMemories = pkgs.exiftool.overrideAttrs (oldAttrs: rec {
-            version = "12.70";
-            src = builtins.fetchurl  {
-                url = "https://exiftool.org/Image-ExifTool-${version}.tar.gz";
-                sha256 = "sha256-TLJSJEXMPj870TkExq6uraX8Wl4kmNerrSlX3LQsr/4=";  # Update the hash accordingly
-            };
-        }); 
+        version = "12.70";
+        src = builtins.fetchurl  {
+            url = "https://exiftool.org/Image-ExifTool-${version}.tar.gz";
+            sha256 = "sha256-TLJSJEXMPj870TkExq6uraX8Wl4kmNerrSlX3LQsr/4=";  # Update the hash accordingly
+        };
+    }); 
 in
 {
     sops.secrets.nextcloud_admin_password = {
@@ -232,7 +232,14 @@ in
                    --config datadir='${dataHomesDirectory}'
 
           # Enable file sharing
-          ${occ} files_external:option 1 enable_sharing true
+          nextcloud_mounts=''$(nextcloud-occ files_external:list --output=json)
+
+          echo "''$nextcloud_mounts" | jq -c '.[]' | while read -r mount; do
+              mount_id=$(echo "$mount" | jq -r '.mount_id')
+              mount_point=$(echo "$mount" | jq -r '.mount_point')
+              echo "Enabling sharing for ''$mount_point (''$mount_id)"
+              ${occ} files_external:option ''$mount_id enable_sharing true"
+          done
           '');
 
       requires = ["postgresql.service"];
