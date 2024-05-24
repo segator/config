@@ -14,7 +14,7 @@
           #../../users/segator
           #../../users/daga12g
           #../../users/carles
-          ./shares.nix
+          ./nas_options.nix
           ./users.nix
           ./zfs.nix
           ./nextcloud.nix
@@ -26,6 +26,28 @@
   ];
 
   nas = {
+    users = {
+      daga12g = { uid = 1000; };
+      segator = { uid = 1001; };
+      carles = { uid = 1002; };
+    };
+    groups = {
+      isaacaina = {
+        gid = 1100;
+        members = [
+          "daga12g"
+          "segator"
+        ];
+      };
+      aymerich = {
+        gid = 1101;
+        members = [
+          "daga12g"
+          "segator"
+          "carles"
+        ];
+      };
+    };
     shares = {
       isaacaina = {
         path = "/nas/isaacaina";      
@@ -34,18 +56,17 @@
 
       multimedia = {
         path = "/nas/multimedia";
-       groups = [ "aymerich" ];     
+        groups = [ "aymerich" ];     
       };
 
       crbmc = {
-        path = "/nas/crbmc" ;
+        path = "/nas/crbmc";
         groups = [ "aymerich" ];        
       };
 
       software = {
-        path = "/nas/software" ;
+        path = "/nas/software";
         groups = [ "aymerich" ];
-      
       };     
     }; 
   };

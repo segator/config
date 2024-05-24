@@ -34,6 +34,7 @@ in
     acceptTerms = true;
   };
   environment.systemPackages = with pkgs; [
+    nextcloud-config
     # for nextcloud memories
     exifToolMemories
     exif
@@ -214,12 +215,25 @@ in
         # Enable cron mode (nixos by default enables the systemd cron to 5min but not enabled on the app)
         ${occ} background:cron
 
+        # Configure User Groups
+        ${lib.concatStringsSep "\n" (map (groupName: ''                        
+                    ${occ} group:list | grep -q "${groupName}" || {
+                        echo "group ${groupName} does not exists, creating..."
+                        ${occ} group:add "${groupName}"
+                    }                                        
+              '') 
+              (lib.attrNames config.nas.groups))}
         # Configure external mountpoints
       '' + (
       let
           escape = x: builtins.replaceStrings ["/"] [''\\\/''] x;
           rootMountName = "/";
           dataHomesDirectory = config.disko.devices.zpool.nas.datasets.homes.mountpoint+"/$user";
+          all_shares = config.nas.shares // {
+            "/" = {
+              path = config.disko.devices.zpool.nas.datasets.homes.mountpoint+"/$user";
+            };
+          };
         in
           ''
           ${occ} files_external:list \
@@ -238,7 +252,10 @@ in
               mount_id=$(echo "$mount" | jq -r '.mount_id')
               mount_point=$(echo "$mount" | jq -r '.mount_point')
               echo "Enabling sharing for ''$mount_point (''$mount_id)"
-              ${occ} files_external:option ''$mount_id enable_sharing true"
+              ${occ} files_external:option ''$mount_id enable_sharing true
+
+
+              nextcloud-occ files_External:applicable 1 --add-group aymerich --add-group isaacaina
           done
           '');
 
@@ -253,8 +270,7 @@ in
               let
               userPassword = username: "$(cat ${config.sops.secrets."${username}_password".path})";
               userCommands = lib.mapAttrsToList (username: _:
-                    ''
-                    
+                    ''                    
                     if ${occ} user:list | grep -q "${username}"; then
                         echo "User ${username} does exists, updating..."
                         OC_PASS="${userPassword username}" ${occ} user:resetpassword --password-from-env segator                        
@@ -264,19 +280,15 @@ in
                     fi           
                     ''
                     ) 
-                    (lib.filterAttrs (n: v: v.isNormalUser==true) config.users.users);
+                    config.nas.users;
               groupMembersCommands = groupName: members: 
                     map (member: ''
                       ${occ} group:adduser "${groupName}" "${member}"
                     '') members;
-              groupCommands = lib.mapAttrsToList (groupName: group: ''                        
-                    ${occ} group:list | grep -q "${groupName}" || {
-                        echo "group ${groupName} does not exists, creating..."
-                        ${occ} group:add "${groupName}"
-                    }                    
+              groupCommands = lib.mapAttrsToList (groupName: group: ''
                     ${lib.concatStringsSep "\n" (groupMembersCommands groupName group.members )}
               '')
-              (lib.filterAttrs (n: v: (builtins.isInt v.gid && v.gid >= 1100 && v.gid <= 1200)) config.users.groups);  
+              config.nas.groups;  
 
 
                   
@@ -285,7 +297,7 @@ in
               echo "Configuring users"
               ${lib.concatStringsSep "\n" userCommands}            
               
-              echo "Configuring groups"
+              echo "Configuring groups members"
               ${lib.concatStringsSep "\n" groupCommands}
               '');
 

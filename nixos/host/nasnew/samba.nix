@@ -87,7 +87,7 @@ in
     enable = true;
     description = "Configure samba users";
     script = ''
-    ${lib.concatStringsSep "\n" (lib.mapAttrsToList smbpasswdCommand (lib.filterAttrs (n: v: v.isNormalUser==true) config.users.users))}
+    ${lib.concatStringsSep "\n" (lib.mapAttrsToList smbpasswdCommand config.nas.users)}
     '';
 
     serviceConfig.Type = "oneshot";

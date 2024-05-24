@@ -1,12 +1,10 @@
+
+
+
 { inputs, config, pkgs, lib, ... }:
 
 let
-  usersConfig = {
-    daga12g = { uid = 1000; };
-    segator = { uid = 1001; };
-    carles = { uid = 1002; };
-  };
-
+  usersConfig = config.nas.users;
 
 
   groupsConfig = {  
@@ -14,23 +12,11 @@ let
       gid = 2000;
       members = (builtins.attrNames usersConfig) ++ lib.optionals config.services.nextcloud.enable [ "nextcloud" ];
     };
-    isaacaina = {
-      gid = 1100;
-      members = [
-        "daga12g"
-        "segator"
-      ];
+    nasusers = {
+      gid = 1999;
+      members = (builtins.attrNames usersConfig);
     };
-    aymerich = {
-      gid = 1101;
-      members = [
-        "daga12g"
-        "segator"
-        "carles"
-      ];
-    };
-  };
-
+  } // config.nas.groups;
 in
 {
 
