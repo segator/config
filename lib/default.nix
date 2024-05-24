@@ -1,4 +1,4 @@
-{inputs}:
+{inputs,...}:
 let
     default_system = "x86_64-linux";
     linuxSystems =  [
@@ -31,7 +31,6 @@ in
           inputs.sops-nix.homeManagerModules.sops        
           ../home-manager/configuration/${user}/home.nix
           ../home-manager/configuration/${user}/host/${hostname}.nix
-          { inputs.nixpkgs.config.allowUnfree = true; }
           ];
       };
 
