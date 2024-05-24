@@ -7,7 +7,6 @@
       #inputs.nixos-hardware.nixosModules.dell-xps-15-9520-nvidia
       ./hardware-configuration.nix
       ../../modules/boot
-      #./s3-patch.nix
       ../../modules/common.nix
       ../../modules/nix-sops
       ../../modules/battery
@@ -17,7 +16,7 @@
       ../../modules/vpn
       ../../modules/roche_certs  
       ../../modules/gnome
-      ../../modules/hyprland
+      #../../modules/hyprland
       ../../modules/virtualisation
       ../../modules/fprintd
       ../../modules/sshd
@@ -52,8 +51,8 @@
   #'';
   boot.kernel.sysctl = {
     #"vm.laptop_mode" = 5;
-    "kernel.nmi_watchdog" = 0;
-    "vm.dirty_writeback_centisecs" = 6000;
+    #"kernel.nmi_watchdog" = 0;
+    #"vm.dirty_writeback_centisecs" = 6000;
   };
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
