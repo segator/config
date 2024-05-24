@@ -236,14 +236,6 @@ in
           };
         in
           ''
-          ${occ} files_external:list \
-                   | grep '${rootMountName}' \
-                   | grep '${dataHomesDirectory}' \
-          || ${occ} files_external:create \
-                   '${rootMountName}' \
-                   local \
-                   null::null \
-                   --config datadir='${dataHomesDirectory}'
 
           # Enable file sharing
           nextcloud_mounts=''$(nextcloud-occ files_external:list --output=json)

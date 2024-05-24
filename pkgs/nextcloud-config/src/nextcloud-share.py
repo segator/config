@@ -36,10 +36,19 @@ for share_name, share_info in desired_shares.items():
         print(f"Share {mount_point} already exists. Checking for updates...")
         # Check if the current configuration matches the desired configuration
         current_config = current_shares_dict[mount_point]['configuration']
+        current_options = current_shares_dict[mount_point]['options']
         current_groups = current_shares_dict[mount_point]['applicable_groups']
 
         if current_config['datadir'] != path:
             print(f"Updating datadir for share {mount_point}")
+            subprocess.run([
+                *occ_command.split(), 'files_external:option',
+                str(current_shares_dict[mount_point]['mount_id']),
+                'datadir', path,                
+            ])
+        
+        if not current_options['enable_sharing']:
+            print(f"Enabling sharing for share {mount_point}")
             subprocess.run([
                 *occ_command.split(), 'files_external:option',
                 str(current_shares_dict[mount_point]['mount_id']),
@@ -73,6 +82,12 @@ for share_name, share_info in desired_shares.items():
         )
         new_mount_id = json.loads(new_mount_id_result.stdout)
         new_mount_id = next(item for item in new_mount_id if item['mount_point'] == mount_point)['mount_id']
+
+        subprocess.run([
+            *occ_command.split(), 'files_external:option',
+            str(new_mount_id),
+            'enable_sharing', 'true',                
+        ])
         
         for group in groups:
             subprocess.run([*occ_command.split(), 'files_external:applicable', str(new_mount_id), '--add-group', group])
@@ -81,4 +96,4 @@ for share_name, share_info in desired_shares.items():
 for mount_point, share in current_shares_dict.items():
     if mount_point not in [f"/{name}" for name in desired_shares.keys()]:
         print(f"Removing share {mount_point}")
-        subprocess.run([*occ_command.split(), 'files_external:delete', str(share['mount_id'])])
+        subprocess.run([*occ_command.split(), 'files_external:delete', str(share['mount_id']), "--yes"])
