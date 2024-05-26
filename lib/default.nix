@@ -49,7 +49,6 @@ in
       modules ? [],
       disko ? false,
       impermanence ? false,
-      lib,
       ...}:
 
       inputs.nixpkgs.lib.nixosSystem {
@@ -60,8 +59,8 @@ in
         };          
         modules = modules ++ [                       
           inputs.sops-nix.nixosModules.sops
-          (lib.optionals disko inputs.disko.nixosModules.disko)
-          (lib.optionals impermanence inputs.impermanence.nixosModules.impermanence)
+          (inputs.nixpkgs.lib.optionals disko inputs.disko.nixosModules.disko)
+          (inputs.nixpkgs.lib.optionals impermanence inputs.impermanence.nixosModules.impermanence)
           ../nixos/host/${hostname}/configuration.nix
           ({
             networking.hostName = hostname;
