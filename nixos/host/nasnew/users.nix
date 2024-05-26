@@ -12,19 +12,9 @@ let
       gid = 2000;
       members = (builtins.attrNames usersConfig) ++ lib.optionals config.services.nextcloud.enable [ "nextcloud" ];
     };
-    nasusers = {
-      gid = 1999;
-      members = (builtins.attrNames usersConfig);
-    };
   } // config.nas.groups;
 in
 {
-
-  sops.secrets = builtins.listToAttrs (
-    builtins.map (key: 
-      {name = "${key}_password"; value = {};}) (builtins.attrNames usersConfig
-    )
-  );
   users.users = lib.mapAttrs (username: user:      
     {
         uid = user.uid;

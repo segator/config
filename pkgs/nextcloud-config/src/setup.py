@@ -10,6 +10,8 @@ setup(
   install_requires=install_requires,
   scripts=[
     'nextcloud-share.py',
+    'nextcloud-group.py',
+    'nextcloud-user.py'
   ],  
    packages=find_packages(),
 )

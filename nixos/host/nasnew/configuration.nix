@@ -27,9 +27,9 @@
 
   nas = {
     users = {
-      daga12g = { uid = 1000; };
-      segator = { uid = 1001; };
-      carles = { uid = 1002; };
+      daga12g = { uid = 1000; passwordFile = config.sops.secrets."daga12g_password".path;};
+      segator = { uid = 1001; passwordFile = config.sops.secrets."segator_password".path;};
+      carles = { uid = 1002; passwordFile = config.sops.secrets."carles_password".path;};
     };
     groups = {
       isaacaina = {
@@ -70,6 +70,13 @@
       };     
     }; 
   };
+
+  sops.secrets = builtins.listToAttrs (
+    builtins.map (key: 
+      {name = "${key}_password"; value = {};}) (builtins.attrNames config.nas.users
+    )
+  );
+
   boot = {
       initrd.secrets = { 
         "/etc/secrets/initrd/ssh_host_ed25519_key" = lib.mkForce /persist/system/initrd/ssh_host_ed25519_key;

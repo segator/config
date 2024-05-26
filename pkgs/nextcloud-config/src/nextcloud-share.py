@@ -5,7 +5,55 @@ import yaml
 import subprocess
 import json
 
-config_file_path = os.getenv('CONFIG_PATH', 'config.yaml')
+def run_occ_command(command_args):
+    result = subprocess.run(command_args, capture_output=True, text=True)
+    return json.loads(result.stdout)
+
+def update_share_configuration(mount_id, configurations):
+    update_share_configuration_or_option('config',mount_id,configurations)
+
+def update_share_option(mount_id):
+    options = {
+        "encrypt": "true",
+        "previews": "true",
+        "enable_sharing": "true",
+        "filesystem_check_changes": 1,
+        "encoding_compatibility": "false",
+        "readonly": "false"
+    }
+    update_share_configuration_or_option('option',mount_id,options)
+
+def update_share_configuration_or_option(verb, mount_id, options):
+    for key, value in options.items():
+        subprocess.run([
+            *occ_command.split(), f'files_external:{verb}',
+            str(mount_id),
+            key, str(value)
+        ])
+
+
+def manage_share_groups(mount_id, groups):
+    current_groups = run_occ_command([
+        *occ_command.split(), 'files_external:applicable',
+        str(mount_id), '--output=json'
+    ])['groups']
+
+    groups_to_add = set(groups) - set(current_groups)
+    groups_to_remove = set(current_groups) - set(groups)
+
+    for group in groups_to_add:
+        subprocess.run([
+            *occ_command.split(), 'files_external:applicable',
+            str(mount_id), '--add-group', group
+        ])
+
+    for group in groups_to_remove:
+        subprocess.run([
+            *occ_command.split(), 'files_external:applicable',
+            str(mount_id), '--remove-group', group
+        ])
+
+config_file_path = os.getenv('CONFIG_PATH', '/etc/nextcloud-config/share-config.yaml')
 occ_command = os.getenv('OCC_COMMAND', 'sudo -u www-data php occ')
 
 with open(config_file_path, 'r') as file:
@@ -13,86 +61,38 @@ with open(config_file_path, 'r') as file:
 
 desired_shares = config['shares']
 
-result = subprocess.run(
-    [*occ_command.split(), 'files_external:list', '--output=json'],
-    capture_output=True,
-    text=True
-)
+current_shares_dict = {share['mount_point']: share for share in run_occ_command([*occ_command.split(), 'files_external:list', '--output=json'])}
 
-current_shares = json.loads(result.stdout)
-
-# Convert current shares to a dictionary for easier comparison
-current_shares_dict = {
-    share['mount_point']: share for share in current_shares
-}
-
-# Create or update shares based on configuration
 for share_name, share_info in desired_shares.items():
     mount_point = f"/{share_name}"
     path = share_info['path']
     groups = share_info['groups']
 
-    if mount_point in current_shares_dict:
-        print(f"Share {mount_point} already exists. Checking for updates...")
-        # Check if the current configuration matches the desired configuration
-        current_config = current_shares_dict[mount_point]['configuration']
-        current_options = current_shares_dict[mount_point]['options']
-        current_groups = current_shares_dict[mount_point]['applicable_groups']
+    if mount_point in current_shares_dict:        
+        current_share = current_shares_dict[mount_point]
 
-        if current_config['datadir'] != path:
+        if current_share['configuration']['datadir'] != path:
             print(f"Updating datadir for share {mount_point}")
-            subprocess.run([
-                *occ_command.split(), 'files_external:option',
-                str(current_shares_dict[mount_point]['mount_id']),
-                'datadir', path,                
-            ])
+            update_share_configuration(current_share['mount_id'], {'datadir': path})
         
-        if not current_options['enable_sharing']:
-            print(f"Enabling sharing for share {mount_point}")
-            subprocess.run([
-                *occ_command.split(), 'files_external:option',
-                str(current_shares_dict[mount_point]['mount_id']),
-                'enable_sharing', 'true',                
-            ])
+        
+        update_share_option(current_share['mount_id'])
 
-        # Update applicable groups
-        groups_to_add = set(groups) - set(current_groups)
-        groups_to_remove = set(current_groups) - set(groups)
-
-        for group in groups_to_add:
-            subprocess.run([*occ_command.split(), 'files_external:applicable', str(current_shares_dict[mount_point]['mount_id']), '--add-group', group])
-
-        for group in groups_to_remove:
-            subprocess.run([*occ_command.split(), 'files_external:applicable', str(current_shares_dict[mount_point]['mount_id']), '--remove-group', group])
+        manage_share_groups(current_share['mount_id'], groups)
     else:
         print(f"Creating new share {mount_point}")
 
         subprocess.run([
             *occ_command.split(), 'files_external:create',
-            mount_point,
-            'local',
-            'null::null',
+            mount_point, 'local', 'null::null',
             '--config', f'datadir={path}'
         ])
-        # Get the new mount ID and set groups
-        new_mount_id_result = subprocess.run(
-            [*occ_command.split(), 'files_external:list', '--output=json'],
-            capture_output=True,
-            text=True
-        )
-        new_mount_id = json.loads(new_mount_id_result.stdout)
+        new_mount_id = run_occ_command([*occ_command.split(), 'files_external:list', '--output=json'])
         new_mount_id = next(item for item in new_mount_id if item['mount_point'] == mount_point)['mount_id']
 
-        subprocess.run([
-            *occ_command.split(), 'files_external:option',
-            str(new_mount_id),
-            'enable_sharing', 'true',                
-        ])
-        
-        for group in groups:
-            subprocess.run([*occ_command.split(), 'files_external:applicable', str(new_mount_id), '--add-group', group])
+        update_share_option(new_mount_id)
+        manage_share_groups(new_mount_id, groups)
 
-# Remove shares that are not in the desired configuration
 for mount_point, share in current_shares_dict.items():
     if mount_point not in [f"/{name}" for name in desired_shares.keys()]:
         print(f"Removing share {mount_point}")

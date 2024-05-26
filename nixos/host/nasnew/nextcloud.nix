@@ -10,13 +10,15 @@ let
             sha256 = "sha256-TLJSJEXMPj870TkExq6uraX8Wl4kmNerrSlX3LQsr/4=";  # Update the hash accordingly
         };
     }); 
+
+
 in
 {
-    sops.secrets.nextcloud_admin_password = {
-        owner = "nextcloud";
-        group = "nextcloud";
-        restartUnits = [ "nextcloud-setup.service" ];
 
+  sops.secrets.nextcloud_admin_password = {
+    owner = "nextcloud";
+    group = "nextcloud";
+    restartUnits = [ "nextcloud-setup.service" ];
     };
    
 
@@ -34,7 +36,6 @@ in
     acceptTerms = true;
   };
   environment.systemPackages = with pkgs; [
-    nextcloud-config
     # for nextcloud memories
     exifToolMemories
     exif
@@ -214,42 +215,34 @@ in
 
         # Enable cron mode (nixos by default enables the systemd cron to 5min but not enabled on the app)
         ${occ} background:cron
-
-        # Configure User Groups
-        ${lib.concatStringsSep "\n" (map (groupName: ''                        
-                    ${occ} group:list | grep -q "${groupName}" || {
-                        echo "group ${groupName} does not exists, creating..."
-                        ${occ} group:add "${groupName}"
-                    }                                        
-              '') 
-              (lib.attrNames config.nas.groups))}
-        # Configure external mountpoints
-      '' + (
-      let
-          escape = x: builtins.replaceStrings ["/"] [''\\\/''] x;
-          rootMountName = "/";
-          dataHomesDirectory = config.disko.devices.zpool.nas.datasets.homes.mountpoint+"/$user";
-          all_shares = config.nas.shares // {
-            "/" = {
-              path = config.disko.devices.zpool.nas.datasets.homes.mountpoint+"/$user";
-            };
-          };
-        in
-          ''
-
-          # Enable file sharing
-          nextcloud_mounts=''$(nextcloud-occ files_external:list --output=json)
-
-          echo "''$nextcloud_mounts" | jq -c '.[]' | while read -r mount; do
-              mount_id=$(echo "$mount" | jq -r '.mount_id')
-              mount_point=$(echo "$mount" | jq -r '.mount_point')
-              echo "Enabling sharing for ''$mount_point (''$mount_id)"
-              ${occ} files_external:option ''$mount_id enable_sharing true
-
-
-              nextcloud-occ files_External:applicable 1 --add-group aymerich --add-group isaacaina
-          done
-          '');
+        ''
+        + 
+        (
+          let
+            nextcloudGroupConfig = pkgs.writeText "nextcloud-group-config.yaml" (lib.generators.toYAML {} {
+              groups = config.nas.groups;
+            });
+          in
+          '' 
+        # Configure groups
+        OCC_COMMAND="${occ}" CONFIG_PATH="${nextcloudGroupConfig}" ${pkgs.nextcloud-config}/bin/nextcloud-group.py
+        '')
+        + 
+        (
+          let
+            nextcloudShareConfig = pkgs.writeText "nextcloud-share-config.yaml" (lib.generators.toYAML {} {
+              shares = config.nas.shares // {
+                "" = { # / home user
+                  path = "/nas/homes/$user";
+                  groups = [ "nasusers" ];     
+                };
+              };
+            });
+          in
+        '' 
+        # Configure external shares
+        OCC_COMMAND="${occ}" CONFIG_PATH="${nextcloudShareConfig}" ${pkgs.nextcloud-config}/bin/nextcloud-share.py
+        '');
 
       requires = ["postgresql.service"];
       after = [ "postgresql.service" ];
@@ -258,41 +251,14 @@ in
   nextcloud-user-setup = {
       enable = true;
       description = "Configure nextcloud users";
-      script = (
-              let
-              userPassword = username: "$(cat ${config.sops.secrets."${username}_password".path})";
-              userCommands = lib.mapAttrsToList (username: _:
-                    ''                    
-                    if ${occ} user:list | grep -q "${username}"; then
-                        echo "User ${username} does exists, updating..."
-                        OC_PASS="${userPassword username}" ${occ} user:resetpassword --password-from-env segator                        
-                    else
-                        echo "User ${username} does not exists, creating..."
-                        OC_PASS="${userPassword username}" ${occ} user:add ${username} --password-from-env
-                    fi           
-                    ''
-                    ) 
-                    config.nas.users;
-              groupMembersCommands = groupName: members: 
-                    map (member: ''
-                      ${occ} group:adduser "${groupName}" "${member}"
-                    '') members;
-              groupCommands = lib.mapAttrsToList (groupName: group: ''
-                    ${lib.concatStringsSep "\n" (groupMembersCommands groupName group.members )}
-              '')
-              config.nas.groups;  
-
-
-                  
-              in 
-              ''
-              echo "Configuring users"
-              ${lib.concatStringsSep "\n" userCommands}            
-              
-              echo "Configuring groups members"
-              ${lib.concatStringsSep "\n" groupCommands}
-              '');
-
+      environment = {
+        OCC_COMMAND=occ;
+        CONFIG_PATH=pkgs.writeText "nextcloud-user-config.yaml" (lib.generators.toYAML {} {
+              groups = config.nas.groups;
+              users = config.nas.users;
+            });
+      };
+      script = "${pkgs.nextcloud-config}/bin/nextcloud-user.py"; 
       serviceConfig = {
         Type = "oneshot";
         User = "root";
