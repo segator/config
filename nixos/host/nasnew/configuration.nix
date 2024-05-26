@@ -49,6 +49,11 @@
       };
     };
     shares = {
+      homes = {
+          path = "/nas/homes";
+          groups = [ "nasusers" ];   
+          isHome = true;  
+      };
       isaacaina = {
         path = "/nas/isaacaina";      
         groups = [ "isaacaina" ];        

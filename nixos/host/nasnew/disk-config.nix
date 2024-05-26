@@ -134,37 +134,10 @@ in
             type = "zfs_fs";
             mountpoint = "/nas";
           };
-          homes = {
+        } // lib.mapAttrs (name: value: {
             type = "zfs_fs";
-            mountpoint = "/nas/homes";
-          };
-          crbmc = {
-            type = "zfs_fs";
-            mountpoint = "/nas/crbmc";            
-            options = {
-             "dedup" = "on";                    
-             };
-          };
-          # photo = {
-          #   type = "zfs_fs";
-          #   mountpoint = "/nas/photo";
-          # };
-          isaacaina = {
-            type = "zfs_fs";
-            mountpoint = "/nas/isaacaina";            
-
-          };
-          multimedia = {
-            type = "zfs_fs";
-            mountpoint = "/nas/multimedia";           
-
-          };
-          software = {
-            type = "zfs_fs";
-            mountpoint = "/nas/software";            
-
-          };
-        };
+            mountpoint = value.path;
+        }) config.nas.shares;        
       };
     };
   };
@@ -201,7 +174,7 @@ in
         chmod 0770 "${homePath}";
         ''
       ) 
-      (lib.filterAttrs (n: v: v.isNormalUser==true) config.users.users)
+      config.nas.users
       )
     }
   '';

@@ -124,8 +124,8 @@ green "Preparing root disk encryption"
 
 
 # Prompt the user to enter the password
-#get_password
-password="holahola"
+get_password
+#password="holahola"
 
 # Specify the file to save the password
 disk_key_file="$temp/disk.key"

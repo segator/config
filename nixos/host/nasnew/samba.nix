@@ -36,40 +36,22 @@ in
       shadow:snapdir = .zfs/snapshot
       vfs objects = catia acl_xattr
     '';
-    shares = {
-      homes = {
-        comment = "Home Directories";                                                                                                    
-        path = "/nas/homes/%S";
-        browseable = "no";
-        "guest ok" = "no";
-        "writeable" = "yes";
-        "valid users" = "%S";
-        "force group" = "%S";
-        "read only" = "no";                                                                                              
-        "create mask" = "0660";
-        "directory mask" = "0770";                                                                                                        
-        "vfs objects" = "shadow_copy2";  
-
-        "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
-        "delete veto files" = "yes";
-      };
-    } //
-    lib.mapAttrs (shareName: shareConfig: {
+    shares = lib.mapAttrs (shareName: shareConfig: {
       comment = shareName;
-      path = shareConfig.path;
+      path = if shareConfig.isHome then shareConfig.path + "/%S" else shareConfig.path; 
       browseable = "yes";
       "guest ok" = "no";
       writeable = "yes";
-      "valid users" = "${lib.concatStringsSep " " (map (groupName: "@${groupName}") shareConfig.groups)}";
-      "force group" = "${lib.concatStringsSep " " shareConfig.groups}";
       "read only" = "no";
       "create mask" = "0660";
       "directory mask" = "0770";
       "vfs objects" = "shadow_copy2";
       "veto files" = "/.apdisk/.DS_Store/.TemporaryItems/.Trashes/desktop.ini/ehthumbs.db/Network Trash Folder/Temporary Items/Thumbs.db/";
       "delete veto files" = "yes";
-      }) config.nas.shares;
-
+      "valid users" = if shareConfig.isHome then "%S" else "${lib.concatStringsSep " " (map (groupName: "@${groupName}") shareConfig.groups)}";
+      "force group" = if shareConfig.isHome then "%S" else "${lib.concatStringsSep " " shareConfig.groups}";
+      }
+    ) config.nas.shares;
   };
 
   services.avahi = {

@@ -10,7 +10,7 @@ def run_occ_command(command_args):
     return json.loads(result.stdout)
 
 def update_share_configuration(mount_id, configurations):
-    update_share_configuration_or_option('config',mount_id,configurations)
+    update_share_configuration_or_option('config', mount_id, configurations)
 
 def update_share_option(mount_id):
     options = {
@@ -21,7 +21,7 @@ def update_share_option(mount_id):
         "encoding_compatibility": "false",
         "readonly": "false"
     }
-    update_share_configuration_or_option('option',mount_id,options)
+    update_share_configuration_or_option('option', mount_id, options)
 
 def update_share_configuration_or_option(verb, mount_id, options):
     for key, value in options.items():
@@ -30,7 +30,6 @@ def update_share_configuration_or_option(verb, mount_id, options):
             str(mount_id),
             key, str(value)
         ])
-
 
 def manage_share_groups(mount_id, groups):
     current_groups = run_occ_command([
@@ -64,18 +63,22 @@ desired_shares = config['shares']
 current_shares_dict = {share['mount_point']: share for share in run_occ_command([*occ_command.split(), 'files_external:list', '--output=json'])}
 
 for share_name, share_info in desired_shares.items():
-    mount_point = f"/{share_name}"
+    mount_point = f"/{share_name}"    
     path = share_info['path']
     groups = share_info['groups']
+    isHome = share_info['isHome']
+    if isHome:
+        print(f"{share_name} {path} is home share")
+        mount_point = "/"
+        path = share_info['path'] + "/$user"
 
-    if mount_point in current_shares_dict:        
+    if mount_point in current_shares_dict:
         current_share = current_shares_dict[mount_point]
 
         if current_share['configuration']['datadir'] != path:
             print(f"Updating datadir for share {mount_point}")
             update_share_configuration(current_share['mount_id'], {'datadir': path})
-        
-        
+
         update_share_option(current_share['mount_id'])
 
         manage_share_groups(current_share['mount_id'], groups)
@@ -93,7 +96,10 @@ for share_name, share_info in desired_shares.items():
         update_share_option(new_mount_id)
         manage_share_groups(new_mount_id, groups)
 
+# Ensure that we handle isHome shares correctly during cleanup
+desired_mount_points = {f"/{name}" if not share_info['isHome'] else "/" for name, share_info in desired_shares.items()}
+
 for mount_point, share in current_shares_dict.items():
-    if mount_point not in [f"/{name}" for name in desired_shares.keys()]:
+    if mount_point not in desired_mount_points:
         print(f"Removing share {mount_point}")
         subprocess.run([*occ_command.split(), 'files_external:delete', str(share['mount_id']), "--yes"])

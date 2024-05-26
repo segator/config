@@ -231,12 +231,7 @@ in
         (
           let
             nextcloudShareConfig = pkgs.writeText "nextcloud-share-config.yaml" (lib.generators.toYAML {} {
-              shares = config.nas.shares // {
-                "" = { # / home user
-                  path = "/nas/homes/$user";
-                  groups = [ "nasusers" ];     
-                };
-              };
+              shares = config.nas.shares;
             });
           in
         '' 

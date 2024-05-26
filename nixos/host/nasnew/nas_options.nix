@@ -20,6 +20,10 @@ in
                     path = lib.mkOption {
                         type = str;                            
                     };
+                    isHome = lib.mkOption {
+                        type = bool;
+                        default = false;
+                    };
                     groups = lib.mkOption {
                         type = (listOf str);
                     };
