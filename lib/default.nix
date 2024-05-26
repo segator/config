@@ -44,7 +44,14 @@ in
         modules = modules ++ [ ../darwin/host/${hostname}/configuration.nix];
       };
 
-    mkNixosSystem = hostname: attrs @ {system ? default_system, modules ? [], ...}:
+    mkNixosSystem = hostname: attrs @ {
+      system ? default_system,
+      modules ? [],
+      disko ? false,
+      impermanence ? false,
+      lib,
+      ...}:
+
       inputs.nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { 
@@ -53,6 +60,8 @@ in
         };          
         modules = modules ++ [                       
           inputs.sops-nix.nixosModules.sops
+          (lib.optionals disko inputs.disko.nixosModules.disko)
+          (lib.optionals impermanence inputs.impermanence.nixosModules.impermanence)
           ../nixos/host/${hostname}/configuration.nix
           ({
             networking.hostName = hostname;

@@ -20,11 +20,10 @@
     nixosConfigurations = {
         fury = libx.mkNixosSystem "fury" { system = "x86_64-linux"; };
         xps15 = libx.mkNixosSystem "xps15" { system = "x86_64-linux"; };
-        seganas = libx.mkNixosSystem "seganas" { system = "x86_64-linux";          
-          modules = [
-            disko.nixosModules.disko
-            impermanence.nixosModules.impermanence 
-          ];
+        seganas = libx.mkNixosSystem "seganas" { 
+          system = "x86_64-linux";    
+          disko = true;
+          impermanence = true;
         };
     };              
 
