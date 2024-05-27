@@ -1,7 +1,7 @@
 keys:
   - &machine_xps15 age1uqfc83ppdychx7lnauqfg6656m6ecy72392jm3slyeal8ppw55lqe59lst
   - &machine_fury age1mqva7u3g57hjz9ptsxclnkg0hsp9v83arc3gwndcwj64jj3ryd2sva0rxg
-  - &machine_nas age1vnyyhx3c5g5k93p56qp20ufv4rl4tgj6z2x6gv7c2ryy0m8mxqys8v4p6k
+  - &machine_nas age1uxyppga3nlqwy4tjw3mv39r25d9klpjjrxa79la3hu25ra02sa7qwzw9m7
   - &user_aymerici age1qw932v4nt3muyy7lf6f2k68627huql68duzqvq7qq0tljr37cp6sjq07f9
   - &user_segator age1m4scguauntyz5zwu9n44jjqfzexaymr3jq4pu3ydfcfxe3gc2pfsfdx6ke
 creation_rules:
