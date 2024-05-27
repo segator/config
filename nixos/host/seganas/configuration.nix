@@ -122,7 +122,7 @@
   system.stateVersion = "23.05";
 
   services.openssh.enable = true;
-
+  users.users.root.initialHashedPassword = "$y$j9T$9HXjgL533c006jafVGWUQ1$u2FqTRYpoYxO5zuw7c/d.V4dIZwetRubPNciqQu54z";
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID5vRrC3yycYEP9GoKk4nm9iTf9aFMb0pAyKbp5rcEkW segator"
   ];
