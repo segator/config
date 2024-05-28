@@ -47,8 +47,6 @@ in
     mkNixosSystem = hostname: attrs @ {
       system ? default_system,
       modules ? [],
-      disko ? false,
-      impermanence ? false,
       ...}:
 
       inputs.nixpkgs.lib.nixosSystem {
@@ -59,8 +57,6 @@ in
         };          
         modules = modules ++ [                       
           inputs.sops-nix.nixosModules.sops
-          (inputs.nixpkgs.lib.optionals disko inputs.disko.nixosModules.disko)
-          (inputs.nixpkgs.lib.optionals impermanence inputs.impermanence.nixosModules.impermanence)
           ../nixos/host/${hostname}/configuration.nix
           ({
             networking.hostName = hostname;

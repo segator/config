@@ -27,9 +27,18 @@
 
   nas = {
     users = {
-      daga12g = { uid = 1000; passwordFile = config.sops.secrets."daga12g_password".path;};
-      segator = { uid = 1001; passwordFile = config.sops.secrets."segator_password".path;};
-      carles = { uid = 1002; passwordFile = config.sops.secrets."carles_password".path;};
+      daga12g = { 
+        uid = 1000; 
+        passwordFile = config.sops.secrets."daga12g_password".path;
+        };
+      segator = { 
+        uid = 1001; 
+        passwordFile = config.sops.secrets."segator_password".path;
+      };
+      carles = {
+         uid = 1002; 
+         passwordFile = config.sops.secrets."carles_password".path;
+         };
     };
     groups = {
       isaacaina = {
@@ -119,10 +128,10 @@
   };
       
   networking.hostId = "4e98920d";
-  system.stateVersion = "23.05";
+  system.stateVersion = "24.05";
 
   services.openssh.enable = true;
-  users.users.root.initialHashedPassword = "$y$j9T$9HXjgL533c006jafVGWUQ1$u2FqTRYpoYxO5zuw7c/d.V4dIZwetRubPNciqQu54z";
+  users.users.root.password = "nixos";
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID5vRrC3yycYEP9GoKk4nm9iTf9aFMb0pAyKbp5rcEkW segator"
   ];
