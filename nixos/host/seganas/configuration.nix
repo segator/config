@@ -22,7 +22,7 @@
           ./mail_telegram.nix
           ./smartd.nix
           #./nfs.nix
-          #./backup.nix
+          ./backup.nix
   ];
 
   nas = {
@@ -60,11 +60,13 @@
     shares = {
       homes = {
           path = "/nas/homes";
-          groups = [ "nasusers" ];   
+          groups = [ "nasusers" ];
+          backup = true;
           isHome = true;  
       };
       isaacaina = {
         path = "/nas/isaacaina";      
+        backup = true;
         groups = [ "isaacaina" ];        
       };
 
@@ -75,6 +77,7 @@
 
       crbmc = {
         path = "/nas/crbmc";
+        backup = true;
         groups = [ "aymerich" ];        
       };
 

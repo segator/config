@@ -27,6 +27,7 @@
       "/var/lib/samba"
       "/var/lib/onlyoffice"
       "/var/lib/rabbitmq"
+      "/var/borg/cache"
     ];
   };
 }

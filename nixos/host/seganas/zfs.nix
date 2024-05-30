@@ -1,7 +1,7 @@
 
 { inputs, config, pkgs, nixpkgs, lib, ... }:
 let
-  nas_snapshot_shares = [ "homes" "crbmc" "photo" "isaacaina" "multimedia" "software" ];
+  nas_snapshot_shares = map (share: share.path) (builtins.attrValues config.nas.shares);
 in
 {
     services.zfs.autoScrub.enable = true;
@@ -13,7 +13,7 @@ in
         interval = "hourly";
 
         datasets = builtins.listToAttrs (map (name: {
-            name = "nas/${name}";
+            inherit name;
             value = {
                 useTemplate = [ "nas" ];
             };

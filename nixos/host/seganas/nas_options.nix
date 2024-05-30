@@ -20,6 +20,10 @@ in
                     path = lib.mkOption {
                         type = str;                            
                     };
+                    backup = lib.mkOption {
+                        type = bool;
+                        default = false;
+                    };
                     isHome = lib.mkOption {
                         type = bool;
                         default = false;

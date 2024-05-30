@@ -8,12 +8,19 @@
   sops.secrets.backup_homeassistant_webhook = {
   };
 
+  programs.ssh.knownHosts."192.168.1.200" = {         
+      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+I/vuw/urVmiFuAnYcxlt8pXbecvMsfIaumiXQz+g/";
+  };
+
   services.borgmatic = {
-    enable = true;
+    enable = false;
     configurations."nas" = {
-      source_directories = [ "/nas/homes" "/nas/software" "/nas/isaacaina" ];
+      source_directories = map (share: share.path) (lib.filter (share: share.backup) (builtins.attrValues config.nas.shares)); 
       repositories = [
-        { label = "unraid-disk"; path = "ssh://root@192.168.1.200/mnt/disks/IsaacBackup/NAS/backup"; }
+        { 
+          label = "unraid-disk";
+          path = "ssh://root@192.168.1.200/mnt/user/nas_backup"; 
+        }
       ];
       exclude_patterns = [ "re:^.+\.zfs\/.+" ];
       checkpoint_interval = 300;      
@@ -24,6 +31,7 @@
       keep_weekly = 4;
       keep_monthly = 12;
       keep_yearly = 1;
+      borg_cache_directory = "/var/borg/cache";
       extra_borg_options = {
         create = "--stats --show-rc --progress";
       };
