@@ -26,6 +26,7 @@ in
             nix-tree
             py3_packages
             repl
+            deploy-rs
         ];
 
         shellHook = ''

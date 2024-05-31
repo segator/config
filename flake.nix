@@ -12,6 +12,7 @@
               disko, 
               impermanence,
               nixos-images,
+              deploy-rs,
               ... } @ inputs:
   let
     libx = import ./lib { inherit inputs; };
@@ -74,6 +75,18 @@
           ];
       }    
     );
+    deploy.nodes = {
+      seganas = libx.mkDeploy {
+        inherit (self) nixosConfigurations;
+        hostname = "seganas.lan";
+        configuration = "seganas";
+      };
+    };
+
+
+    # This is highly advised, and will prevent many possible mistakes
+    checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+
   };
 
   inputs = {
@@ -107,5 +120,7 @@
       impermanence.url = "github:nix-community/impermanence";
 
       nixos-images.url = "github:nix-community/nixos-images";
+
+      deploy-rs.url = "github:serokell/deploy-rs";
   };
 }

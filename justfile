@@ -18,8 +18,8 @@ bootstrap_apply profile server arch=default_arch:
         --flake .#{{profile}} \
         "root@{{server}}"
 
-deploy profile server:
-    nixos-rebuild switch -L --flake .#{{profile}} --target-host root@{{server}} 
+deploy server:
+    deploy .#{{server}}
 create_age_user_key user:
     age-keygen -o "./secrets/key/age_user_{{user}}_key.txt"
     @echo "Key generated at: ./secrets/key/age_user_{{user}}_key.txt"

@@ -1,7 +1,8 @@
 { self, config, lib, pkgs, ... }:
 let
   nextcloudAdminUser = "admin";
-  fqdn = "cloud-192.168.0.121.traefik.me";
+  nextcloudFqdn = "cloud.segator.es";
+  officeFqdn = "office.segator.es";
   occ = lib.getExe config.services.nextcloud.occ;
   exifToolMemories = pkgs.exiftool.overrideAttrs (oldAttrs: rec {
         version = "12.70";
@@ -19,10 +20,10 @@ in
     owner = "nextcloud";
     group = "nextcloud";
     restartUnits = [ "nextcloud-setup.service" ];
-    };
-   
+  };
 
-  #https://carjorvaz.com/posts/the-holy-grail-nextcloud-setup-made-easy-by-nixos/
+  services.cloudflare-dyndns.domains = lib.mkIf config.services.cloudflare-dyndns.enable   [ nextcloudFqdn officeFqdn ]; 
+
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [ 80 443 ];
@@ -30,8 +31,10 @@ in
   security.acme = {
     defaults = {
       email = "isaac.aymerich@gmail.com";
-      server = "https://acme-staging-v02.api.letsencrypt.org/directory";
-      # prod --> "https://acme-v02.api.letsencrypt.org/directory"
+      # Staging
+      #server = "https://acme-staging-v02.api.letsencrypt.org/directory";
+      # Prod
+      server = "https://acme-v02.api.letsencrypt.org/directory";
     };
     acceptTerms = true;
   };
@@ -57,9 +60,9 @@ in
       recommendedOptimisation = true;
       recommendedTlsSettings = true;
       virtualHosts = {
-        "${fqdn}" = {
-          forceSSL = false;
-          enableACME = false;
+        "${nextcloudFqdn}" = {
+          forceSSL = true;
+          enableACME = true;
           # From [1] this should fix downloading of big files. [2] seems to indicate that buffering
           # happens at multiple places anyway, so disabling one place should be okay.
           extraConfig = ''
@@ -77,7 +80,7 @@ in
 
     nextcloud = {
       enable = true;
-      hostName = fqdn;
+      hostName = nextcloudFqdn;
       package = pkgs.nextcloud29;
       autoUpdateApps = {
         enable = true;
@@ -92,7 +95,7 @@ in
       webfinger = true;
       # Increase the maximum file upload size to avoid problems uploading videos.
       maxUploadSize = "16G";
-      https = false;
+      https = true;
       extraAppsEnable = false;
       appstoreEnable = true;
       # extraApps = with config.services.nextcloud.package.packages.apps; {
@@ -114,7 +117,8 @@ in
       };
       phpExtraExtensions = ex: [ ex.zip ex.zlib ex.tidy ex.smbclient ];
       settings = {
-        "trusted_domains" = [ fqdn ];
+        maintenance_window_start = 4;
+        "trusted_domains" = [ nextcloudFqdn ];
         "trusted_proxies" = [ "127.0.0.1" ];
         overwriteProtocol = "http";
         "localstorage.umask" = "0007";

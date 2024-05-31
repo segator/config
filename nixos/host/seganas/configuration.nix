@@ -8,12 +8,8 @@
           ../../modules/common.nix
           ../../modules/nix-sops
           ../../modules/nix
-          ../../modules/sshd    
-
+          ../../modules/sshd
           ../../modules/grafana-agent
-          #../../users/segator
-          #../../users/daga12g
-          #../../users/carles
           ./nas_options.nix
           ./users.nix
           ./zfs.nix
@@ -23,6 +19,7 @@
           ./smartd.nix
           #./nfs.nix
           ./backup.nix
+          ./cloudflare.nix
   ];
 
   nas = {
@@ -56,6 +53,10 @@
           "carles"
         ];
       };
+      carles = {
+        gid = 1002;
+        members = [ "carles" ];
+      };
     };
     shares = {
       homes = {
@@ -78,7 +79,7 @@
       crbmc = {
         path = "/nas/crbmc";
         backup = true;
-        groups = [ "aymerich" ];        
+        groups = [ "carles" ];        
       };
 
       software = {

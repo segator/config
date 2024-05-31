@@ -63,6 +63,20 @@ in
           })
         ];
       };
+
+      mkDeploy = attrs @ {
+        hostname,
+        nixosConfigurations,
+        configuration,
+      ...}:
+      {
+        inherit hostname;
+        profiles.system = {          
+          sshUser = "root";
+          user = "root";
+          path = inputs.deploy-rs.lib.${nixosConfigurations.${configuration}.pkgs.system}.activate.nixos nixosConfigurations.${configuration};
+        };        
+      };
     
     aarch64_darwin_pkgs = import inputs.nixpkgs {
       system = "aarch64-darwin";
