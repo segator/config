@@ -13,7 +13,7 @@
   };
 
   services.borgmatic = {
-    enable = false;
+    enable = true;
     configurations."nas" = {
       source_directories = map (share: share.path) (lib.filter (share: share.backup) (builtins.attrValues config.nas.shares)); 
       repositories = [
