@@ -77,9 +77,9 @@ in
                     job_name = logJob.name;
                     static_configs = [{
                       targets = [ "localhost" ];
-                      journal = {
-                        labels.job = logJob.name;
-                        labels."__path__" = logJob.path;
+                      labels = {
+                        job = logJob.name;
+                        "__path__" = logJob.path;
                       };
                     }];                      
                   }

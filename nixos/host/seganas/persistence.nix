@@ -35,6 +35,6 @@
     ++
     (lib.optionals config.services.onlyoffice.enable ["/var/lib/onlyoffice" ])
     ++
-    (map (borgConfig: borgConfig.borg_cache_directory)  (builtins.attrValues config.services.borgmatic.configurations));   
+    (map (borgConfig: borgConfig.borg_base_directory)  (builtins.attrValues config.services.borgmatic.configurations));   
   };
 }

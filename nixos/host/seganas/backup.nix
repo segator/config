@@ -12,6 +12,11 @@
       publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+I/vuw/urVmiFuAnYcxlt8pXbecvMsfIaumiXQz+g/";
   };
 
+  environment.systemPackages = with pkgs; [
+    xxHash
+  ];
+  
+
   services.borgmatic = {
     enable = true;
     configurations."nas" = {
@@ -31,14 +36,27 @@
       keep_weekly = 4;
       keep_monthly = 12;
       keep_yearly = 1;
-      borg_cache_directory = "/var/borg/cache";
+      borg_base_directory = "/var/borg";
       extra_borg_options = {
-        create = "--stats --show-rc --progress";
+        #create = "--stats --show-rc --progress";
       };
-      checks = [{
+      checks = [
+      {
         name = "repository";
-        frequency = "always";
-      }];
+        frequency = "2 weeks";
+      }
+      {
+        name = "archives";
+        frequency = "2 months";
+      }
+      {
+        name = "spot";
+        count_tolerance_percentage = 10;
+        data_sample_percentage = 1;
+        data_tolerance_percentage = 0.5;
+        frequency = "3 months";
+      }
+      ];
       after_backup = [
         "${pkgs.curl}/bin/curl -fss -m 10 --retry 5 -d 'backup completed' -o /dev/null $(${pkgs.coreutils}/bin/cat ${config.sops.secrets.backup_homeassistant_webhook.path})" ];
       after_check = [

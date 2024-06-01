@@ -19,7 +19,7 @@ bootstrap_apply profile server arch=default_arch:
         "root@{{server}}"
 
 deploy server:
-    deploy .#{{server}}
+    deploy --auto-rollback false .#{{server}}
 create_age_user_key user:
     age-keygen -o "./secrets/key/age_user_{{user}}_key.txt"
     @echo "Key generated at: ./secrets/key/age_user_{{user}}_key.txt"
