@@ -15,7 +15,7 @@
   services.borgmatic = {
     enable = true;
     configurations."nas" = {
-      source_directories = map (share: share.path) (lib.filter (share: share.backup) (builtins.attrValues config.nas.shares)); 
+      source_directories = config.nas.backup.sourceDirectories;
       repositories = [
         { 
           label = "unraid-disk";

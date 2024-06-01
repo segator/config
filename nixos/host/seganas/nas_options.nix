@@ -50,6 +50,18 @@ in
             type = groupType;
         };
 
+        backup = lib.mkOption {
+            type =  with lib.types; (submodule {
+                options = {
+                    sourceDirectories = lib.mkOption {
+                        type = (listOf str);
+                        default = [];
+                        description = "List of directories to be backed up.";
+                    };                    
+                };
+            }); 
+        };
+
     };
     config = {
         nas = {
@@ -61,6 +73,8 @@ in
                 };  
             }
             ];
+
+            backup.sourceDirectories = lib.mkMerge [ (map (share: share.path) (lib.filter (share: share.backup) (builtins.attrValues config.nas.shares)))];
         };
     };
 }

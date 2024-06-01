@@ -11,10 +11,18 @@ let
             sha256 = "sha256-TLJSJEXMPj870TkExq6uraX8Wl4kmNerrSlX3LQsr/4=";  # Update the hash accordingly
         };
     }); 
+  databaseName = "nextcloud";
+  nextcloudDataDir = config.services.nextcloud.datadir + "/data";
 
 
 in
 {
+  my.monitoring.logs = [{
+      name = "nextcloud";
+      path = nextcloudDataDir + "/nextcloud.log";
+    }];
+
+  nas.backup.sourceDirectories = [nextcloudDataDir config.services.postgresqlBackup.location];
 
   sops.secrets.nextcloud_admin_password = {
     owner = "nextcloud";
@@ -22,7 +30,7 @@ in
     restartUnits = [ "nextcloud-setup.service" ];
   };
 
-  services.cloudflare-dyndns.domains = lib.mkIf config.services.cloudflare-dyndns.enable   [ nextcloudFqdn officeFqdn ]; 
+  services.cloudflare-dyndns.domains = [ nextcloudFqdn officeFqdn ]; 
 
   networking.firewall = {
     enable = true;
@@ -162,7 +170,7 @@ in
 
         dbtype = "pgsql";
         dbhost = "/run/postgresql";
-        dbname = "nextcloud";
+        dbname = databaseName;
       };
     };
     phpfpm.pools = {
@@ -173,8 +181,13 @@ in
     postgresql = {
       enable = true;
       package = pkgs.postgresql_16;
-      ensureDatabases = [ "nextcloud" ];
+      ensureDatabases = [ databaseName ];
 
+    };
+
+    postgresqlBackup = {
+      enable = true;
+      databases = [ databaseName ];
     };
     onlyoffice = {
       enable = false;

@@ -20,14 +20,19 @@
 
   environment.persistence."/persist/services" = {
     hideMounts = false;
-    directories = [
-      "/var/lib/acme"
-      "/var/lib/nextcloud"
-      "/var/lib/postgresql"
-      "/var/lib/samba"
-      "/var/lib/onlyoffice"
-      "/var/lib/rabbitmq"
-      "/var/borg/cache"
-    ];
+    directories = 
+    (lib.optionals ((lib.attrNames config.security.acme.certs)!=[]) ["/var/lib/acme"])
+    ++ 
+    (lib.optionals config.services.nextcloud.enable ["/var/lib/nextcloud"])
+    ++
+    (lib.optionals config.services.postgresql.enable ["/var/lib/postgresql"])
+    ++
+    (lib.optionals config.services.samba.enable ["/var/lib/samba"])
+    ++
+    (lib.optionals config.services.rabbitmq.enable ["/var/lib/rabbitmq"])
+    ++
+    (lib.optionals config.services.onlyoffice.enable ["/var/lib/onlyoffice" ])
+    ++
+    (map (borgConfig: borgConfig.borg_cache_directory)  (builtins.attrValues config.services.borgmatic.configurations));   
   };
 }
