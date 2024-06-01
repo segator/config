@@ -5,17 +5,33 @@ in
 {
     options.my.monitoring = {
         logs = lib.mkOption {
-            type = with lib.types; listOf (submodule {
-                options = {
-                    path = lib.mkOption {
-                        type = str;                            
-                    };
-                    name = lib.mkOption {
-                        type = str;
-                        default = false;
-                    };
-                };
-            });
+          type = with lib.types; listOf (submodule {
+            options = {
+              path = lib.mkOption {
+                  type = str;                            
+              };
+              name = lib.mkOption {
+                  type = str;
+                  default = false;
+              };
+            };
+          });
+        };
+        prom-exporters = lib.mkOption {
+          type = with lib.types; listOf (submodule {
+            options = {
+              name = lib.mkOption {
+                  type = str;                            
+              };
+              target = lib.mkOption {
+                  type = str;
+              };
+              scheme = lib.mkOption {
+                  type = str;
+                  default = "http";
+              };
+            };
+          });
         };
     };
     config = {
@@ -57,16 +73,31 @@ in
         };
 
         services.grafana-agent.settings = {
-          metrics.global = {
-            remote_write = [{
-              url = "\${METRICS_REMOTE_WRITE_URL}";
-              basic_auth.username = "\${METRICS_REMOTE_WRITE_USERNAME}";
-              basic_auth.password_file = "\${CREDENTIALS_DIRECTORY}/metrics_remote_write_password";
+          metrics= {
+            global = {
+              remote_write = [{
+                url = "\${METRICS_REMOTE_WRITE_URL}";
+                basic_auth.username = "\${METRICS_REMOTE_WRITE_USERNAME}";
+                basic_auth.password_file = "\${CREDENTIALS_DIRECTORY}/metrics_remote_write_password";
+              }];
+
+              scrape_interval = "60s";
+            };
+            configs = [{
+              name = "prometheus_scrape_configs";
+              scrape_configs = (map (promJob: {
+                job_name = promJob.name;
+                inherit (promJob) scheme;
+                static_configs = [{
+                  targets = [promJob.target];
+                  labels = {
+                    job = promJob.name;
+                    host = config.networking.hostName;
+                  };
+                }];
+              }) config.my.monitoring.prom-exporters); 
             }];
-
-            scrape_interval = "60s";
           };
-
           logs.configs = [
             {
             name = "default";
@@ -79,6 +110,7 @@ in
                       targets = [ "localhost" ];
                       labels = {
                         job = logJob.name;
+                        host = config.networking.hostName;
                         "__path__" = logJob.path;
                       };
                     }];                      
@@ -123,11 +155,6 @@ in
               }
             ];
 
-
-
-
-
-
             positions.filename = "\${STATE_DIRECTORY}/loki_positions.yaml";
             clients = [{
               url = "\${LOGS_REMOTE_WRITE_URL}";
@@ -140,6 +167,11 @@ in
         };
 
         services.grafana-agent.enable = true;
-
+        systemd.services.grafana-agent = {
+          serviceConfig = {
+            DynamicUser = lib.mkForce false;
+            User = "root";
+          };
+        }; 
     };
 }

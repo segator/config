@@ -21,12 +21,26 @@ in
       name = "nextcloud";
       path = nextcloudDataDir + "/nextcloud.log";
     }];
+  services.prometheus.exporters.nextcloud = {
+    enable = true;
+    username = nextcloudAdminUser;
+    passwordFile = config.sops.secrets.nextcloud_admin_password.path;
+    url = "https://${config.services.nextcloud.hostName}";
+    group = "nextcloud";
+  };
+  my.monitoring.prom-exporters = [
+    {
+      name = "nextcloud-exporter";
+      target = "127.0.0.1:${builtins.toString config.services.prometheus.exporters.nextcloud.port}";
+    }
+  ];
 
-  nas.backup.sourceDirectories = [nextcloudDataDir config.services.postgresqlBackup.location];
+  nas.backup.sourceDirectories = [nextcloudDataDir];
 
   sops.secrets.nextcloud_admin_password = {
     owner = "nextcloud";
     group = "nextcloud";
+    mode = "0440";
     restartUnits = [ "nextcloud-setup.service" ];
   };
 
@@ -64,9 +78,6 @@ in
 
   services = {
     nginx = {
-      recommendedGzipSettings = true;
-      recommendedOptimisation = true;
-      recommendedTlsSettings = true;
       virtualHosts = {
         "${nextcloudFqdn}" = {
           forceSSL = true;
@@ -179,14 +190,10 @@ in
       nextcloud.phpEnv.PATH = lib.mkForce "/run/wrappers/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/bin:/bin:/etc/profiles/per-user/nextcloud/bin";
     };
     postgresql = {
-      enable = true;
-      package = pkgs.postgresql_16;
       ensureDatabases = [ databaseName ];
-
     };
 
     postgresqlBackup = {
-      enable = true;
       databases = [ databaseName ];
     };
     onlyoffice = {

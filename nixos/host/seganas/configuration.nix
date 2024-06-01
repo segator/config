@@ -13,6 +13,8 @@
           ./nas_options.nix
           ./users.nix
           ./zfs.nix
+          ./nginx.nix
+          ./postgresql.nix
           ./nextcloud.nix
           ./samba.nix
           ./mail_telegram.nix
