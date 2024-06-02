@@ -138,7 +138,7 @@
   system.stateVersion = "24.05";
 
   services.openssh.enable = true;
-  users.users.root.password = "nixos";
+  #users.users.root.password = "nixos";
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID5vRrC3yycYEP9GoKk4nm9iTf9aFMb0pAyKbp5rcEkW segator"
   ];
