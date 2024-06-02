@@ -171,7 +171,9 @@ in
         "memories.vod.ffmpeg" = lib.getExe pkgs.ffmpeg-headless;
         "memories.vod.ffprobe" = "${pkgs.ffmpeg-headless}/bin/ffprobe";
         recognize = {
-          nice_binary = lib.getExe' pkgs.coreutils "nice";
+          #Not seems to work :( for now I set it by hand in the UI, ugly..
+          #nice_binary = lib.getExe' pkgs.coreutils "nice";
+          #node_binary = lib.getExe' pkgs.nodejs_20 "node";
         };
 
       };
@@ -214,10 +216,11 @@ in
         ${occ} app:install recognize || ${occ} app:enable recognize
 
 
+
         # Memories 
         #${occ} memories:places-setup
 
-        #  Recognize configuration
+        # Recognize configuration
         if [[ ! -e "${config.services.nextcloud.datadir}/store-apps/recognize/node_modules/@tensorflow/tfjs-node/lib/napi-v8/tfjs_binding.node" ]]; then
             if [[ -d "${config.services.nextcloud.datadir}/store-apps/recognize/node_modules/" ]]; then
               cd "${config.services.nextcloud.datadir}/store-apps/recognize/node_modules/"
@@ -228,6 +231,7 @@ in
         if [ -z "$(ls -A "${config.services.nextcloud.datadir}/store-apps/recognize/models")" ]; then
           ${occ} recognize:download-models
         fi
+
         # Disable default apps
         ${occ} app:disable dashboard
         ${occ} app:disable comments
@@ -307,3 +311,6 @@ in
     };
   };
 }
+
+
+

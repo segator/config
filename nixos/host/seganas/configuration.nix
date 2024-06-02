@@ -38,7 +38,11 @@
       carles = {
          uid = 1002; 
          passwordFile = config.sops.secrets."carles_password".path;
-         };
+      };
+      charo = {
+        uid = 1003;
+        passwordFile = config.sops.secrets."charo_password".path;
+      };
     };
     groups = {
       isaacaina = {
@@ -54,6 +58,7 @@
           "daga12g"
           "segator"
           "carles"
+          "charo"
         ];
       };
       carles = {

@@ -78,7 +78,7 @@
     deploy.nodes = {
       seganas = libx.mkDeploy {
         inherit (self) nixosConfigurations;
-        hostname = "seganas.lan";
+        hostname = "192.168.0.110";
         configuration = "seganas";
       };
     };
