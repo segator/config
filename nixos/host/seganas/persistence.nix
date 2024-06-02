@@ -23,11 +23,11 @@
     directories = 
     (lib.optionals ((lib.attrNames config.security.acme.certs)!=[]) ["/var/lib/acme"])
     ++ 
-    (lib.optionals config.services.nextcloud.enable [config.services.nextcloud.datadir])
+    (lib.optionals config.services.nextcloud.enable [{ directory = config.services.nextcloud.datadir; user = "nextcloud"; group = "nextcloud"; mode = "u=rwx,g=rwx,o="; }])
     ++
-    (lib.optionals config.services.postgresql.enable [config.services.postgresql.dataDir])
+    (lib.optionals config.services.postgresql.enable [{ directory = config.services.postgresql.dataDir; user = "postgres"; group = "postgres"; mode = "u=rwx,g=rwx,o="; }])
     ++
-    (lib.optionals config.services.postgresqlBackup.enable [config.services.postgresqlBackup.location])
+    (lib.optionals config.services.postgresqlBackup.enable [{ directory = config.services.postgresqlBackup.location; user = "postgres"; group = "postgres"; mode = "u=rwx,g=rwx,o="; }])
     ++
     (lib.optionals config.services.samba.enable ["/var/lib/samba"])
     ++
@@ -35,6 +35,7 @@
     ++
     (lib.optionals config.services.onlyoffice.enable ["/var/lib/onlyoffice" ])
     ++
-    (map (borgConfig: borgConfig.borg_base_directory)  (builtins.attrValues config.services.borgmatic.configurations));   
+    (map (borgConfig: borgConfig.borg_base_directory)  (builtins.attrValues config.services.borgmatic.configurations))
+    ++ [ "/var/kopia"];   
   };
 }

@@ -20,7 +20,8 @@
           ./mail_telegram.nix
           ./smartd.nix
           #./nfs.nix
-          ./backup.nix
+          ./borgbackup.nix
+          #./kopiabackup.nix
           ./cloudflare.nix
   ];
 
