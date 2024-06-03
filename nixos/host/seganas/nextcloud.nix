@@ -211,9 +211,11 @@ in
         ${occ} app:install suspicious_login || ${occ} app:enable suspicious_login
         ${occ} app:install bruteforcesettings || ${occ} app:enable bruteforcesettings
         ${occ} app:install tasks || ${occ} app:enable tasks
+        #${occ} app:install photos || ${occ} app:enable photos
         ${occ} app:install memories || ${occ} app:enable memories
         ${occ} app:install previewgenerator || ${occ} app:enable previewgenerator
         ${occ} app:install recognize || ${occ} app:enable recognize
+        
 
 
 
@@ -235,7 +237,7 @@ in
         # Disable default apps
         ${occ} app:disable dashboard
         ${occ} app:disable comments
-        ${occ} app:disable photos
+        #${occ} app:disable photos
         ${occ} app:disable activity
 
         # Missing indices
