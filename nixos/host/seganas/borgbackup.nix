@@ -15,6 +15,12 @@
   environment.systemPackages = with pkgs; [
     xxHash
   ];
+
+  
+  environment.shellAliases = {
+    # required for spot check
+    xxh64sum = "xxhsum -H1";
+  };
   
 
   services.borgmatic = {
