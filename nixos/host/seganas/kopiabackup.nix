@@ -1,94 +1,21 @@
 
 { inputs, config, pkgs, nixpkgs, lib, ... }:
 {
-
-  sops.secrets.backup_homeassistant_webhook = {
+  
+  #sops.secrets.backup_homeassistant_webhook = {
+  #};
+  sops.secrets."kopiabackup-id_25519" = {
+    sopsFile = ../../../secrets/common/hzt-storagebox-id_25519;
+    format = "binary";
   };
 
-  programs.ssh.knownHosts."u399475.your-storagebox.de" = {         
-      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs";
-  };
-  rm /root/.ssh/known_hosts
 
-}
+  programs.ssh.knownHostsFiles = [
+    (pkgs.writeText "hzt-storagebox.keys" ''
+    [u399475.your-storagebox.de]:23 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs
+    [u399475.your-storagebox.de]:23 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5EB5p/5Hp3hGW1oHok+PIOH9Pbn7cnUiGmUEBrCVjnAw+HrKyN8bYVV0dIGllswYXwkG/+bgiBlE6IVIBAq+JwVWu1Sss3KarHY3OvFJUXZoZyRRg/Gc/+LRCE7lyKpwWQ70dbelGRyyJFH36eNv6ySXoUYtGkwlU5IVaHPApOxe4LHPZa/qhSRbPo2hwoh0orCtgejRebNtW5nlx00DNFgsvn8Svz2cIYLxsPVzKgUxs8Zxsxgn+Q/UvR7uq4AbAhyBMLxv7DjJ1pc7PJocuTno2Rw9uMZi1gkjbnmiOh6TTXIEWbnroyIhwc8555uto9melEUmWNQ+C+PwAK+MPw==
+    [u399475.your-storagebox.de]:23 ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAGK0po6usux4Qv2d8zKZN1dDvbWjxKkGsx7XwFdSUCnF19Q8psHEUWR7C/LtSQ5crU/g+tQVRBtSgoUcE8T+FWp5wBxKvWG2X9gD+s9/4zRmDeSJR77W6gSA/+hpOZoSE+4KgNdnbYSNtbZH/dN74EG7GLb/gcIpbUUzPNXpfKl7mQitw==
+    '')
+  ];
 
-export KOPIA_PASSWORD="dddddddddddddddddddddd"
-export KOPIA_CACHE_DIRECTORY="/var/kopia/cache"
-export KOPIA_LOG_DIR="/var/kopia/log"
-
-kopia repository connect sftp --host u399475.your-storagebox.de --username u399475 --no-check-for-updates --no-use-keyring --no-persist-credentials  --known-hosts=/root/.ssh/known_hosts --port 23  --path backups/NAS
-kopia snapshot create /nas/...
-kopia snapshot verify --verify-files-percent=2 --file-parallelism=10 --parallel=10
-      
-
-Flags:
-      --[no-]help                Show context-sensitive help (also try --help-long and --help-man).
-      --[no-]version             Show application version.
-      --log-file=LOG-FILE        Override log file.
-      --log-dir="/root/.cache/kopia"
-                                 Directory where log files should be written. ($KOPIA_LOG_DIR)
-      --log-level=info           Console log level
-      --file-log-level=debug     File log level
-      --[no-]help-full           Show help for all commands, including hidden
-      --config-file="repository.config"
-                                 Specify the config file to use ($KOPIA_CONFIG_PATH)
-  -p, --password=PASSWORD        Repository password. ($KOPIA_PASSWORD)
-      --[no-]persist-credentials
-                                 Persist credentials ($KOPIA_PERSIST_CREDENTIALS_ON_CONNECT)
-      --[no-]use-keyring         Use Gnome Keyring for storing repository password. ($KOPIA_USE_KEYRING)
-      --cache-directory=PATH     Cache directory ($KOPIA_CACHE_DIRECTORY)
-      -
-      --[no-]check-for-updates   Periodically check for Kopia updates on GitHub ($KOPIA_CHECK_FOR_UPDATES)
-      --[no-]readonly            Make repository read-only to avoid accidental changes
-      --description=DESCRIPTION  Human-readable description of the repository
-      --[no-]enable-actions      Allow snapshot actions
-      --path=PATH                Path to the repository in the SFTP/SSH server
-      --host=HOST                SFTP/SSH server hostname
-      --port=22                  SFTP/SSH server port
-      --username=USERNAME        SFTP/SSH server username
-      --sftp-password=SFTP-PASSWORD
-                                 SFTP/SSH server password
-      --keyfile=KEYFILE          path to private key file for SFTP/SSH server
-      --key-data=KEY-DATA        private key data
-      --known-hosts=KNOWN-HOSTS  path to known_hosts file
-      --known-hosts-data=KNOWN-HOSTS-DATA
-                                 known_hosts file entries
-      --[no-]embed-credentials   Embed key and known_hosts in Kopia configuration
-      --[no-]external            Launch external passwordless SSH command
-      --ssh-command="ssh"        SSH command
-      --ssh-args=SSH-ARGS        Arguments to external SSH command
-      --[no-]flat                Use flat directory structure
-      --max-download-speed=BYTES_PER_SEC
-                                 Limit the download speed.
-      --max-upload-speed=BYTES_PER_SEC
-                                 Limit the upload speed.
-
-
-  repository.config
-  {
-  "storage": {
-    "type": "sftp",
-    "config": {
-      "path": "backups/NAS",
-      "host": "dddddddddddddddddddddddddddddd",
-      "port": 23,
-      "username": "xxxxxxxxxxxxx",
-      "password": "zzzzzzzzzzzzzzzzzzz",
-      "knownHostsFile": "/root/.ssh/known_hosts",
-      "externalSSH": false,
-      "sshCommand": "ssh",
-      "dirShards": null
-    }
-  },
-  "caching": {
-    "cacheDirectory": "../../../var/kopia/cache",
-    "maxCacheSize": 5242880000,
-    "maxMetadataCacheSize": 5242880000,
-    "maxListCacheDuration": 30
-  },
-  "hostname": "seganas",
-  "username": "root",
-  "description": "a nice description",
-  "enableActions": false,
-  "formatBlobCacheDuration": 900000000000
 }

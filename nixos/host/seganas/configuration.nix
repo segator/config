@@ -21,7 +21,7 @@
           ./smartd.nix
           #./nfs.nix
           ./borgbackup.nix
-          #./kopiabackup.nix
+          ./kopiabackup.nix
           ./cloudflare.nix
   ];
 

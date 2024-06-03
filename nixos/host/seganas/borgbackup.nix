@@ -49,7 +49,7 @@
       checks = [
       {
         name = "repository";
-        frequency = "2 weeks";
+        frequency = "1 month";
       }
       {
         name = "archives";
@@ -60,7 +60,7 @@
         count_tolerance_percentage = 10;
         data_sample_percentage = 1;
         data_tolerance_percentage = 0.5;
-        frequency = "3 months";
+        frequency = "1 month";
       }
       ];
       after_backup = [
