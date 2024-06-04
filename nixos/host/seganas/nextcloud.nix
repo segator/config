@@ -261,7 +261,23 @@ in
         (
           let
             nextcloudShareConfig = pkgs.writeText "nextcloud-share-config.yaml" (lib.generators.toYAML {} {
-              shares = config.nas.shares;
+              shares =  
+                (lib.filterAttrs (name: attrs: !attrs.isHome) config.nas.shares) 
+                // 
+                (
+                  let
+                    homeShares = lib.filterAttrs (name: attrs: attrs.isHome) config.nas.shares;
+                    homeBasePath = if homeShares == {} then throw "No home share found with isHome=true" else (lib.head (lib.attrValues homeShares)).path;
+                  in
+                  :p lib.listToAttrs (map (user: {
+                    name = "${user}Home";
+                    value = {
+                      path = "${homeBasePath}/${user}";
+                      groups = [ user ];
+                      isHome = "true";
+                    };
+                  }) (builtins.attrNames config.nas.users))                  
+                );
             });
           in
         '' 

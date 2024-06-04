@@ -61,10 +61,6 @@
           "charo"
         ];
       };
-      carles = {
-        gid = 1002;
-        members = [ "carles" ];
-      };
     };
     shares = {
       homes = {
@@ -81,7 +77,7 @@
 
       multimedia = {
         path = "/nas/multimedia";
-        groups = [ "aymerich" ];     
+        groups = [ "isaacaina" ];     
       };
 
       crbmc = {
@@ -92,7 +88,7 @@
 
       software = {
         path = "/nas/software";
-        groups = [ "aymerich" ];
+        groups = [ "isaacaina" ];
       };     
     }; 
   };

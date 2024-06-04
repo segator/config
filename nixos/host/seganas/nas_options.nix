@@ -72,6 +72,12 @@ in
                     members = (builtins.attrNames config.nas.users);
                 };  
             }
+            # We create groups per each user
+            (lib.mapAttrs(name: value: 
+            {
+                gid = value.uid;
+                members = [name];
+            }) config.nas.users)
             ];
 
             backup.sourceDirectories = lib.mkMerge [ (map (share: share.path) (lib.filter (share: share.backup) (builtins.attrValues config.nas.shares)))];

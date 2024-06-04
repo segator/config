@@ -55,13 +55,13 @@
         name = "archives";
         frequency = "2 months";
       }
-      {
-        name = "spot";
-        count_tolerance_percentage = 10;
-        data_sample_percentage = 1;
-        data_tolerance_percentage = 0.5;
-        frequency = "1 month";
-      }
+      # {
+      #   name = "spot";
+      #   count_tolerance_percentage = 10;
+      #   data_sample_percentage = 1;
+      #   data_tolerance_percentage = 0.5;
+      #   frequency = "1 month";
+      # }
       ];
       after_backup = [
         "${pkgs.curl}/bin/curl -fss -m 10 --retry 5 -d 'backup completed' -o /dev/null $(${pkgs.coreutils}/bin/cat ${config.sops.secrets.backup_homeassistant_webhook.path})" ];
