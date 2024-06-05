@@ -2,8 +2,10 @@
 { inputs, config, pkgs, nixpkgs, lib, ... }:
 {
   
-  #sops.secrets.backup_homeassistant_webhook = {
-  #};
+  environment.systemPackages = with pkgs; [
+    kopia
+  ];
+
   sops.secrets."kopiabackup-id_25519" = {
     sopsFile = ../../../secrets/common/hzt-storagebox-id_25519;
     format = "binary";

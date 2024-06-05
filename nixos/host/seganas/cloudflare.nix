@@ -19,4 +19,9 @@
         proxied = false;
         apiTokenFile = config.sops.templates."cloudflare-dyndns-secrets".path;
     };
+
+    environment.systemPackages = with pkgs; [
+        screen
+    ];
+
 }    
