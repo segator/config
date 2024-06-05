@@ -23,6 +23,7 @@
           ./borgbackup.nix
           ./kopiabackup.nix
           ./cloudflare.nix
+          ./fail2ban.nix
   ];
 
   nas = {
