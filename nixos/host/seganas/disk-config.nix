@@ -38,8 +38,24 @@ in
       };
     };
 
-    disk.nas = {
+    disk.sdb = {
       device = "/dev/sdb"; # /dev/disk/by-id/ata-Samsung_SSD_860_EVO_500GB_S3Z1NB0K303456L"
+      type = "disk";
+      content = {
+        type = "gpt";
+        partitions = {
+          nas = {
+            size = "100%";
+            content = {
+              type = "zfs";
+              pool = "nas";
+            };
+          };          
+        };
+      };
+    };
+      disk.sdc = {
+      device = "/dev/sdc"; # /dev/disk/by-id/ata-Samsung_SSD_860_EVO_500GB_S3Z1NB0K303456L"
       type = "disk";
       content = {
         type = "gpt";
@@ -82,13 +98,6 @@ in
           # after disko creates the encrypted volume we switch to prompt for next boots
           zfs set keylocation="prompt" "zroot";          
         '';
-
-        # postMountHook = ''
-        #     mkdir -p /mnt/persist/system/var/lib/nixos
-        #     mkdir -p /mnt/persist/system/etc/nixos
-        #     mkdir -p /mnt/persist/system/var/log
-        #     mkdir -p /mnt/persist/system/var/lib/systemd/coredump
-        #     '';
         datasets = {
           # root = {
           #   type = "zfs_fs";
@@ -111,7 +120,7 @@ in
 
       nas = {
         type = "zpool";
-        mode = ""; # mirror
+        mode = "mirror";
         rootFsOptions = {
           mountpoint = "none";
           acltype = "posixacl";
