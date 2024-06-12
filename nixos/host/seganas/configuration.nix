@@ -136,6 +136,12 @@
     };
   };
       
+
+  fileSystems."/ceph" = { 
+    device = "192.168.0.254,192.168.0.252,192.168.0.250:/";
+    fsType = "ceph";
+    options = "name=nas-client1,secretfile=/persist/system/nas-client1.key";
+  };
   networking.hostId = "4e98920d";
   system.stateVersion = "24.05";
 
