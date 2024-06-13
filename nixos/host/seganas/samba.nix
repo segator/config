@@ -36,7 +36,28 @@ in
       shadow:snapdir = .zfs/snapshot
       vfs objects = catia acl_xattr
     '';
-    shares = lib.mapAttrs (shareName: shareConfig: {
+    shares = {
+      ceph = {
+        path = "/ceph";
+        "guest ok" = "no";
+        writeable = "yes";
+        "read only" = "no";
+        "create mask" = "0660";
+        "directory mask" = "0770";
+        "vfs objects" = "shadow_copy2";
+        "valid users" = "@isaacaina";
+      };
+      cephhdd = {
+        path = "/cephhdd";
+        "guest ok" = "no";
+        writeable = "yes";
+        "read only" = "no";
+        "create mask" = "0660";
+        "directory mask" = "0770";
+        "vfs objects" = "shadow_copy2";
+        "valid users" = "@isaacaina";
+      };
+      } // lib.mapAttrs (shareName: shareConfig: {
       comment = shareName;
       path = if shareConfig.isHome then shareConfig.path + "/%S" else shareConfig.path; 
       browseable = "yes";

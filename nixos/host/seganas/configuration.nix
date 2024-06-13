@@ -136,11 +136,24 @@
     };
   };
       
+  environment.systemPackages = with pkgs; [ ceph fio];
+  # To generate the secret
+  # ceph fs authorize <pool-name> client.<client-name> / rw
+  # fileSystems."/ceph" = { 
+  #   device = "192.168.0.254,192.168.0.252:/";
+  #   fsType = "ceph";
+  #   options = ["name=nas-client1" "secretfile=/persist/system/nas-client1.key" ];
+  # };
 
-  fileSystems."/ceph" = { 
-    device = "192.168.0.254,192.168.0.252,192.168.0.250:/";
+    fileSystems."/ceph" = { 
+    device = "192.168.0.250,192.168.0.252,192.168.0.254:/";
     fsType = "ceph";
-    options = "name=nas-client1,secretfile=/persist/system/nas-client1.key";
+    options = ["name=nas-client1-erasure"  "mds_namespace=naserasure" "secretfile=/persist/system/nas-client1-erasure.key" ];
+  };
+  fileSystems."/cephhdd" = { 
+    device = "192.168.0.250,192.168.0.252,192.168.0.254:/";
+    fsType = "ceph";
+    options = ["name=nashdd" "mds_namespace=nashdd" "secretfile=/persist/system/nashdd.key" ];
   };
   networking.hostId = "4e98920d";
   system.stateVersion = "24.05";
