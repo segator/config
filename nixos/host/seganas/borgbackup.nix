@@ -43,6 +43,7 @@
       keep_monthly = 12;
       keep_yearly = 1;
       borg_base_directory = "/var/borg";
+      borgmatic_source_directory = "/var/borgmatic";
       extra_borg_options = {
         #create = "--stats --show-rc --progress";
       };

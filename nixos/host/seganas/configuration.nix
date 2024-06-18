@@ -145,16 +145,19 @@
   #   options = ["name=nas-client1" "secretfile=/persist/system/nas-client1.key" ];
   # };
 
-    fileSystems."/ceph" = { 
-    device = "192.168.0.250,192.168.0.252,192.168.0.254:/";
-    fsType = "ceph";
-    options = ["name=nas-client1-erasure"  "mds_namespace=naserasure" "secretfile=/persist/system/nas-client1-erasure.key" ];
-  };
-  fileSystems."/cephhdd" = { 
-    device = "192.168.0.250,192.168.0.252,192.168.0.254:/";
-    fsType = "ceph";
-    options = ["name=nashdd" "mds_namespace=nashdd" "secretfile=/persist/system/nashdd.key" ];
-  };
+# fileSystems."/ceph" = { 
+#     device = "192.168.0.250,192.168.0.252,192.168.0.254:/";
+#     fsType = "ceph";
+#     options = ["name=staging"  "mds_namespace=cephfs" "secretfile=/persist/system/cephfs.key" ];
+#   };
+
+#   fileSystems."/ceph2" = { 
+#     device = "192.168.0.250,192.168.0.252,192.168.0.254:/";
+#     fsType = "ceph";
+#     options = ["name=staging"  "mds_namespace=cephfs2" "secretfile=/persist/system/cephfs.key" ];
+#   };
+
+
   networking.hostId = "4e98920d";
   system.stateVersion = "24.05";
 

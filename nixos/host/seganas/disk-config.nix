@@ -54,7 +54,7 @@ in
         };
       };
     };
-      disk.sdc = {
+    disk.sdc = {
       device = "/dev/sdc"; # /dev/disk/by-id/ata-Samsung_SSD_860_EVO_500GB_S3Z1NB0K303456L"
       type = "disk";
       content = {
@@ -127,10 +127,16 @@ in
           xattr = "sa";
           atime = "off";
           compression = "zstd";
+
           encryption = "aes-256-gcm";
           keyformat = "passphrase";
           keylocation = "file:///tmp/disk.key";
           dedup = "off";
+          # Speed tunning # we only store some cold big files
+          logbias = "throughput";
+          recordsize = "1M";
+          sync = "disabled"; 
+          ####
         };
 
         postCreateHook = ''

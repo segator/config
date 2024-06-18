@@ -4,7 +4,7 @@ export KOPIA_LOG_DIR="/var/kopia/log"
 export KOPIA_CHECK_FOR_UPDATES=false
 export KOPIA_PERSIST_CREDENTIALS_ON_CONNECT=false
 kopia repository connect sftp --host u399475.your-storagebox.de --username u399475 --no-check-for-updates --no-use-keyring --no-persist-credentials  --known-hosts=/root/.ssh/known_hosts --port 23  --path backups/NAS
-kopia snapshot create /nas/...
+kopia snapshot create /nas/homes /nas/isaacaina /
 kopia snapshot verify --verify-files-percent=2 --file-parallelism=10 --parallel=10
       
 
