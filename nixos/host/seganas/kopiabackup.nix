@@ -71,7 +71,7 @@ in
 
   systemd = {
     timers.kopia-backup = {
-      enable = false;
+      enable = true;
       wantedBy = ["timers.target"];
       partOf = ["kopia-backup.service"];
       timerConfig.OnCalendar = "05:00";
@@ -89,7 +89,7 @@ in
       enable = true;
       wantedBy = ["timers.target"];
       partOf = ["kopia-verify.service"];
-      timerConfig.OnCalendar = "1 of month 12:00:00";
+      timerConfig.OnCalendar = "*-*-01 00:00:00";
     };
     services.kopia-verify = {
       serviceConfig = {
@@ -100,8 +100,4 @@ in
       '';
     };
   };
-
-
-
-  
 }
