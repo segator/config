@@ -1,0 +1,13 @@
+all:
+  hosts:
+    test1:
+      ansible_host: test1
+    test2:
+      ansible_host: test2
+    test3:
+      ansible_host: test3
+  vars:
+    ansible_user: segator
+    ssh_install_pubkey: ~/.ssh/id_ed25519.pub
+    k3s_version: v1.24.6+k3s1
+    token: testtoken

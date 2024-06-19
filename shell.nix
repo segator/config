@@ -27,6 +27,7 @@ in
             py3_packages
             repl
             deploy-rs
+            ansible
         ];
 
         shellHook = ''
