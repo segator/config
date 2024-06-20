@@ -81,7 +81,7 @@ in
         Type = "oneshot";
       };
       script = ''
-        ${kopia-backup} snapshot create ${lib.concatStringsSep " " config.nas.backup.sourceDirectories}
+        ${kopia-backup}/bin/kopia snapshot create ${lib.concatStringsSep " " config.nas.backup.sourceDirectories}
       '';
     };
 
@@ -96,7 +96,7 @@ in
         Type = "oneshot";
       };
       script = ''
-        ${kopia-backup} snapshot verify --verify-files-percent=1 --file-parallelism=4 --parallel=4
+        ${kopia-backup}/bin/kopia snapshot verify --verify-files-percent=1 --file-parallelism=4 --parallel=4
       '';
     };
   };
