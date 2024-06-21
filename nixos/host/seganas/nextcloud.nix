@@ -5,10 +5,10 @@ let
   officeFqdn = "office.segator.es";
   occ = lib.getExe config.services.nextcloud.occ;
   exifToolMemories = pkgs.exiftool.overrideAttrs (oldAttrs: rec {
-        version = "12.70";
+        version = "12.87";
         src = builtins.fetchurl  {
             url = "https://exiftool.org/Image-ExifTool-${version}.tar.gz";
-            sha256 = "sha256-TLJSJEXMPj870TkExq6uraX8Wl4kmNerrSlX3LQsr/4=";  # Update the hash accordingly
+            sha256 = "sha256:089cgw7fy137gby1wm8d1rbarg45kg97h4h1nwm8pcac6y6l58vx";  # Update the hash accordingly
         };
     }); 
   databaseName = "nextcloud";
