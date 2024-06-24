@@ -5,16 +5,17 @@ let
   officeFqdn = "office.segator.es";
   occ = lib.getExe config.services.nextcloud.occ;
   exifToolMemories = pkgs.exiftool.overrideAttrs (oldAttrs: rec {
-        version = "12.87";
+        version = "12.70";
         src = builtins.fetchurl  {
-            url = "https://exiftool.org/Image-ExifTool-${version}.tar.gz";
-            sha256 = "sha256:089cgw7fy137gby1wm8d1rbarg45kg97h4h1nwm8pcac6y6l58vx";  # Update the hash accordingly
+            # Seems source page does not publish anymore 12.70 version
+            #url = "https://exiftool.org/Image-ExifTool-${version}.tar.gz";
+            # Nextcloud wants 12.70 otherwise does not work
+            url = "https://mirrors.sjtug.sjtu.edu.cn/cpan/authors/id/E/EX/EXIFTOOL/Image-ExifTool-${version}.tar.gz";
+            sha256 = "sha256:1zmg5jsdqmr9mnmxg614brdgr9ddmspcc11rs4xkygnc8lj55cjc";  # Update the hash accordingly
         };
     }); 
   databaseName = "nextcloud";
   nextcloudDataDir = config.services.nextcloud.datadir + "/data";
-
-
 in
 {
   my.monitoring.logs = [{
@@ -161,9 +162,10 @@ in
         ];
         allow_user_to_change_display_name = false;
         lost_password_link = "disabled";
-        jpeg_quality = 60;
-        preview_max_filesize_image = 128; # MB
-        preview_max_memory = 512; # MB
+        enable_previews = true;
+        jpeg_quality = 60;        
+        preview_max_filesize_image = 150; # MB
+        preview_max_memory = 2048; # MB
         preview_max_x = 2048; # px
         preview_max_y = 2048; # px
         # More info https://github.com/Shawn8901/nix-configuration/blob/8b59d8953e7cb1fd38ec6987bbd18f05406d0ace/modules/nixos/private/nextcloud/memories.nix
@@ -237,7 +239,7 @@ in
         # Disable default apps
         ${occ} app:disable dashboard
         ${occ} app:disable comments
-        #${occ} app:disable photos
+        ${occ} app:disable photos
         ${occ} app:disable activity
 
         # Missing indices
@@ -245,6 +247,12 @@ in
 
         # Enable cron mode (nixos by default enables the systemd cron to 5min but not enabled on the app)
         ${occ} background:cron
+
+        # Improve  preview generator defaults
+        ${occ} config:app:set previewgenerator squareSizes --value="32 256"
+        ${occ} config:app:set previewgenerator widthSizes  --value="256 384"
+        ${occ} config:app:set previewgenerator heightSizes --value="256"        
+        ${occ} config:app:set preview jpeg_quality --value="60"
         ''
         + 
         (

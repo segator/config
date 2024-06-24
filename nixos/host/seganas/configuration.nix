@@ -99,7 +99,7 @@
       {name = "${key}_password"; value = {};}) (builtins.attrNames config.nas.users
     )
   );
-
+  services.qemuGuest.enable = true;
   boot = {
       initrd.secrets = { 
         "/etc/secrets/initrd/ssh_host_ed25519_key" = lib.mkForce /persist/system/initrd/ssh_host_ed25519_key;

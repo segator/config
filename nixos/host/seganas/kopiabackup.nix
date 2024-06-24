@@ -4,9 +4,9 @@ let
   kopiaCacheDir = "/var/kopia/cache";
   kopiaCacheLog = "/var/kopia/log";
   backupServerSshPubKey = pkgs.writeText "nuc.keys" ''
-    192.168.0.250 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJEQgvlucZCfPCrkdSHGrQwbNLHjFTzAwZuPg80W9Lcy
-    192.168.0.250 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDy8CVwRW7UXKfXCNyyW2ivSHH9sYIDM4RVjap8P4UnfVgJCzE45UQHhTs9AFW82CV09U/JU+JKIvGNQrlTxpJXNxTqwsJUda+T8vVnRqo+/wWzRyWJO0lOVAJJP5c6LmviJdVgkCdSDfJIbIoRVk0/H8lIJu9/1qftHBQ63wFjQM4mIQrE4aX7DV62jw6RRF0tdYlmI2D3wqow+nlqITF/OtK6R/lO3LikH3MeYZ4QwU6w23ynowxV9h+RV0OmLiemdsP5Sa+Ddu9gnWiM3SdLBHQGFSuFd47dOe1NPp+1jCsbCAc4FfZl9DS0TsfemFFMYy+SCjM0cr7YCwP3sdL75UJ3XuJIKgX321AaEf+7RT/i46KXGX1kqz9ogguAruGF+wKo6X1gb2MhUCcJXzyEEoh0jFfVwXX3au7611A9Vg3PtrTjCHGPCDtNAJNEMOj1Xk/LuAaJjX3gQhAh8KLGzNkgZZWzqvenaEiTlCf05UAMjkI/V1vgbHYDGMkHmzs=
-    192.168.0.250 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOWPPN/Py2jqrPGj3lJwEONJrEQPHtZmpzhq9rnwX0f3Be4QT6x0dpk4QpUpR/YhCAtXoMB7jiTSjPYNj1UuJZg=
+    192.168.0.250 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMtTAOaoX42tTvLwP03Go1N1ZLEjGQMfOnRkDZcsYQod
+    192.168.0.250 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDf9atzXSXYkRZ7lGDwA+v7yNgqAPtbs8vF/QrpowoXktv0E+dyPCpoobyqUBwnrx/EeG/rbaS6xe70FIReWIQkxCqzThbE8lACbI2/mg7AbPPX6OVFjGIIhYmKQ0qs3D7S2LHxi2l+wtNYk9zVokFzvCHBP/yrkGMYsRHaiNJzSiKb2wE89S4B7WfAu1iLE5xN0+auHlYM4p4B+AMpoYDA5+4IVQTOaoZkA50lphUGxQCoV9CWYLGn/VgrO0EUDkFeBB7a/G/GuRu99biag4dk09eWegN78Jy+/Chv3ExylmmGRvsRWI55PTmCAGVgNpN6YCpUhea9tiqQkRs5ygeViSfdTqnqggLukm8Bc+eO1GoEECFbMxoi004K9hp+lBqFDXSilDzKvJF07Z7+QUDP0snZMfIHi2VuSP2ZvhIFOUovs/rD8oP8zWKmJu57kVsIUt9fWUGomFQHFWbKQEo3+RlmraxH7vNR4XXkqe614oFJQNHtLEroqHNoq/F/8aCJb5CvqRu9XJRBWGVONoJf1ZxHSupFIjo8EygpSbUnjkwi2rnZwTJkz9Y8/PhNubAWvuOb2sPdvxKEWuxfMOrC7fwTYvn4wMh10fxtV4xFTzyVvtzRIZpCPelUFV0OqZXV2KAL+e4hLRJptK7Ye4kliHCN8VT4wXwMD6oCcs97Qw== root@nuc
+    192.168.0.250 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBBA1UnoeReVpRrtvc4v3BqMivt5X8q1RZRi/g0NrFfBti2wyudtbyQfy4XINP3biSzQkkRtkh/Sfhy+rmaKWGtY=
     '';
 
    kopiaRepoConfig = pkgs.writeText "repo.config" ''
@@ -39,8 +39,7 @@ let
     }
    '';
     kopia-backup = pkgs.writeShellScriptBin "kopia" ''
-    #!/usr/bin/env bash    
-
+    
     export KOPIA_PASSWORD=$(cat ${config.sops.secrets.kopia_passphrase.path})
     export KOPIA_CONFIG_PATH=/tmp/kopia/repo.config
     export KOPIA_CACHE_DIRECTORY=${kopiaCacheDir}
