@@ -132,16 +132,16 @@
   environment.variables.VDPAU_DRIVER = "va_gl";
   environment.variables.LIBVA_DRIVER_NAME = "nvidia";
 
-  hardware.opengl = {
+
+  hardware.graphics = {
+    enable32Bit = true;
     enable = true;
-    driSupport = true;
-    driSupport32Bit = true; 
     extraPackages = with pkgs; [
       nvidia-vaapi-driver
       libvdpau-va-gl
     ];
   };
-
+  
   networking.extraHosts =
   ''
   192.168.49.2 idp.edge.local

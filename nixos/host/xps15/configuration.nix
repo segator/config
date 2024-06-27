@@ -174,10 +174,9 @@
 
   services.dbus.enable = true;
 
-  hardware.opengl = {
+  hardware.graphics = {
+    enable32Bit = true;
     enable = true;
-    driSupport = true;
-    driSupport32Bit = true; 
     extraPackages = with pkgs; [
       libvdpau-va-gl
     ];
