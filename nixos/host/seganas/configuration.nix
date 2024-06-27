@@ -100,7 +100,13 @@
       {name = "${key}_password"; value = {};}) (builtins.attrNames config.nas.users
     )
   );
+  hardware.opengl.package = (pkgs.mesa.override {
+    enableGalliumNine = false;
+    galliumDrivers = [ "swrast" "virgl" ];
+  }).drivers;
+
   services.qemuGuest.enable = true;
+  services.spice-vdagentd.enable = true;
   boot = {
       initrd.secrets = { 
         "/etc/secrets/initrd/ssh_host_ed25519_key" = lib.mkForce /persist/system/initrd/ssh_host_ed25519_key;
