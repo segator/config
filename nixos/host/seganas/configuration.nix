@@ -171,6 +171,4 @@
   time.timeZone = "Europe/Madrid";
   networking.networkmanager.enable = false;
   networking.firewall.enable = true;
-  # Auto update
-  system.autoUpgrade.enable = true;
 }

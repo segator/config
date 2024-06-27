@@ -4,6 +4,6 @@
     enable = true;
     allowReboot = true;
     dates = "03:00";
-    flake = "github:segator/configs";
+    flake = "github:segator/config";
   };
 }
