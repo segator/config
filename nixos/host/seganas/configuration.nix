@@ -10,6 +10,7 @@
           ../../modules/nix
           ../../modules/sshd
           ../../modules/grafana-agent
+          ../../modules/auto-upgrade
           ./nas_options.nix
           ./users.nix
           ./zfs.nix
