@@ -20,7 +20,7 @@
           ./samba.nix
           ./mail_telegram.nix
           ./smartd.nix
-          #./nfs.nix
+          ./nfs.nix
           ./borgbackup.nix
           ./kopiabackup.nix
           ./cloudflare.nix
@@ -100,7 +100,7 @@
       {name = "${key}_password"; value = {};}) (builtins.attrNames config.nas.users
     )
   );
-  hardware.opengl.package = (pkgs.mesa.override {
+  hardware.graphics.package = (pkgs.mesa.override {
     enableGalliumNine = false;
     galliumDrivers = [ "swrast" "virgl" ];
   }).drivers;
