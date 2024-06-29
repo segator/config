@@ -185,11 +185,11 @@ in
   environment.systemPackages = with pkgs; [ ceph fio];
   # To generate the secret
   # ceph fs authorize <pool-name> client.<client-name> / rw
-  # fileSystems."/ceph" = { 
-  #   device = "192.168.0.254,192.168.0.252:/";
-  #   fsType = "ceph";
-  #   options = ["name=nas-client1" "secretfile=/persist/system/nas-client1.key" ];
-  # };
+  fileSystems."/ceph" = { 
+    device = "192.168.0.254,192.168.0.252,192.168.0.250:/";
+    fsType = "ceph";
+    options = ["name=foo" "secretfile=/persist/system/foo.key" ];
+  };
 
 # fileSystems."/ceph" = { 
 #     device = "192.168.0.250,192.168.0.252,192.168.0.254:/";
