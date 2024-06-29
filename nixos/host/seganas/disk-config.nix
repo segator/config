@@ -2,9 +2,9 @@
 let
 in
 {
-  boot.initrd.postDeviceCommands = lib.mkAfter ''
-    zfs rollback -r zroot/root@empty
-  '';
+  # boot.initrd.postDeviceCommands = lib.mkAfter ''
+  #   zfs rollback -r zroot/root@empty
+  # '';
 
   disko.devices = {
     disk.main = {
@@ -96,7 +96,8 @@ in
 
         postCreateHook = ''
           # after disko creates the encrypted volume we switch to prompt for next boots
-          zfs set keylocation="prompt" "zroot";          
+          zfs set keylocation="prompt" "zroot";  
+          zfs set clevis:jwe=$(cat /tmp/disk.key.jwe) zroot
         '';
         datasets = {
           # root = {
@@ -141,7 +142,9 @@ in
 
         postCreateHook = ''
           # after disko creates the encrypted volume we switch to prompt for next boots
-          zfs set keylocation="prompt" "nas";          
+          zfs set keylocation="prompt" "nas";
+          zfs set clevis:jwe=$(cat /tmp/disk.key.jwe) nas
+          
         '';
 
         datasets = {

@@ -13,7 +13,7 @@ bootstrap_setup profile arch=default_arch:
 bootstrap_apply profile server arch=default_arch:
     nix run github:nix-community/nixos-anywhere -- \
         --kexec "$(nix build --print-out-paths .#packages.{{arch}}-linux.kexec-installer-nixos)/nixos-kexec-installer-{{arch}}-linux.tar.gz" \
-        --disk-encryption-keys /tmp/disk.key "$(pwd)/build/bootstrap/{{profile}}/disk.key" \
+        --disk-encryption-keys /tmp/disk.key /tmp/disk.key.jwe "$(pwd)/build/bootstrap/{{profile}}/disk.key" \
         --extra-files "$(pwd)/build/bootstrap/{{profile}}" \
         --flake .#{{profile}} \
         "root@{{server}}"

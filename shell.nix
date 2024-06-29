@@ -28,6 +28,7 @@ in
             repl
             deploy-rs
             ansible
+            clevis
         ];
 
         shellHook = ''

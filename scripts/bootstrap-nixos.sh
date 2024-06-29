@@ -74,6 +74,27 @@ get_password() {
     fi
 }
 
+tang_server_input() {
+	ask_for_tang_server_url
+	ask_for_tang_thp    
+}
+
+# Function to prompt the user for Tang Server URL
+ask_for_tang_server_url() {
+  while true; do
+    read -p "Provide Tang Server URL: " tang_url
+    if [[ $tang_url =~ ^https?:// ]]; then
+      break
+    else
+      echo "Invalid URL $tang_url. Please provide a valid Tang Server URL."
+    fi
+  done
+}
+
+ask_for_tang_thp(){
+	read -p "Provide Tang Fingerprint (thp): " tang_thp
+}
+
 # Handle options
 while [[ $# -gt 0 ]]; do
 	case "$1" in
@@ -132,6 +153,11 @@ disk_key_file="$temp/disk.key"
 
 # Save the password to a file
 echo "$password" > "$disk_key_file"
+
+tang_server_input
+echo $password | clevis encrypt tang "{\"url\": \"$tang_url\", \"thp\": \"$tang_thp\"}" > "${disk_key_file}.jwe"
+echo "Tang Key created: ${disk_key_file}.jwe"
+
 
 green "Generating an age key based on the new ssh_host_ed25519_key."
 

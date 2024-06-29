@@ -1,4 +1,30 @@
 { inputs, config, pkgs, nixpkgs, lib, ... }:
+let
+zfsUnattendedUnlockPkg = (pkgs.writeShellScriptBin "unattended-zfs-unlock" ''
+          #export PATH=${pkgs.curl}/bin:$PATH
+          for pool_name in "$@"; do
+            while true; do
+              echo "running clevis to unlock $pool_name"
+              #zpool status $pool_name || zpool import -f $pool_name
+              zpool import -a
+              zfs get -H clevis:jwe -s local "$pool_name" | awk '{print $3}' | clevis decrypt | zfs load-key "$pool_name"
+              if [[ $? -eq 0 ]]; then
+                echo "ZFS decryption and key loading succeeded for pool: $pool_name."
+                break
+              else
+                echo "ZFS decryption and key loading failed for pool: $pool_name. Retrying..."
+                sleep 1
+              fi
+            done
+          done
+        '');
+  zfsUnlockPkg = (pkgs.writeShellScriptBin "zfs-unlock" ''
+    zpool import -a
+    zfs load-key zroot
+    zfs load-key nas
+    ${pkgs.killall}/bin/killall zfs
+  '');
+in
 {
   imports = [    
           ./hardware-configuration.nix
@@ -111,6 +137,7 @@
       initrd.secrets = { 
         "/etc/secrets/initrd/ssh_host_ed25519_key" = lib.mkForce /persist/system/initrd/ssh_host_ed25519_key;
       };
+      initrd.clevis.enable = true;
       initrd.network = {
         enable = true;
         ssh = {
@@ -119,20 +146,32 @@
           hostKeys = [ "/etc/secrets/initrd/ssh_host_ed25519_key" ];              
           authorizedKeys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID5vRrC3yycYEP9GoKk4nm9iTf9aFMb0pAyKbp5rcEkW segator" ];
         };
-        postCommands = ''
+        postCommands = ''        
           cat <<EOF > /root/.profile
           if pgrep -x "zfs" > /dev/null
           then
-            zpool import -a
-            zfs load-key zroot
-            zfs load-key nas
-            killall zfs
+            cat ${zfsUnattendedUnlockPkg}/bin/unattended-zfs-unlock
+            ${zfsUnlockPkg}/bin/zfs-unlock
           else
             echo "zfs not running -- maybe the pool is taking some time to load for some unforseen reason."
           fi
           EOF
+
+          ${zfsUnattendedUnlockPkg}/bin/unattended-zfs-unlock zroot nas &
         '';
       };
+  #     initrd.systemd = {
+  #       enable = true;
+  #       initrdBin = with pkgs; [ clevis jose tpm2-tools curl killall zfsUnattendedUnlockPkg zfsUnlockPkg ];
+  #       services.zfs-import-zroot.script = lib.mkForce ''
+  #         zpool status zroot || zpool import -f zroot
+  #         unattended-zfs-unlock zroot
+  #       '';
+  #       services.zfs-import-nas.script = lib.mkForce ''
+  #         zpool status nas || zpool import -f nas
+  #         unattended-zfs-unlock nas
+  #       '';
+  # };
     loader.grub = {
         enable = true;
         copyKernels = true;
