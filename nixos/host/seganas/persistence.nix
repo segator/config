@@ -35,10 +35,12 @@
     ++
     (lib.optionals config.services.onlyoffice.enable ["/var/lib/onlyoffice" ])
     ++
+    (lib.optionals config.services.resilio.enable [ config.services.resilio.storagePath])
+    ++
     (map (borgConfig: borgConfig.borg_base_directory)  (builtins.attrValues config.services.borgmatic.configurations))
     ++
     (map (borgConfig: borgConfig.borgmatic_source_directory)  (builtins.attrValues config.services.borgmatic.configurations))
-    
+
     ++ [ "/var/kopia"];   
   };
 }

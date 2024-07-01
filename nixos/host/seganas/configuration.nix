@@ -191,6 +191,15 @@ in
     options = ["name=foo" "secretfile=/persist/system/foo.key" ];
   };
 
+  services.resilio = {
+    enable = true;
+    enableWebUI = true;
+    httpListenAddr = "0.0.0.0";
+    deviceName = config.networking.hostName;    
+  };
+  networking.firewall.allowedTCPPorts = [ config.services.resilio.listeningPort ];
+  networking.firewall.allowedUDPPorts = [ config.services.resilio.listeningPort ];
+  
 # fileSystems."/ceph" = { 
 #     device = "192.168.0.250,192.168.0.252,192.168.0.254:/";
 #     fsType = "ceph";
