@@ -186,7 +186,7 @@ in
   # To generate the secret
   # ceph fs authorize <pool-name> client.<client-name> / rw
   fileSystems."/nas_ceph" = { 
-    device = "192.168.0.254,192.168.0.252,192.168.0.250:/";
+    device = "192.168.0.254,192.168.0.252,192.168.0.250,192.168.0.249:/";
     fsType = "ceph";
     options = ["name=nas" "secretfile=/persist/system/nas.key" "mds_namespace=nas" ];
   };
@@ -202,19 +202,6 @@ in
   };
   networking.firewall.allowedTCPPorts = [ config.services.resilio.httpListenPort config.services.resilio.listeningPort ];
   networking.firewall.allowedUDPPorts = [ config.services.resilio.listeningPort ];
-
-# fileSystems."/ceph" = { 
-#     device = "192.168.0.250,192.168.0.252,192.168.0.254:/";
-#     fsType = "ceph";
-#     options = ["name=staging"  "mds_namespace=cephfs" "secretfile=/persist/system/cephfs.key" ];
-#   };
-
-#   fileSystems."/ceph2" = { 
-#     device = "192.168.0.250,192.168.0.252,192.168.0.254:/";
-#     fsType = "ceph";
-#     options = ["name=staging"  "mds_namespace=cephfs2" "secretfile=/persist/system/cephfs.key" ];
-#   };
-
 
   networking.hostId = "4e98920d";
   system.stateVersion = "24.05";

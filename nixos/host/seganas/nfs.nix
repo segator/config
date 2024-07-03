@@ -25,7 +25,7 @@
     enableTCPOptions = true;
     enableUDPOptions = true;
     # rdma = "true"; # Remote Direct Memory Access
-    vers3 = "false";
+    vers3 = "true";
     vers4 = "true";
     "vers4.0" = "false";
     "vers4.1" = "false";
