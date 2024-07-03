@@ -13,8 +13,8 @@
   statdPort = 4000;
   #all_squash
   exports = ''
-    /nfs 192.168.0.250(no_subtree_check,no_root_squash,no_all_squash,async,rw,insecure,fsid=root) 192.168.0.252(no_subtree_check,no_root_squash,no_all_squash,async,rw,insecure,fsid=root) 192.168.0.254(no_subtree_check,no_root_squash,no_all_squash,async,rw,insecure,fsid=root)
-    /nfs/nas 192.168.0.250(no_subtree_check,no_root_squash,no_all_squash,async,rw,insecure) 192.168.0.252(no_subtree_check,no_root_squash,no_all_squash,async,rw,insecure) 192.168.0.254(no_subtree_check,no_root_squash,no_all_squash,async,rw,insecure)
+    /nfs 192.168.0.250(no_subtree_check,no_root_squash,no_all_squash,async,rw,insecure,fsid=root) 192.168.0.252(no_subtree_check,no_root_squash,no_all_squash,async,rw,insecure,fsid=root) 192.168.0.254(no_subtree_check,no_root_squash,no_all_squash,async,rw,insecure,fsid=root) 192.168.0.249(no_subtree_check,no_root_squash,no_all_squash,async,rw,insecure,fsid=root)
+    /nfs/nas 192.168.0.250(no_subtree_check,no_root_squash,no_all_squash,async,rw,insecure) 192.168.0.252(no_subtree_check,no_root_squash,no_all_squash,async,rw,insecure) 192.168.0.254(no_subtree_check,no_root_squash,no_all_squash,async,rw,insecure) 192.168.0.249(no_subtree_check,no_root_squash,no_all_squash,async,rw,insecure)
  
   ''; 
   };

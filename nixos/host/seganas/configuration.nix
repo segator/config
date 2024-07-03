@@ -185,21 +185,24 @@ in
   environment.systemPackages = with pkgs; [ ceph fio];
   # To generate the secret
   # ceph fs authorize <pool-name> client.<client-name> / rw
-  fileSystems."/ceph" = { 
+  fileSystems."/nas_ceph" = { 
     device = "192.168.0.254,192.168.0.252,192.168.0.250:/";
     fsType = "ceph";
-    options = ["name=foo" "secretfile=/persist/system/foo.key" ];
+    options = ["name=nas" "secretfile=/persist/system/nas.key" "mds_namespace=nas" ];
   };
 
   services.resilio = {
     enable = true;
     enableWebUI = true;
+    useUpnp = false;
     httpListenAddr = "0.0.0.0";
+    listeningPort = 53210;
+    httpListenPort = 9000;
     deviceName = config.networking.hostName;    
   };
-  networking.firewall.allowedTCPPorts = [ config.services.resilio.listeningPort ];
+  networking.firewall.allowedTCPPorts = [ config.services.resilio.httpListenPort config.services.resilio.listeningPort ];
   networking.firewall.allowedUDPPorts = [ config.services.resilio.listeningPort ];
-  
+
 # fileSystems."/ceph" = { 
 #     device = "192.168.0.250,192.168.0.252,192.168.0.254:/";
 #     fsType = "ceph";

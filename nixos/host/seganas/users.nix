@@ -10,7 +10,7 @@ let
   groupsConfig = {  
     nasservices = {
       gid = 2000;
-      members = (builtins.attrNames usersConfig) ++ lib.optionals config.services.nextcloud.enable [ "nextcloud" ];
+      members = (builtins.attrNames usersConfig) ++ lib.optionals config.services.nextcloud.enable [ "nextcloud" ] ++ lib.optionals config.services.resilio.enable ["rslsync" ];
     };
   } // config.nas.groups;
 in
