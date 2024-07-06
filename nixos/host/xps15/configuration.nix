@@ -137,7 +137,14 @@
     enable = true;
     drivers = [pkgs.hplipWithPlugin ];
   };
-
+  # Scanner
+  hardware.sane = {
+    enable = true;
+    extraBackends = [pkgs.hplipWithPlugin ];
+  };
+  nixpkgs.config.packageOverrides = pkgs: {
+    xsaneGimp = pkgs.xsane.override { gimpSupport = true; };
+  };
   # Enable sound with pipewire.
   sound.enable = true;
   hardware.pulseaudio.enable = false;
@@ -157,6 +164,7 @@
   ];
 
   environment.systemPackages = with pkgs; [
+    gimp
     home-manager
     git
     
