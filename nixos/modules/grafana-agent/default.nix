@@ -1,6 +1,7 @@
 {config, lib, pkgs, ...}:
 let
     cfg = config.my.monitoring;    
+    monitoringProvider = "vps";
 in
 {
     options.my.monitoring = {
@@ -42,36 +43,42 @@ in
         ];
 
         #Prometheus
-        sops.secrets."grafana/metrics/url" = {
+        sops.secrets."grafana/${monitoringProvider}/metrics/url" = {
           sopsFile = ../../../secrets/common/monitoring.yaml;
+          restartUnits = [ "grafana-agent.service" ];
         };
-        sops.secrets."grafana/metrics/username" = {
+        sops.secrets."grafana/${monitoringProvider}/metrics/username" = {
           sopsFile = ../../../secrets/common/monitoring.yaml;
+          restartUnits = [ "grafana-agent.service" ];
         };
-        sops.secrets."grafana/metrics/password" = {
+        sops.secrets."grafana/${monitoringProvider}/metrics/password" = {
           sopsFile = ../../../secrets/common/monitoring.yaml;
+          restartUnits = [ "grafana-agent.service" ];
         };
 
         #Loki
-        sops.secrets."grafana/logs/url" = {
+        sops.secrets."grafana/cloud/logs/url" = {
           sopsFile = ../../../secrets/common/monitoring.yaml;
+          restartUnits = [ "grafana-agent.service" ];
         };
-        sops.secrets."grafana/logs/username" = {
+        sops.secrets."grafana/cloud/logs/username" = {
           sopsFile = ../../../secrets/common/monitoring.yaml;
+          restartUnits = [ "grafana-agent.service" ];
 
         };
-        sops.secrets."grafana/logs/password" = {
+        sops.secrets."grafana/cloud/logs/password" = {
           sopsFile = ../../../secrets/common/monitoring.yaml;
+          restartUnits = [ "grafana-agent.service" ];
         };
 
 
         services.grafana-agent.credentials = {
-          LOGS_REMOTE_WRITE_URL = config.sops.secrets."grafana/logs/url".path;
-          LOGS_REMOTE_WRITE_USERNAME = config.sops.secrets."grafana/logs/username".path;
-          logs_remote_write_password = config.sops.secrets."grafana/logs/password".path;
-          METRICS_REMOTE_WRITE_URL = config.sops.secrets."grafana/metrics/url".path;
-          METRICS_REMOTE_WRITE_USERNAME = config.sops.secrets."grafana/metrics/username".path;
-          metrics_remote_write_password = config.sops.secrets."grafana/metrics/password".path;
+          LOGS_REMOTE_WRITE_URL = config.sops.secrets."grafana/cloud/logs/url".path;
+          LOGS_REMOTE_WRITE_USERNAME = config.sops.secrets."grafana/cloud/logs/username".path;
+          logs_remote_write_password = config.sops.secrets."grafana/cloud/logs/password".path;
+          METRICS_REMOTE_WRITE_URL = config.sops.secrets."grafana/${monitoringProvider}/metrics/url".path;
+          METRICS_REMOTE_WRITE_USERNAME = config.sops.secrets."grafana/${monitoringProvider}/metrics/username".path;
+          metrics_remote_write_password = config.sops.secrets."grafana/${monitoringProvider}/metrics/password".path;
         };
 
         services.grafana-agent.settings = {

@@ -39,6 +39,8 @@ in
           ../../modules/fail2ban
           ../../modules/cloudflare-dyndns
           ../../modules/nginx
+          ../../modules/acme
+          ../../modules/persistence
           ./nas_options.nix
           ./users.nix
           ./zfs.nix
@@ -126,6 +128,9 @@ in
       {name = "${key}_password"; value = {};}) (builtins.attrNames config.nas.users
     )
   );
+
+  fileSystems."/nas".neededForBoot = true;
+  
   hardware.graphics.package = (pkgs.mesa.override {
     enableGalliumNine = false;
     galliumDrivers = [ "swrast" "virgl" ];

@@ -76,10 +76,10 @@
           ];
           format = "iso";
         };
-
-        kexec-installer-nixos = kexec-installer [
-            ( import ./nixos/modules/zfs/sse4-support.nix)
-          ];
+        #Todo temporary disable it due a bug https://github.com/nix-community/nixos-images/issues/249
+        # kexec-installer-nixos = kexec-installer [
+        #     ( import ./nixos/modules/zfs/sse4-support.nix)
+        #   ];
       }    
     );
     deploy.nodes = {

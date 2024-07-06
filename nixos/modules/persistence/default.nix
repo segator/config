@@ -1,8 +1,6 @@
-
 { inputs, config, pkgs, nixpkgs, lib, ... }:
 {
-  fileSystems."/persist".neededForBoot = true;
-  fileSystems."/nas".neededForBoot = true;
+  fileSystems."/persist".neededForBoot = true;  
   environment.persistence."/persist/system" = {
     hideMounts = false;
     directories = [
@@ -29,6 +27,10 @@
     ++
     (lib.optionals config.services.postgresqlBackup.enable [{ directory = config.services.postgresqlBackup.location; user = "postgres"; group = "postgres"; mode = "u=rwx,g=rwx,o="; }])
     ++
+    (lib.optionals config.services.grafana.enable [{ directory = config.services.grafana.dataDir; user = "grafana"; group = "grafana"; }])
+    ++
+    (lib.optionals config.services.prometheus.enable [{ directory = "/var/lib/prometheus2"; user = "prometheus"; group = "prometheus"; }])
+    ++
     (lib.optionals config.services.samba.enable ["/var/lib/samba"])
     ++
     (lib.optionals config.services.rabbitmq.enable [config.services.rabbitmq.dataDir])
@@ -40,7 +42,6 @@
     (map (borgConfig: borgConfig.borg_base_directory)  (builtins.attrValues config.services.borgmatic.configurations))
     ++
     (map (borgConfig: borgConfig.borgmatic_source_directory)  (builtins.attrValues config.services.borgmatic.configurations))
-
     ++ [ "/var/kopia"];   
   };
 }
