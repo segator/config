@@ -16,6 +16,7 @@
           ../../modules/acme
           ../../modules/persistence
           ./prometheus.nix
+          ./alertmanager.nix
           #./grafana.nix
           #./loki.nix
   ];

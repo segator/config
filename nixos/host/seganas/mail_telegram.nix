@@ -11,14 +11,18 @@ in
           })
     ];
 
-    sops.secrets.telegram_bot_token = { };
-    sops.secrets.telegram_chatid = { };
+    sops.secrets."telegram/bot_token" = {
+        sopsFile = ../../../secrets/common/monitoring.yaml;        
+    };
+    sops.secrets."telegram/chatid" = { 
+        sopsFile = ../../../secrets/common/monitoring.yaml;
+    };
 
     sops.templates."mailtelegram.conf" = {
         path = mailtelegram_config_path;
         content = ''
-        opt_telegram_bot_token="${config.sops.placeholder.telegram_bot_token}"
-        opt_telegram_chatid="${config.sops.placeholder.telegram_chatid}"
+        opt_telegram_bot_token="${config.sops.placeholder."telegram/bot_token"}"
+        opt_telegram_chatid="${config.sops.placeholder."telegram/chatid"}"
         '';
     };
 }

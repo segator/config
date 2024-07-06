@@ -15,6 +15,13 @@ in
         ./prometheus/alerts/blackbox.yaml
         ];
     extraFlags = [ "--web.enable-remote-write-receiver" ];
+    alertmanagers = [{
+      scheme = "http";
+      static_configs = [{
+        targets =
+          [ "${config.services.prometheus.alertmanager.listenAddress}:${toString config.services.prometheus.alertmanager.port}" ];
+      }];
+    }];
     scrapeConfigs = [
       {
         job_name = "prometheus";
