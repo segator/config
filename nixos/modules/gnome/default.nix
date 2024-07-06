@@ -20,7 +20,7 @@ in
     services.xserver.desktopManager.gnome.enable = true;
     programs.dconf.enable = true;
     environment.systemPackages = with pkgs; [
-        gnome.gnome-tweaks
+        gnome-tweaks
     ];
 
     environment.gnome.excludePackages = (with pkgs; [

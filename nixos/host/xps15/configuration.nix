@@ -127,8 +127,16 @@
   # Configure console keymap
   console.keyMap = "es";
 
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
+  services.printing = 
+  {
+    enable = true;
+    drivers = [pkgs.hplipWithPlugin ];
+  };
 
   # Enable sound with pipewire.
   sound.enable = true;
