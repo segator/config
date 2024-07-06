@@ -1,7 +1,6 @@
 { inputs, config, pkgs, nixpkgs, lib, ... }:
 let
 zfsUnattendedUnlockPkg = (pkgs.writeShellScriptBin "unattended-zfs-unlock" ''
-          #export PATH=${pkgs.curl}/bin:$PATH
           for pool_name in "$@"; do
             while true; do
               echo "running clevis to unlock $pool_name"
