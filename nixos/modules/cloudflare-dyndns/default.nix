@@ -1,8 +1,8 @@
 
-
 { inputs, config, pkgs, nixpkgs, lib, ... }:
 {
     sops.secrets."cloudflare_api_token" = {
+        sopsFile = ../../../secrets/common/cloudflare-dyndns.yaml;
         restartUnits = [ "cloudflare-dyndns.service" ];
     };
 

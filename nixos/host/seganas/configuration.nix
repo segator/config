@@ -36,20 +36,21 @@ in
           ../../modules/sshd
           ../../modules/grafana-agent
           ../../modules/auto-upgrade
+          ../../modules/fail2ban
+          ../../modules/cloudflare-dyndns
+          ../../modules/nginx
           ./nas_options.nix
           ./users.nix
           ./zfs.nix
-          ./nginx.nix
+
           ./postgresql.nix
           ./nextcloud.nix
           ./samba.nix
           ./mail_telegram.nix
           ./smartd.nix
-          ./nfs.nix
+          #./nfs.nix
           ./borgbackup.nix
-          ./kopiabackup.nix
-          ./cloudflare.nix
-          ./fail2ban.nix
+          ./kopiabackup.nix          
   ];
 
   nas = {

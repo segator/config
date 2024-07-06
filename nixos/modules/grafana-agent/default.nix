@@ -16,6 +16,7 @@ in
               };
             };
           });
+          default = [];
         };
         prom-exporters = lib.mkOption {
           type = with lib.types; listOf (submodule {
@@ -32,6 +33,7 @@ in
               };
             };
           });
+          default = [];
         };
     };
     config = {

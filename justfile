@@ -11,12 +11,17 @@ bootstrap_setup profile arch=default_arch:
     ./scripts/bootstrap-nixos.sh -n={{profile}}
 
 bootstrap_apply profile server arch=default_arch:
-    nix run github:nix-community/nixos-anywhere -- \
-        --kexec "$(nix build --print-out-paths .#packages.{{arch}}-linux.kexec-installer-nixos)/nixos-kexec-installer-{{arch}}-linux.tar.gz" \
-        --disk-encryption-keys /tmp/disk.key /tmp/disk.key.jwe "$(pwd)/build/bootstrap/{{profile}}/disk.key" \
-        --extra-files "$(pwd)/build/bootstrap/{{profile}}" \
-        --flake .#{{profile}} \
-        "root@{{server}}"
+	encryption_status_file="$(pwd)/build/bootstrap/{{profile}}/encryption"; \
+	if [ -f "$$encryption_status_file" ] && grep -q "true" "$$encryption_status_file"; then \
+		disk_encryption_keys="--disk-encryption-keys /tmp/disk.key /tmp/disk.key.jwe \"$(pwd)/build/bootstrap/{{profile}}/disk.key\""; \
+	else \
+		disk_encryption_keys=""; \
+	fi; \
+	nix run github:nix-community/nixos-anywhere -- \
+		--kexec "$$(nix build --print-out-paths .#packages.{{arch}}-linux.kexec-installer-nixos)/nixos-kexec-installer-{{arch}}-linux.tar.gz" $disk_encryption_keys \
+		--extra-files "$$(pwd)/build/bootstrap/{{profile}}" \
+		--flake .#{{profile}} \
+		"root@{{server}}"
 
 deploy server:
     deploy --auto-rollback false --skip-checks .#{{server}}

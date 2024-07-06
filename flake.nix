@@ -28,6 +28,13 @@
             impermanence.nixosModules.impermanence
           ];
         };
+        vps1 = libx.mkNixosSystem "vps1" { 
+          system = "x86_64-linux";    
+          modules = [
+            disko.nixosModules.disko
+            impermanence.nixosModules.impermanence
+          ];
+        };
     };              
 
     # MacOS systems
@@ -80,6 +87,11 @@
         inherit (self) nixosConfigurations;
         hostname = "192.168.0.110";
         configuration = "seganas";
+      };
+      vps1 = libx.mkDeploy {
+        inherit (self) nixosConfigurations;
+        hostname = "157.90.238.117";
+        configuration = "vps1";
       };
     };
 
