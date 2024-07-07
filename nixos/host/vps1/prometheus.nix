@@ -29,8 +29,14 @@ in
         job_name = "prometheus";
         scrape_interval = "30s";
         static_configs = [{ 
-          targets = [ "${config.services.prometheus.listenAddress}:${toString config.services.prometheus.port}" ]; 
+          targets = [ "${config.networking.hostName}:${toString config.services.prometheus.port}" ]; 
           }];
+        relabel_configs = [{
+          source_labels= ["__address__"];
+          target_label= "instance";
+          regex= "([^:]+).*";
+          replacement= "\${1}";
+        }];  
       }
      
       {
@@ -42,29 +48,43 @@ in
         static_configs = [{
             targets = [ "https://cloud.segator.es" ];
         }];
+        
         relabel_configs = [ 
             {
             source_labels = [ "__address__" ];
             target_label = "__param_target";
-            } {
-            source_labels = [ "__param_target" ];
-            target_label = "instance";
-            } {
+            }
+            #  {
+            # source_labels = [ "__param_target" ];
+            # target_label = "instance";
+            # } 
+            {
             target_label = "__address__";
-            replacement = "localhost:${toString config.services.prometheus.exporters.blackbox.port}";
-            } ];
+            replacement = "${config.networking.hostName}:${toString config.services.prometheus.exporters.blackbox.port}";
+            }            
+            {
+              source_labels= ["__address__"];
+              target_label= "instance";
+              regex= "([^:]+).*";
+              replacement= "\${1}";
+            }];
       }    
       {
         job_name = "blackbox_exporter";
         static_configs = [{
-            targets = [ "localhost:${toString config.services.prometheus.exporters.blackbox.port}" ];
+            targets = [ "${config.networking.hostName}:${toString config.services.prometheus.exporters.blackbox.port}" ];
         }];
+        relabel_configs = [{
+          source_labels= ["__address__"];
+          target_label= "instance";
+          regex= "([^:]+).*";
+          replacement= "\${1}";
+        }];  
       }
     ];
     exporters = {
       node = {
-        enable = true;
-        enabledCollectors = [ "systemd" "pressure" ];
+        enable = false;
       };
     };
   };

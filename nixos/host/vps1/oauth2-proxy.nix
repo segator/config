@@ -2,7 +2,8 @@
 let
     oauth2proxyFqdn = "auth.segator.es";
     oauth2LocalAddr = "http://127.0.0.1:4180";
-    oauth2LocalMetricAddr = "127.0.0.1:4185";
+    oauth2LocalMetricPort = "4185";
+    oauth2LocalMetricAddr = "127.0.0.1:${oauth2LocalMetricPort}";
 in
 {
     sops.secrets."oauth2-proxy/secrets" = { owner = "oauth2-proxy"; };
@@ -49,8 +50,14 @@ in
         job_name = "oauth2-proxy";
         scrape_interval = "30s";
         static_configs = [{ 
-          targets = [ oauth2LocalMetricAddr ]; 
+          targets = [ "${config.networking.hostName}:${oauth2LocalMetricPort}" ]; 
           }];
+        relabel_configs = [{
+          source_labels= ["__address__"];
+          target_label= "instance";
+          regex= "([^:]+).*";
+          replacement= "\${1}";
+        }];  
       }];
    
 }

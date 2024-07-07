@@ -74,7 +74,13 @@ in
         job_name = "alertmanager";
         scrape_interval = "30s";
         static_configs = [{ 
-          targets = [ "${config.services.prometheus.alertmanager.listenAddress}:${toString config.services.prometheus.alertmanager.port}" ]; 
-          }];
+          targets = [ "${config.networking.hostName}:${toString config.services.prometheus.alertmanager.port}" ]; 
+          }];          
+        relabel_configs = [{
+          source_labels= ["__address__"];
+          target_label= "instance";
+          regex= "([^:]+).*";
+          replacement= "\${1}";
+        }];                  
       }];
 }
