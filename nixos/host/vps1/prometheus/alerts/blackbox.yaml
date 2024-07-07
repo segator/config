@@ -1,6 +1,6 @@
 groups:
 
-- name: BlackboxExporter
+- name: Blackbox
 
   rules:
 
