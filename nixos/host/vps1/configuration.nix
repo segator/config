@@ -15,6 +15,7 @@
           ../../modules/nginx
           ../../modules/acme
           ../../modules/persistence
+          ./oauth2-proxy.nix
           ./prometheus.nix
           ./alertmanager.nix
           #./grafana.nix

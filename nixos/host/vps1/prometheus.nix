@@ -7,7 +7,7 @@ in
     enable = true;
     retentionTime = "365d";
     listenAddress = "127.0.0.1";
-    #webExternalUrl = prometheusFqdn;
+    webExternalUrl = "https://${prometheusFqdn}";
     # rules ;
     ruleFiles = [ 
         ./prometheus/alerts/prometheus.yaml
@@ -26,8 +26,11 @@ in
       {
         job_name = "prometheus";
         scrape_interval = "30s";
-        static_configs = [{ targets = [ "127.0.0.1:9090" ]; }];
+        static_configs = [{ 
+          targets = [ "${config.services.prometheus.listenAddress}:${toString config.services.prometheus.port}" ]; 
+          }];
       }
+     
       {
         job_name = "blackbox_http_probe";
         metrics_path= "/probe";
@@ -82,11 +85,17 @@ in
   services.nginx.virtualHosts."${prometheusFqdn}" = {
       enableACME = true;
       forceSSL = true;
-      basicAuthFile =  config.sops.secrets."prometheus/auth/htpasswd".path;
-      locations."/" = {
-        proxyPass = "http://${config.services.prometheus.listenAddress}:${toString config.services.prometheus.port}";
-        extraConfig = "proxy_pass_header Authorization;";
-      };
+      kTLS = true;
+      locations =  {
+        "/api/" = {
+          proxyPass = "http://${config.services.prometheus.listenAddress}:${toString config.services.prometheus.port}";
+          extraConfig = "auth_request off;";
+          basicAuthFile = config.sops.secrets."prometheus/auth/htpasswd".path; 
+        };
+        "/" = {
+          proxyPass = "http://${config.services.prometheus.listenAddress}:${toString config.services.prometheus.port}";
+        };
+      };      
     };
     # https://github.com/prometheus/blackbox_exporter/blob/master/CONFIGURATION.md
     services.prometheus.exporters.blackbox =    

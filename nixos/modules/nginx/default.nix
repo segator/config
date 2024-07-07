@@ -11,6 +11,7 @@
         enable = true;
         recommendedGzipSettings = true;
         recommendedOptimisation = true;
-        recommendedTlsSettings = true;
+        recommendedTlsSettings = true;        
+        recommendedProxySettings = true;
     };
 }
