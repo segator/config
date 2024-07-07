@@ -13,6 +13,8 @@ in
         ./prometheus/alerts/prometheus.yaml
         ./prometheus/alerts/node-exporter.yaml
         ./prometheus/alerts/blackbox.yaml
+        ./prometheus/alerts/ceph.yaml
+        ./prometheus/alerts/zfs.yaml
         ];
     extraFlags = [ "--web.enable-remote-write-receiver" ];
     alertmanagers = [{

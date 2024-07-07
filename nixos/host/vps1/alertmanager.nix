@@ -29,7 +29,7 @@ in
       configuration = rec {
         route = {
           group_wait = "1s";
-          group_interval = "1m";
+          group_interval = "24h";
           repeat_interval = "24h";
           receiver = (builtins.elemAt receivers 0).name;
         };
