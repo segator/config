@@ -20,7 +20,7 @@ zfsUnattendedUnlockPkg = (pkgs.writeShellScriptBin "unattended-zfs-unlock" ''
   zfsUnlockPkg = (pkgs.writeShellScriptBin "zfs-unlock" ''
     zpool import -a
     zfs load-key zroot
-    zfs load-key nas
+    #zfs load-key nas
     ${pkgs.killall}/bin/killall zfs
   '');
 in
@@ -131,7 +131,7 @@ in
     )
   );
 
-  fileSystems."/nas".neededForBoot = true;
+  #fileSystems."/nas".neededForBoot = true;
   
   hardware.graphics.package = (pkgs.mesa.override {
     enableGalliumNine = false;
@@ -164,7 +164,7 @@ in
           fi
           EOF
 
-          ${zfsUnattendedUnlockPkg}/bin/unattended-zfs-unlock zroot nas &
+          ${zfsUnattendedUnlockPkg}/bin/unattended-zfs-unlock zroot  & # nas
         '';
       };
 

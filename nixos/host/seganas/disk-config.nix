@@ -140,12 +140,12 @@ in
           ####
         };
 
-        postCreateHook = ''
-          # after disko creates the encrypted volume we switch to prompt for next boots
-          zfs set keylocation="prompt" "nas";
-          zfs set clevis:jwe=$(cat /tmp/disk.key.jwe) nas
+        # postCreateHook = ''
+        #   # after disko creates the encrypted volume we switch to prompt for next boots
+        #   zfs set keylocation="prompt" "nas";
+        #   zfs set clevis:jwe=$(cat /tmp/disk.key.jwe) nas
           
-        '';
+        # '';
 
         datasets = {
           root = {
