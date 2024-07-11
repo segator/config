@@ -150,51 +150,51 @@ in
         datasets = {
           root = {
             type = "zfs_fs";
-            mountpoint = "/nas";
+            mountpoint = "/nas_old";
           };
         } // lib.mapAttrs (name: value: {
             type = "zfs_fs";
-            mountpoint = value.path;
+            mountpoint = "/nas_old/${name}"; #old way--> value.path
         }) config.nas.shares;        
       };
     };
   };
 
   # Set proper permissions for NAS base shares
-  system.activationScripts.nas_share_permissions = { 
-    deps = [ "users" "groups"];
-    text=''
-    ${lib.concatStringsSep "\n" (lib.mapAttrsToList (_: value: 
-        ''
-        chown nobody:nasservices "${value.mountpoint}";
-        chmod 0770 "${value.mountpoint}";
-        chmod g+s "${value.mountpoint}";
-        ''
-      ) 
-      (lib.filterAttrs (n: v: v.mountpoint!=null) config.disko.devices.zpool.nas.datasets )
-      )
-    }
-  '';
-  };
+  # system.activationScripts.nas_share_permissions = { 
+  #   deps = [ "users" "groups"];
+  #   text=''
+  #   ${lib.concatStringsSep "\n" (lib.mapAttrsToList (_: value: 
+  #       ''
+  #       chown nobody:nasservices "${value.mountpoint}";
+  #       chmod 0770 "${value.mountpoint}";
+  #       chmod g+s "${value.mountpoint}";
+  #       ''
+  #     ) 
+  #     (lib.filterAttrs (n: v: v.mountpoint!=null) config.disko.devices.zpool.nas.datasets )
+  #     )
+  #   }
+  # '';
+  # };
 
-  # Create homes folders if not exists
-  system.activationScripts.nas_share_homes = 
-  {
-    deps = [ "nas_share_permissions" ];
-    text = ''
-    ${lib.concatStringsSep "\n" (lib.mapAttrsToList (username: _:
-        let
-          homePath = "${config.disko.devices.zpool.nas.datasets.homes.mountpoint}/${username}";          
-        in
-        ''
-        mkdir -p "${homePath}";
-        chown ${username}:nasservices "${homePath}";
-        chmod 0770 "${homePath}";
-        ''
-      ) 
-      config.nas.users
-      )
-    }
-  '';
-  };
+  # # Create homes folders if not exists
+  # system.activationScripts.nas_share_homes = 
+  # {
+  #   deps = [ "nas_share_permissions" ];
+  #   text = ''
+  #   ${lib.concatStringsSep "\n" (lib.mapAttrsToList (username: _:
+  #       let
+  #         homePath = "${config.disko.devices.zpool.nas.datasets.homes.mountpoint}/${username}";          
+  #       in
+  #       ''
+  #       mkdir -p "${homePath}";
+  #       chown ${username}:nasservices "${homePath}";
+  #       chmod 0770 "${homePath}";
+  #       ''
+  #     ) 
+  #     config.nas.users
+  #     )
+  #   }
+  # '';
+  # };
 }

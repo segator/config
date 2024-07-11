@@ -28,7 +28,6 @@ in
   imports = [    
           ./hardware-configuration.nix
           ./disk-config.nix    
-          ./persistence.nix       
           ../../modules/zfs/sse4-support.nix
           ../../modules/common.nix
           ../../modules/nix-sops
@@ -110,11 +109,11 @@ in
         groups = [ "isaacaina" ];     
       };
 
-      crbmc = {
-        path = "/nas/crbmc";
-        backup = true;
-        groups = [ "carles" ];        
-      };
+      # crbmc = {
+      #   path = "/nas/crbmc";
+      #   backup = true;
+      #   groups = [ "carles" ];        
+      # };
 
       software = {
         path = "/nas/software";
@@ -123,7 +122,10 @@ in
     }; 
   };
 
-  sops.secrets = builtins.listToAttrs (
+  sops.secrets = {
+    "ceph_nas" = { };
+  } //
+  builtins.listToAttrs (
     builtins.map (key: 
       {name = "${key}_password"; value = {};}) (builtins.attrNames config.nas.users
     )
@@ -165,18 +167,7 @@ in
           ${zfsUnattendedUnlockPkg}/bin/unattended-zfs-unlock zroot nas &
         '';
       };
-  #     initrd.systemd = {
-  #       enable = true;
-  #       initrdBin = with pkgs; [ clevis jose tpm2-tools curl killall zfsUnattendedUnlockPkg zfsUnlockPkg ];
-  #       services.zfs-import-zroot.script = lib.mkForce ''
-  #         zpool status zroot || zpool import -f zroot
-  #         unattended-zfs-unlock zroot
-  #       '';
-  #       services.zfs-import-nas.script = lib.mkForce ''
-  #         zpool status nas || zpool import -f nas
-  #         unattended-zfs-unlock nas
-  #       '';
-  # };
+
     loader.grub = {
         enable = true;
         copyKernels = true;
@@ -190,10 +181,11 @@ in
   environment.systemPackages = with pkgs; [ ceph fio];
   # To generate the secret
   # ceph fs authorize <pool-name> client.<client-name> / rw
-  fileSystems."/nas_ceph" = { 
+
+  fileSystems."/nas" = { 
     device = "192.168.0.254,192.168.0.252,192.168.0.250,192.168.0.249:/";
     fsType = "ceph";
-    options = ["name=nas" "secretfile=/persist/system/nas.key" "mds_namespace=nas" ];
+    options = ["name=nas" "secretfile=${ config.sops.secrets."ceph_nas".path}" "mds_namespace=nas" ];
   };
 
   services.resilio = {

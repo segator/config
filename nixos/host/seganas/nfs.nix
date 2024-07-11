@@ -7,7 +7,7 @@
     options = [ "bind" ];
   };                                                                                            
   services.nfs.server = {
-  enable = true;
+  enable = false; # We don't need anymore nfs as we have ceph
   lockdPort = 4001;
   mountdPort = 4002;
   statdPort = 4000;
