@@ -18,6 +18,7 @@
           ./oauth2-proxy.nix
           ./prometheus.nix
           ./alertmanager.nix
+          ./api-basic.nix
           #./grafana.nix
           #./loki.nix
   ];

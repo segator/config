@@ -91,10 +91,10 @@ in
                 source_labels = ["agent_hostname"];
                 target_label = "instance";
               }
-              {
-                action = "labeldrop";
-                regex = "^agent_hostname$";
-              }
+              # {
+              #   action = "labeldrop";
+              #   regex = "^agent_hostname$";
+              # }
             ];
           in
           {

@@ -109,11 +109,6 @@ in
       forceSSL = true;
       kTLS = true;
       locations =  {
-        "/api/" = {
-          proxyPass = "http://${config.services.prometheus.listenAddress}:${toString config.services.prometheus.port}";
-          extraConfig = "auth_request off;";
-          basicAuthFile = config.sops.secrets."prometheus/auth/htpasswd".path; 
-        };
         "/" = {
           proxyPass = "http://${config.services.prometheus.listenAddress}:${toString config.services.prometheus.port}";
         };
