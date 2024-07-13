@@ -16,6 +16,7 @@ in
         ./prometheus/alerts/ceph.yaml
         ./prometheus/alerts/zfs.yaml
         ./prometheus/alerts/ups.yaml
+        ./prometheus/alerts/smartctl.yaml
         ];
     extraFlags = [ "--web.enable-remote-write-receiver" ];
     alertmanagers = [{
