@@ -29,15 +29,14 @@ in
       pam password change = yes
       usershare allow guests = no
       shadow:localtime = no
-      shadow:delimiter = _
-      shadow:snapprefix = ^autosnap
-      shadow:format = _%Y-%m-%d_%H:%M:%S
+      shadow:delimiter = -
+      shadow:snapprefix = ^scheduled
+      shadow:format = -%Y-%m-%d-%H_%M_%S_UTC
       shadow:sort = desc
-      shadow:snapdir = .zfs/snapshot
-      vfs objects = catia acl_xattr
+      shadow:snapdir = .snap
+      vfs objects = catia acl_xattr shadow_copy2
     '';
-    shares = {     
-      } // lib.mapAttrs (shareName: shareConfig: {
+    shares = lib.mapAttrs (shareName: shareConfig: {
       comment = shareName;
       path = if shareConfig.isHome then shareConfig.path + "/%S" else shareConfig.path; 
       browseable = "yes";
