@@ -1,0 +1,46 @@
+groups:
+- name: UPS
+  rules:
+  - alert: UPSExitedOnlineMode
+    expr: network_ups_tools_ups_status{flag="OL"} * on(instance) group_left(model) network_ups_tools_device_info == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "UPS has exited 'online' mode"
+      description: "UPS {{ $labels.model }} at instance {{ $labels.instance }} is no longer in 'online' mode. Please check the UPS status immediately."
+  - alert: UPSOnBattery
+    expr: network_ups_tools_ups_status{flag="OB"}  * on(instance) group_left(model) network_ups_tools_device_info == 1
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "UPS is on battery"
+      description: "UPS {{ $labels.model }} at instance {{ $labels.instance }} is currently on battery power. Check the power source."
+
+  - alert: UPSStatusChanged
+    expr: changes(network_ups_tools_ups_status[5m]) * on(instance) group_left(model) network_ups_tools_device_info > 0
+    for: 1m
+    labels:
+      severity: info
+    annotations:
+      summary: "UPS status changed"
+      description: "UPS {{ $labels.model }} at instance {{ $labels.instance }} status has changed in the past 5 minutes."
+
+  - alert: UPSBatteryLow
+    expr: network_ups_tools_battery_charge * on(instance) group_left(model) network_ups_tools_device_info < 20
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "UPS battery is low"
+      description: "UPS {{ $labels.model }} at instance {{ $labels.instance }} battery charge is below 20%. Immediate action is required."
+
+  - alert: UPSLoadHigh
+    expr: network_ups_tools_ups_load * on(instance) group_left(model) network_ups_tools_device_info > 50
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "UPS load is high"
+      description: "The load on the UPS {{ $labels.model }} at instance {{ $labels.instance }} is above 50%. Consider reducing the load."
