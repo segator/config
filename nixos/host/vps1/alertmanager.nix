@@ -31,6 +31,7 @@ in
           group_wait = "1s";
           group_interval = "24h";
           repeat_interval = "24h";
+          group_by =  [ "..." ];
           receiver = (builtins.elemAt receivers 0).name;
         };
         receivers = [
