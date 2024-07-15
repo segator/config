@@ -10,7 +10,7 @@ in
 
     # Snapshots
     services.sanoid = {
-        enable = false; # We use ceph now
+        enable = true;
         interval = "hourly";
 
         datasets = builtins.listToAttrs (map (name: {

@@ -5,46 +5,46 @@ groups:
   rules:
 
     - alert: SmartDeviceTemperatureWarning
-      expr: 'smartctl_device_temperature > 60'
+      expr: 'smartctl_device_temperature  * on(instance, device) group_left(protocol, model_name, serial_number) smartctl_device > 60'
       for: 2m
       labels:
         severity: warning
       annotations:
         summary: Smart device temperature warning (instance {{ $labels.instance }})
-        description: "Device temperature  warning (instance {{ $labels.instance }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        description: "Device temperature warning\n  instance = {{ $labels.instance }}\n  model = {{ $labels.model_name }}\n  serial = {{ $labels.serial_number }}\n  protocol = {{ $labels.protocol }}\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
     - alert: SmartDeviceTemperatureCritical
-      expr: 'smartctl_device_temperature > 80'
+      expr: 'smartctl_device_temperature * on(instance, device) group_left(protocol, model_name, serial_number) smartctl_device > 80'
       for: 2m
       labels:
         severity: critical
       annotations:
         summary: Smart device temperature critical (instance {{ $labels.instance }})
-        description: "Device temperature critical  (instance {{ $labels.instance }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        description: "Device temperature critical\n  instance = {{ $labels.instance }}\n  model = {{ $labels.model_name }}\n  serial = {{ $labels.serial_number }}\n  protocol = {{ $labels.protocol }}\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
     - alert: SmartCriticalWarning
-      expr: 'smartctl_device_critical_warning > 0'
+      expr: 'smartctl_device_critical_warning * on(instance, device) group_left(protocol, model_name, serial_number) smartctl_device > 0'
       for: 15m
       labels:
         severity: critical
       annotations:
         summary: Smart critical warning (instance {{ $labels.instance }})
-        description: "device has critical warning (instance {{ $labels.instance }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        description: "device has critical warnin\n  instance = {{ $labels.instance }}\n  model = {{ $labels.model_name }}\n  serial = {{ $labels.serial_number }}\n  protocol = {{ $labels.protocol }}\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
     - alert: SmartMediaErrors
-      expr: 'smartctl_device_media_errors > 0'
+      expr: 'smartctl_device_media_errors * on(instance, device) group_left(protocol, model_name, serial_number) smartctl_device > 0'
       for: 15m
       labels:
         severity: critical
       annotations:
         summary: Smart media errors (instance {{ $labels.instance }})
-        description: "device has media errors (instance {{ $labels.instance }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        description: "device has media errorsn  instance = {{ $labels.instance }}\n  model = {{ $labels.model_name }}\n  serial = {{ $labels.serial_number }}\n  protocol = {{ $labels.protocol }}\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
     - alert: SmartNvmeWearoutIndicator
-      expr: 'smartctl_device_available_spare{device=~"nvme.*"} < smartctl_device_available_spare_threshold{device=~"nvme.*"}'
+      expr: 'smartctl_device_available_spare{device=~"nvme.*"} * on(instance, device) group_left(protocol, model_name, serial_number) smartctl_device < smartctl_device_available_spare_threshold{device=~"nvme.*"}  * on(instance, device) group_left(protocol, model_name, serial_number) smartctl_device'
       for: 15m
       labels:
         severity: critical
       annotations:
         summary: Smart NVME Wearout Indicator (instance {{ $labels.instance }})
-        description: "NVMe device is wearing out (instance {{ $labels.instance }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        description: "NVMe device is wearing outn  instance = {{ $labels.instance }}\n  model = {{ $labels.model_name }}\n  serial = {{ $labels.serial_number }}\n  protocol = {{ $labels.protocol }}\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"

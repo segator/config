@@ -2,10 +2,6 @@
 let
 in
 {
-  # boot.initrd.postDeviceCommands = lib.mkAfter ''
-  #   zfs rollback -r zroot/root@empty
-  # '';
-
   disko.devices = {
     disk.main = {
       device = lib.mkDefault "/dev/sda"; 
@@ -27,49 +23,26 @@ in
               mountpoint = "/boot";
             };
           };
-          system = {
+          nix = {
+            size = "50G";
+            content = {
+              type = "filesystem";
+              format = "xfs";
+              mountpoint = "/nix";
+            };
+          };
+          persist = {
             size = "100%";
             content = {
-              type = "zfs";
-              pool = "zroot";
+              type = "filesystem";
+              format = "xfs";
+              mountpoint = "/persist";
             };
           };          
         };
       };
     };
 
-    # disk.sdb = {
-    #   device = "/dev/sdb"; # /dev/disk/by-id/ata-Samsung_SSD_860_EVO_500GB_S3Z1NB0K303456L"
-    #   type = "disk";
-    #   content = {
-    #     type = "gpt";
-    #     partitions = {
-    #       nas = {
-    #         size = "100%";
-    #         content = {
-    #           type = "zfs";
-    #           pool = "nas";
-    #         };
-    #       };          
-    #     };
-    #   };
-    # };
-    # disk.sdc = {
-    #   device = "/dev/sdc"; # /dev/disk/by-id/ata-Samsung_SSD_860_EVO_500GB_S3Z1NB0K303456L"
-    #   type = "disk";
-    #   content = {
-    #     type = "gpt";
-    #     partitions = {
-    #       nas = {
-    #         size = "100%";
-    #         content = {
-    #           type = "zfs";
-    #           pool = "nas";
-    #         };
-    #       };          
-    #     };
-    #   };
-    # };
     nodev."/" = {
       fsType = "tmpfs";
       mountOptions = [
@@ -78,87 +51,8 @@ in
         "mode=755"
       ];
     };
-    zpool = {
-      zroot = {
-        type = "zpool";
-        mode = ""; # mirror
-        rootFsOptions = {
-          mountpoint = "none";
-          acltype = "posixacl";
-          xattr = "sa";
-          atime = "off";
-          compression = "zstd";
-          encryption = "aes-256-gcm";
-          keyformat = "passphrase";
-          keylocation = "file:///tmp/disk.key";
-          dedup = "on";   
-        };
-
-        postCreateHook = ''
-          # after disko creates the encrypted volume we switch to prompt for next boots
-          zfs set keylocation="prompt" "zroot";  
-          zfs set clevis:jwe=$(cat /tmp/disk.key.jwe) zroot
-        '';
-        datasets = {
-          # root = {
-          #   type = "zfs_fs";
-          #   mountpoint = "/";
-          #   postCreateHook = "zfs snapshot zroot/root@empty";
-          # };
-          persist = {
-            type = "zfs_fs";
-            mountpoint = "/persist";
-           
-
-          };
-          nix = {
-            type = "zfs_fs";
-            mountpoint = "/nix";
-          };
-        };
-      };
-
-
-      # nas = {
-      #   type = "zpool";
-      #   mode = "mirror";
-      #   rootFsOptions = {
-      #     mountpoint = "none";
-      #     acltype = "posixacl";
-      #     xattr = "sa";
-      #     atime = "off";
-      #     compression = "zstd";
-
-      #     encryption = "aes-256-gcm";
-      #     keyformat = "passphrase";
-      #     keylocation = "file:///tmp/disk.key";
-      #     dedup = "off";
-      #     # Speed tunning # we only store some cold big files
-      #     logbias = "throughput";
-      #     recordsize = "1M";
-      #     sync = "disabled"; 
-      #     ####
-      #   };
-
-      #   postCreateHook = ''
-      #     # after disko creates the encrypted volume we switch to prompt for next boots
-      #     zfs set keylocation="prompt" "nas";
-      #     zfs set clevis:jwe=$(cat /tmp/disk.key.jwe) nas
-          
-      #   '';
-
-      #   datasets = {
-      #     root = {
-      #       type = "zfs_fs";
-      #       mountpoint = "/nas_old";
-      #     };
-      #   } // lib.mapAttrs (name: value: {
-      #       type = "zfs_fs";
-      #       mountpoint = "/nas_old/${name}"; #old way--> value.path
-      #   }) config.nas.shares;        
-      # };
-    };
   };
+
 
   #Set proper permissions for NAS base shares
   system.activationScripts.nas_share_permissions = { 

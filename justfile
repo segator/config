@@ -14,11 +14,11 @@ bootstrap_setup profile arch=default_arch:
 bootstrap_apply profile server arch=default_arch:
 	encryption_status_file="$(pwd)/build/bootstrap/{{profile}}/encryption"; \
 	if [ -f "$$encryption_status_file" ] && grep -q "true" "$$encryption_status_file"; then \
-		disk_encryption_keys="--disk-encryption-keys /tmp/disk.key /tmp/disk.key.jwe \"$(pwd)/build/bootstrap/{{profile}}/disk.key\""; \
+		disk_encryption_keys="--disk-encryption-keys /tmp/disk.key $(pwd)/build/bootstrap/{{profile}}/disk.key --disk-encryption-keys /tmp/disk.key.jwe $(pwd)/build/bootstrap/{{profile}}/disk.key.jwe"; \
 	else \
 		disk_encryption_keys=""; \
 	fi; \
-	nix run github:nix-community/nixos-anywhere -- $disk_encryption_keys \
+	nix run github:nix-community/nixos-anywhere -- \
 		--extra-files "$(pwd)/build/bootstrap/{{profile}}" \
 		--flake .#{{profile}} \
 		"root@{{server}}"

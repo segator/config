@@ -18,6 +18,14 @@ in
           
           basicAuthFile = config.sops.secrets."prometheus/auth/htpasswd".path; 
         };
+        "/alert" = {
+          proxyPass = "http://${config.services.prometheus.alertmanager.listenAddress}:${toString config.services.prometheus.alertmanager.port}";
+          extraConfig = ''
+            rewrite /alert/(.*)$ /$1 break;
+          '';
+          
+          basicAuthFile = config.sops.secrets."prometheus/auth/htpasswd".path; 
+        };
       };      
     };
 }

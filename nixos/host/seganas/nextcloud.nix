@@ -271,7 +271,7 @@ in
       enable = true;
       description = "Configure nextcloud users";
       environment = {
-        OCC_COMMAND=occ;
+        OCC_COMMAND="sudo -E -u nextcloud ${occ}";
         CONFIG_PATH=pkgs.writeText "nextcloud-user-config.yaml" (lib.generators.toYAML {} {
               groups = config.nas.groups;
               users = config.nas.users;
