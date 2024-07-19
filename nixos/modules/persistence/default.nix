@@ -33,6 +33,8 @@
     ++
     (lib.optionals config.services.samba.enable ["/var/lib/samba"])
     ++
+    (lib.optionals virtualisation.docker.enable [virtualisation.docker.daemon.settings.data-root])
+    ++
     (lib.optionals config.services.rabbitmq.enable [config.services.rabbitmq.dataDir])
     ++
     (lib.optionals config.services.onlyoffice.enable ["/var/lib/onlyoffice" ])

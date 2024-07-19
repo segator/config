@@ -21,6 +21,7 @@
           ./api-basic.nix
           #./grafana.nix
           #./loki.nix
+          ./proxylive.nix
   ];
 
   services.qemuGuest.enable = true;
@@ -54,6 +55,8 @@
       { routeConfig.Gateway = "fe80::1"; }
     ];
   };
+
+  virtualisation.docker.enable = true;
 
   time.timeZone = "Europe/Madrid";
   networking.networkmanager.enable = false;
