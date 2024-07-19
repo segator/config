@@ -18,7 +18,7 @@
       ../../modules/gnome
       #../../modules/hyprland
       ../../modules/virtualisation
-      ../../modules/fprintd
+      #../../modules/fprintd
       ../../modules/sshd
       ../../modules/fwupd
       ../../modules/logind
@@ -146,7 +146,7 @@
     xsaneGimp = pkgs.xsane.override { gimpSupport = true; };
   };
   # Enable sound with pipewire.
-  sound.enable = true;
+  #sound.enable = true;
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
