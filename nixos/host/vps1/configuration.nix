@@ -22,6 +22,7 @@
           #./grafana.nix
           #./loki.nix
           ./proxylive.nix
+          ./tailscale.nix
   ];
 
   services.qemuGuest.enable = true;
@@ -56,7 +57,10 @@
     ];
   };
 
-  virtualisation.docker.enable = true;
+  virtualisation.docker = {
+    enable = true;
+    daemon.settings.data-root = "/var/lib/docker";
+  };
 
   time.timeZone = "Europe/Madrid";
   networking.networkmanager.enable = false;

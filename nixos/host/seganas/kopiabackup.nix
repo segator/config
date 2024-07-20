@@ -3,10 +3,10 @@
 let  
   kopiaCacheDir = "/var/kopia/cache";
   kopiaCacheLog = "/var/kopia/log";
-  backupServerSshPubKey = pkgs.writeText "nuc.keys" ''
-    192.168.0.250 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMtTAOaoX42tTvLwP03Go1N1ZLEjGQMfOnRkDZcsYQod
-    192.168.0.250 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDf9atzXSXYkRZ7lGDwA+v7yNgqAPtbs8vF/QrpowoXktv0E+dyPCpoobyqUBwnrx/EeG/rbaS6xe70FIReWIQkxCqzThbE8lACbI2/mg7AbPPX6OVFjGIIhYmKQ0qs3D7S2LHxi2l+wtNYk9zVokFzvCHBP/yrkGMYsRHaiNJzSiKb2wE89S4B7WfAu1iLE5xN0+auHlYM4p4B+AMpoYDA5+4IVQTOaoZkA50lphUGxQCoV9CWYLGn/VgrO0EUDkFeBB7a/G/GuRu99biag4dk09eWegN78Jy+/Chv3ExylmmGRvsRWI55PTmCAGVgNpN6YCpUhea9tiqQkRs5ygeViSfdTqnqggLukm8Bc+eO1GoEECFbMxoi004K9hp+lBqFDXSilDzKvJF07Z7+QUDP0snZMfIHi2VuSP2ZvhIFOUovs/rD8oP8zWKmJu57kVsIUt9fWUGomFQHFWbKQEo3+RlmraxH7vNR4XXkqe614oFJQNHtLEroqHNoq/F/8aCJb5CvqRu9XJRBWGVONoJf1ZxHSupFIjo8EygpSbUnjkwi2rnZwTJkz9Y8/PhNubAWvuOb2sPdvxKEWuxfMOrC7fwTYvn4wMh10fxtV4xFTzyVvtzRIZpCPelUFV0OqZXV2KAL+e4hLRJptK7Ye4kliHCN8VT4wXwMD6oCcs97Qw== root@nuc
-    192.168.0.250 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBBA1UnoeReVpRrtvc4v3BqMivt5X8q1RZRi/g0NrFfBti2wyudtbyQfy4XINP3biSzQkkRtkh/Sfhy+rmaKWGtY=
+  backupServerSshPubKey = pkgs.writeText "kopia.keys" ''
+    192.168.0.59 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDG5juRNHfkebF/v7xRhI+F/ZNHuiy57tW390GZvmMi6f/rHdxwPgmt4GkKIrQgRJy+IwemQbGIc8AX41hzUB1rMA0bzDtmNDa90pYr3Vd+2q8on4k6Xfk2kF6v+exrEoHhcTz3UD7E3071nzKxrHlpwTfWdTa2oX1CroLFQyrtQ3I8tFFVx/AABp3VfVuCGJJ0HEwNAj3i0b8qo+1si4fQC8+CL+UOclRs5nz8Y4NYivzLW0D04sb36/032F9YkfxL7qioybigRmGUFqUxKrgeyu5FUPjXtbVe8DNYiuOKNSU1LILuxNRDY1ctHHdauFWPk02+fec7B7A+jkI7DsutMjee2IbXz5He4Gecr41ed/p4qffCTNRa6+B4FD/Ixq6h64raqIoStSqsBCu4ijxCOd01L9GZ1+rO7Hu8PRm6UAjykq44h+bUrnZEhVy5HINFydhWPrLHc8LFUWqrvLiPkCVXlQml+3PB0y/UofCHyeEtERepIoxOZ/07ux8sQOM=
+    192.168.0.59 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHJJUJlvVkivTDC9dHcZVVluo1j9Jfcm2MhI8fdx7TTC
+    192.168.0.59 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNddSwvR7wmeBay2UaskdqzvnU8K7jEF1VY54OkL8FScX9C1SGi4yCc+zHrXmuu1jZT+3gt3aMcHzHAz9uewPD4=
     '';
 
    kopiaRepoConfig = pkgs.writeText "repo.config" ''
@@ -15,7 +15,7 @@ let
         "type": "sftp",
         "config": {
           "path": "/backup/kopia",
-          "host": "192.168.0.250",
+          "host": "192.168.0.59",
           "port": 22,
           "username": "root",
           "keyfile": "${config.sops.secrets."kopia-backup-sshkey".path}",
@@ -62,7 +62,7 @@ in
   ];
 
   sops.secrets."kopia-backup-sshkey" = {
-    sopsFile = ../../../secrets/common/kopia-nuc-ssh.key;
+    sopsFile = ../../../secrets/common/kopia-ssh.key;
     format = "binary";
   };
 
