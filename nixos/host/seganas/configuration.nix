@@ -81,7 +81,8 @@
 
       multimedia = {
         path = "/nas/multimedia";
-        groups = [ "isaacaina" ];     
+        groups = [ "isaacaina" ];    
+        backup = true; 
       };
 
       # crbmc = {
@@ -93,6 +94,7 @@
       software = {
         path = "/nas/software";
         groups = [ "isaacaina" ];
+        backup = true;
       };     
     }; 
   };
