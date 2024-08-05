@@ -40,7 +40,7 @@ in
             telegram_configs = [
               {
                 bot_token_file = config.sops.secrets."telegram/bot_token".path;
-                chat_id = -4276135277;
+                chat_id = -4144135430;
                 api_url = "https://api.telegram.org";
                 send_resolved = true;
                 parse_mode = "HTML";  # Changed to HTML

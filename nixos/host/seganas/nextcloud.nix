@@ -196,7 +196,7 @@ in
       script = ''
         # Installing extra apps
         ${occ} app:install files_external || ${occ} app:enable files_external
-        ${occ} app:install suspicious_login || ${occ} app:enable suspicious_login
+        #${occ} app:install suspicious_login || ${occ} app:enable suspicious_login
         ${occ} app:install bruteforcesettings || ${occ} app:enable bruteforcesettings
         ${occ} app:install tasks || ${occ} app:enable tasks
         #${occ} app:install photos || ${occ} app:enable photos
