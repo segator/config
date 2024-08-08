@@ -203,9 +203,8 @@ in
         ${occ} app:install memories || ${occ} app:enable memories
         ${occ} app:install previewgenerator || ${occ} app:enable previewgenerator
         ${occ} app:install recognize || ${occ} app:enable recognize
-        
 
-
+        ${occ} app:install twofactor_webauthn || ${occ} app:enable twofactor_webauthn
 
         # Memories 
         #${occ} memories:places-setup
