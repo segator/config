@@ -29,6 +29,8 @@ in
             deploy-rs
             ansible
             clevis
+            nh
+            nix-output-monitor
         ];
 
         shellHook = ''

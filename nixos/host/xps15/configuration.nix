@@ -18,7 +18,7 @@
       ../../modules/gnome
       #../../modules/hyprland
       ../../modules/virtualisation
-      ../../modules/fprintd
+      #../../modules/fprintd
       ../../modules/sshd
       ../../modules/fwupd
       ../../modules/logind
