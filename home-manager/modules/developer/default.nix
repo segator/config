@@ -7,6 +7,7 @@
     ./dotnet.nix
     ./java.nix
     ./c.nix
+    ./node.nix
   ];
 
   home.packages = with pkgs; [
