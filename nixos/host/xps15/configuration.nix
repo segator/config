@@ -22,8 +22,9 @@
       ../../modules/sshd
       ../../modules/fwupd
       ../../modules/logind
-
+      ../../modules/weylus
       ../../users/aymerici
+      
     ];
 
 
