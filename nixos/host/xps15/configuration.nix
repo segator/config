@@ -23,6 +23,7 @@
       ../../modules/fwupd
       ../../modules/logind
       ../../modules/weylus
+      ../../modules/sunshine
       ../../users/aymerici
       
     ];
@@ -186,6 +187,8 @@
     kitty
     virt-manager
     neofetch
+
+    moonlight-qt
   ];
 
 
