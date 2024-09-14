@@ -3,8 +3,8 @@
   imports =
     [
       inputs.nixos-hardware.nixosModules.dell-xps-15-9520
-      inputs.nixos-hardware.nixosModules.common-gpu-nvidia-disable
-      #inputs.nixos-hardware.nixosModules.dell-xps-15-9520-nvidia
+      #inputs.nixos-hardware.nixosModules.common-gpu-nvidia-disable
+      inputs.nixos-hardware.nixosModules.dell-xps-15-9520-nvidia
       ./hardware-configuration.nix
       ../../modules/boot
       ../../modules/common.nix
@@ -17,8 +17,9 @@
       ../../modules/roche_certs  
       ../../modules/gnome
       #../../modules/hyprland
+      ../../modules/gaming
       ../../modules/virtualisation
-      #../../modules/fprintd
+      ../../modules/fprintd
       ../../modules/sshd
       ../../modules/fwupd
       ../../modules/logind
