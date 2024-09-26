@@ -2,7 +2,7 @@
 {
   imports =
     [
-      inputs.nixos-hardware.nixosModules.dell-xps-15-9520
+      #inputs.nixos-hardware.nixosModules.dell-xps-15-9520
       #inputs.nixos-hardware.nixosModules.common-gpu-nvidia-disable
       inputs.nixos-hardware.nixosModules.dell-xps-15-9520-nvidia
       ./hardware-configuration.nix
@@ -17,7 +17,7 @@
       ../../modules/roche_certs  
       ../../modules/gnome
       #../../modules/hyprland
-      ../../modules/gaming
+      #../../modules/gaming
       ../../modules/virtualisation
       ../../modules/fprintd
       ../../modules/sshd
@@ -32,19 +32,19 @@
 
   hardware.enableRedistributableFirmware = true;
   hardware.enableAllFirmware = true;
-
-  #hardware.nvidia = {
-  #  modesetting.enable = true;
-  #  powerManagement.enable = true;
-#    open = true;
-#    nvidiaSettings = true;
-#    package = config.boot.kernelPackages.nvidiaPackages.stable;
-#    prime.offload = {
-#			enable = true;
-#			enableOffloadCmd = true;
-#		};
-#    powerManagement.finegrained = true;
-#  };
+ boot.blacklistedKernelModules = [ "nouveau" ];
+  hardware.nvidia = {
+   modesetting.enable = true;
+   powerManagement.enable = true;
+   open = true;
+   nvidiaSettings = true;
+   package = config.boot.kernelPackages.nvidiaPackages.stable;
+   prime.offload = {
+			enable = true;
+			enableOffloadCmd = true;
+		};
+   powerManagement.finegrained = true;
+ };
 
   #boot.kernelParams = [ "iommu=off" "intel_iommu=off"];
   #boot.blacklistedKernelModules = [ "intel_lpss_pci"];

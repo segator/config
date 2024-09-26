@@ -28,7 +28,7 @@
             sshCommand = "ssh -i ~/.ssh/id_rsa_roche";
           };
         };
-        condition = "hasconfig:remote.*.url:git@github.com:Roche-DIA-RIS-Platform/*";
+        condition = "hasconfig:remote.*.url:git@github.com:Roche-DIA-RIS-*/**";
       }
       {
         contents = {
