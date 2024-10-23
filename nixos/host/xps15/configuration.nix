@@ -25,6 +25,7 @@
       ../../modules/logind
       ../../modules/weylus
       ../../modules/sunshine
+      ../../modules/yubikey
       ../../users/aymerici
       
     ];
