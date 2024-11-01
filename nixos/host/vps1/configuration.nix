@@ -23,6 +23,7 @@
           #./loki.nix
           ./proxylive.nix
           ./tailscale.nix
+          #./test.nix
   ];
 
   services.qemuGuest.enable = true;
