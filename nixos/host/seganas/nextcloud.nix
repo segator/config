@@ -87,7 +87,7 @@ in
     nextcloud = {
       enable = true;
       hostName = nextcloudFqdn;
-      package = pkgs.nextcloud29;
+      package = pkgs.nextcloud30;
       autoUpdateApps = {
         enable = true;
         startAt = "22:35";
