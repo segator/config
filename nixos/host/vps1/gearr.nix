@@ -3,6 +3,7 @@
 let
   # Load secrets directly using sops-nix.
   rabbitMQPort = 5672;
+  rabbitMQManagementPort = 15672;
   secrets = pkgs.sops-nix.secrets {
     rabbitmqUser = "./secrets.yaml#rabbitmq.user";
     rabbitmqPassword = "./secrets.yaml#rabbitmq.password";
@@ -11,12 +12,16 @@ let
   };
 in
 {
-  sops.secrets."rabbitmq/user" = { };
-  sops.secrets."rabbitmq/password" = { };
-  sops.templates."rabbitmq.env.secret".content = ''
-    RABBITMQ_DEFAULT_USER = "${config.sops.placeholder."rabbitmq/user"}"
-    RABBITMQ_DEFAULT_PASS = "${config.sops.placeholder."rabbitmq/password"}"
-  '';
+  sops.secrets."rabbitmq/user" = {     restartUnits = [ "docker-rabbitmq.service" ]; };
+  sops.secrets."rabbitmq/password" = {      restartUnits = [ "docker-rabbitmq.service" ];};
+  sops.templates."rabbitmq.env.secret" = {
+    owner = "docker";
+    group = "docker";
+    content = ''
+    RABBITMQ_DEFAULT_USER=${config.sops.placeholder."rabbitmq/user"}
+    RABBITMQ_DEFAULT_PASS=${config.sops.placeholder."rabbitmq/password"}
+    '';
+  };
   # Enable OCI containers in NixOS
   virtualisation.oci-containers = {
     backend = "docker";
@@ -62,8 +67,9 @@ in
       # Define the "rabbitmq" container
       rabbitmq = {
         image = "rabbitmq:3-management";
-        ports = ["${builtins.toString rabbitMQPort}:${builtins.toString rabbitMQPort}"];
+        ports = ["${builtins.toString rabbitMQPort}:${builtins.toString rabbitMQPort}" "${builtins.toString rabbitMQManagementPort}:${builtins.toString rabbitMQManagementPort}"];
         environmentFiles = [ "${config.sops.templates."rabbitmq.env.secret".path}" ];
+        volumes = ["/persist/services/rabbitmq:/var/lib/rabbitmq" ];
       };
 
       # Define the "worker" container
