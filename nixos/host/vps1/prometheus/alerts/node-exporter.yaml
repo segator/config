@@ -140,7 +140,7 @@ groups:
         description: "CPU steal is > 10%. A noisy neighbor is killing VM performances or a spot instance may be out of credit.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
     - alert: HostCpuHighIowait
-      expr: '(avg by (instance) (rate(node_cpu_seconds_total{mode="iowait"}[5m])) * 100 > 10) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
+      expr: '(avg by (instance) (rate(node_cpu_seconds_total{mode="iowait"}[30m])) * 100 > 10) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 0m
       labels:
         severity: warning
@@ -158,7 +158,7 @@ groups:
         description: "Time spent in IO is too high on {{ $labels.instance }}. Check storage for issues.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
     - alert: HostContextSwitchingHigh
-      expr: '(rate(node_context_switches_total[15m])/count without(mode,cpu) (node_cpu_seconds_total{mode="idle"}))
+      expr: '(rate(node_context_switches_total[30m])/count without(mode,cpu) (node_cpu_seconds_total{mode="idle"}))
 /
 (rate(node_context_switches_total[1d])/count without(mode,cpu) (node_cpu_seconds_total{mode="idle"})) > 3
 '
@@ -189,7 +189,7 @@ groups:
 
     - alert: HostPhysicalComponentTooHot
       expr: '((node_hwmon_temp_celsius * ignoring(label) group_left(instance, job, node, sensor) node_hwmon_sensor_label{label!="tctl"} > 75)) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
-      for: 5m
+      for: 30m
       labels:
         severity: warning
       annotations:

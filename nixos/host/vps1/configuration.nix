@@ -23,6 +23,7 @@
           #./loki.nix
           ./proxylive.nix
           ./tailscale.nix
+          ./gearr.nix
           #./test.nix
   ];
 
