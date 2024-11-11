@@ -2,7 +2,7 @@
 {
   programs.kitty.enable = true;
   programs.kitty.shellIntegration.enableFishIntegration = true;
-  programs.kitty.theme = "Catppuccin-Macchiato";
+  programs.kitty.themeFile = "Catppuccin-Macchiato";
   programs.kitty.settings =  {
     confirm_os_window_close=0;
     font_size = 14;

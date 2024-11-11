@@ -31,6 +31,10 @@ in
     GITHUB_TOKEN=$(cat ${github_token})
     REPOSITORY_USER=$(cat ${jfrog_navify_user})
     REPOSITORY_TOKEN=$(cat ${jfrog_navify_token})
+
+    #NI especific
+    TF_TOKEN_CODE_ROCHE_COM=$(cat ${gitlab_token})
+    TG_TF_REGISTRY_TOKEN==$(cat ${gitlab_token})
     '';
   };
 
