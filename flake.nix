@@ -49,6 +49,7 @@
       "aymerici@fury" = libx.mkHome "aymerici@fury" { system = "x86_64-linux"; };
       "segator@fury" = libx.mkHome "segator@fury" { system = "x86_64-linux"; };
       "aymerici@xps15" = libx.mkHome "aymerici@xps15" { system = "x86_64-linux"; };
+      "aymerici@xps15-pop" = libx.mkHome "aymerici@xps15-pop" { system = "x86_64-linux"; };
       "aymerici@aymerici-4DVF0G" = libx.mkHome "aymerici@aymerici-4DVF0G" { system = "aarch64-darwin"; };
     };
 
