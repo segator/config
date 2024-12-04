@@ -8,6 +8,8 @@ in
       kind      
       kubernetes-helm      
       kubectl
+      awscli2
+      tenv
       #(krewKubectl.withKrewPlugins (plugins: [
       #      plugins.oidc-login
       #    ]))
