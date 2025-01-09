@@ -34,7 +34,7 @@ in
 
     #NI especific
     TF_TOKEN_CODE_ROCHE_COM=$(cat ${gitlab_token})
-    TG_TF_REGISTRY_TOKEN==$(cat ${gitlab_token})
+    TG_TF_REGISTRY_TOKEN=$(cat ${gitlab_token})
     '';
   };
 
