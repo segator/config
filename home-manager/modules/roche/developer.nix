@@ -45,6 +45,10 @@ in
     set -gx GITHUB_TOKEN $(cat ${github_token})
     set -gx REPOSITORY_USER $(cat ${jfrog_navify_user})
     set -gx REPOSITORY_TOKEN $(cat ${jfrog_navify_token})
+
+    #NI especific
+    set -gx TF_TOKEN_CODE_ROCHE_COM $(cat ${gitlab_token})
+    set -gx TG_TF_REGISTRY_TOKEN $(cat ${gitlab_token})
     '';
   };
 
