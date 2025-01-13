@@ -5,6 +5,17 @@ let
   github_token = "${config.home.homeDirectory}/.secrets/home-manager/github_token";
   jfrog_navify_user = "${config.home.homeDirectory}/.secrets/home-manager/jfrog_navify_user";
   jfrog_navify_token = "${config.home.homeDirectory}/.secrets/home-manager/jfrog_navify_token";
+  roche_user = "${config.home.homeDirectory}/.secrets/home-manager/roche_user";
+  roche_pass = "${config.home.homeDirectory}/.secrets/home-manager/roche_pass";
+  roche_aws_account_alias = {
+    "ni-dev-mfc" = "arn:aws:iam::161629962181:role/Roche/Products/NIB/NIBDevOps";
+    "ni-dev-sandbox" = "arn:aws:iam::153050842925:role/Roche/Products/NIB/NIBDevOps";
+    "ni-live" = "arn:aws:iam::296370534383:role/Roche/Products/NIB/NIBDevOps";
+    "migration-dev" = "arn:aws:iam::891612565494:role/Roche/Products/NIB/NIBDevOps";
+    "ni-network" = "arn:aws:iam::897729119902:role/Roche/Products/NIBACKEND/NIBACKENDDevOps";
+    "ni-qa" = "arn:aws:iam::340747948655:role/Roche/Products/NIB/NIBDevOps";
+    "ni-stage" = "arn:aws:iam::957086612114:role/Roche/Products/NIB/NIBDevOps";
+  };
 in
 {
   sops.secrets.gitlab_token = {
@@ -22,9 +33,15 @@ in
   sops.secrets.jfrog_navify_token = { 
     path = jfrog_navify_token;
   };
+  sops.secrets.roche_user = { 
+    path = roche_user;
+  };
+  sops.secrets.roche_pass = { 
+    path = roche_pass;
+  };
 
 
-  home.file.".secrets/home-manager/secrets.bashrc" = {
+  home.file.".secrets/home-manager/secrets.bashrc" = lib.mkIf config.programs.bash.enable {
     text=''
     NPM_AUTH_TOKEN=$(cat ${gitlab_npm_token})
     GITLAB_TOKEN=$(cat ${gitlab_token})
@@ -33,12 +50,13 @@ in
     REPOSITORY_TOKEN=$(cat ${jfrog_navify_token})
 
     #NI especific
+    TF_REGISTRY_TOKEN=$(cat ${gitlab_token})
     TF_TOKEN_CODE_ROCHE_COM=$(cat ${gitlab_token})
     TG_TF_REGISTRY_TOKEN=$(cat ${gitlab_token})
     '';
   };
 
-  home.file.".secrets/home-manager/secrets.fish" = {
+  home.file.".secrets/home-manager/secrets.fish" = lib.mkIf config.programs.fish.enable {
     text=''
     set -gx NPM_AUTH_TOKEN $(cat ${gitlab_npm_token})
     set -gx GITLAB_TOKEN $(cat ${gitlab_token})
@@ -55,13 +73,35 @@ in
   programs.bash = lib.mkIf config.programs.bash.enable {
     bashrcExtra = ''
       source ${config.home.homeDirectory}/.secrets/home-manager/secrets.bashrc
+      export PATH=$PATH:/home/${config.home.username}/.local/bin
     '';
+    shellAliases = lib.mapAttrs' (accountName: v: 
+      { 
+        name = "aws-${accountName}"; 
+        value="navify-aws-sso-login --login-alias ${accountName} --username $(cat ${roche_user}) --password $(cat ${roche_pass})  --write-credentials ${accountName}";
+      }
+    ) roche_aws_account_alias;
   };  
 
   programs.fish = lib.mkIf config.programs.fish.enable {
     shellInit = ''
       source ${config.home.homeDirectory}/.secrets/home-manager/secrets.fish
+      set -gx PATH $PATH:/home/aymerici/.local/bin
     '';
+    shellAliases = lib.mapAttrs' (accountName: v: 
+      { 
+        name = "aws-${accountName}"; 
+        value="navify-aws-sso-login --login-alias ${accountName} --username $(cat ${roche_user}) --password $(cat ${roche_pass})  --write-credentials ${accountName}";
+      }
+    ) roche_aws_account_alias;
   };
+
+  # Navify AWS SSO alias file
+  home.file.".navify/aws-sso.yml".  text = ''
+    accounts:
+    ${lib.concatMapStrings (accountName: 
+    "  ${accountName}:\n    login_role: ${roche_aws_account_alias.${accountName}}\n") (builtins.attrNames roche_aws_account_alias)}
+  '';
+
 }
 
