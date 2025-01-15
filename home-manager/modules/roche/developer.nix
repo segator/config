@@ -5,8 +5,8 @@ let
   github_token = "${config.home.homeDirectory}/.secrets/home-manager/github_token";
   jfrog_navify_user = "${config.home.homeDirectory}/.secrets/home-manager/jfrog_navify_user";
   jfrog_navify_token = "${config.home.homeDirectory}/.secrets/home-manager/jfrog_navify_token";
-  roche_user = "${config.home.homeDirectory}/.secrets/home-manager/roche_user";
-  roche_pass = "${config.home.homeDirectory}/.secrets/home-manager/roche_pass";
+  roche_user_path = "${config.home.homeDirectory}/.secrets/home-manager/roche_user";
+  roche_pass_path = "${config.home.homeDirectory}/.secrets/home-manager/roche_pass";
   roche_aws_account_alias = {
     "ni-dev-mfc" = "arn:aws:iam::161629962181:role/Roche/Products/NIB/NIBDevOps";
     "ni-dev-sandbox" = "arn:aws:iam::153050842925:role/Roche/Products/NIB/NIBDevOps";
@@ -34,10 +34,10 @@ in
     path = jfrog_navify_token;
   };
   sops.secrets.roche_user = { 
-    path = roche_user;
+    path = roche_user_path;
   };
   sops.secrets.roche_pass = { 
-    path = roche_pass;
+    path = roche_pass_path;
   };
 
 
@@ -78,7 +78,7 @@ in
     shellAliases = lib.mapAttrs' (accountName: v: 
       { 
         name = "aws-${accountName}"; 
-        value="navify-aws-sso-login --login-alias ${accountName} --username $(cat ${roche_user}) --password $(cat ${roche_pass})  --write-credentials ${accountName}";
+        value="navify-aws-sso-login --login-alias ${accountName} --username $(cat ${roche_user_path}) --password $(cat ${roche_pass_path})  --write-credentials ${accountName}";
       }
     ) roche_aws_account_alias;
   };  
