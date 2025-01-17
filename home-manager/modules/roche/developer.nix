@@ -78,7 +78,7 @@ in
     shellAliases = lib.mapAttrs' (accountName: v: 
       { 
         name = "aws-${accountName}"; 
-        value="navify-aws-sso-login --login-alias ${accountName} --username $(cat ${roche_user_path}) --password $(cat ${roche_pass_path})  --write-credentials ${accountName}";
+        value="navify-aws-sso-login --login-alias ${accountName} --username $(cat ${roche_user_path}) --password $(cat ${roche_pass_path})  --write-credentials ${accountName} && export AWS_PROFILE=${accountName}";
       }
     ) roche_aws_account_alias;
   };  
@@ -91,7 +91,7 @@ in
     shellAliases = lib.mapAttrs' (accountName: v: 
       { 
         name = "aws-${accountName}"; 
-        value="navify-aws-sso-login --login-alias ${accountName} --username $(cat ${roche_user}) --password $(cat ${roche_pass})  --write-credentials ${accountName}";
+        value="navify-aws-sso-login --login-alias ${accountName} --username $(cat ${roche_user_path}) --password $(cat ${roche_pass_path})  --write-credentials ${accountName} && set -gx AWS_PROFILE=${accountName}";
       }
     ) roche_aws_account_alias;
   };
