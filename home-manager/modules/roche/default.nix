@@ -5,6 +5,7 @@
       ./ssh.nix
       ./pki.nix
       ./developer.nix
+      ./vpn.nix
     ];
 }
 

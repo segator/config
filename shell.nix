@@ -22,6 +22,7 @@ in
             sops
             moreutils
             fzf
+            home-manager
             nixos-rebuild 
             nix-tree
             py3_packages
