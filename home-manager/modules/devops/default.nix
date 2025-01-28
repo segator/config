@@ -4,6 +4,7 @@ let
 in
 {  
   home.packages = with pkgs; [
+      devbox
       lazydocker
       kind      
       kubernetes-helm      
