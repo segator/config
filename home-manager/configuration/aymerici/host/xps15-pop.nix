@@ -4,6 +4,7 @@
     #../../../modules/spotify
     #../../../modules/developer
     ../../../modules/devops
+    ../../../modules/roche
     #../../../modules/work
     #../../../modules/office
     #../../../modules/gnome

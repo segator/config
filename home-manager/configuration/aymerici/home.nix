@@ -9,9 +9,8 @@ let
 in
 {
   imports = [
-    ../../modules/shell {}
+    ../../modules/shell
     ../../modules/sops
-    ../../modules/roche
   ];
   
   home.username = "aymerici";
@@ -22,6 +21,7 @@ in
   home.stateVersion = "23.05"; 
 
   programs.home-manager.enable = true;
+
 
   home.file.".ssh/authorized_keys" = {
     text=''

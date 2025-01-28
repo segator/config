@@ -6,7 +6,7 @@
     defaultSopsFile = ../../../secrets/users/${config.home.username}/secrets.yaml;
   };
 
-  home.activation.setupEtc = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    /run/current-system/sw/bin/systemctl start --user sops-nix
-  '';
+  # home.activation.setupEtc = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+  #   /run/current-system/sw/bin/systemctl start --user sops-nix
+  # '';
 }
