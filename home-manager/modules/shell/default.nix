@@ -14,8 +14,9 @@
     ./ai.nix
   ];
   home.packages = with pkgs; [
-    neofetch
+    neofetch    
   ];
+  programs.vim.enable = true;
 }
 
       

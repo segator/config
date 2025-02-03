@@ -6,17 +6,39 @@ in
   home.packages = with pkgs; [
       devbox
       lazydocker
+      
+      cloudflared
+      qemu
+
+      # Aws
+      awscli2
+
+      # Kube
       kind      
       kubernetes-helm      
       kubectl
-      awscli2
-      tenv #tf tooling
+      kubectx
+      cilium-cli
+      talosctl      
       argocd
-      ansible
       #(krewKubectl.withKrewPlugins (plugins: [
       #      plugins.oidc-login
       #    ]))
+
+      # Terra
+      #tenv #tf tooling
+      #opentofu
+      terraform
+      terragrunt
+      atmos
+
+      
+      ansible
   ];
+  home.shellAliases = {
+    "k" = "kubectl";
+    "terraform" = "tofu";
+  };
 
   programs.k9s.enable = true;
   xdg.configFile."k9s/skin.yml".source = let
