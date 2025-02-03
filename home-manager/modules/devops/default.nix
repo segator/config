@@ -10,7 +10,9 @@ in
       kubernetes-helm      
       kubectl
       awscli2
-      tenv
+      tenv #tf tooling
+      argocd
+      ansible
       #(krewKubectl.withKrewPlugins (plugins: [
       #      plugins.oidc-login
       #    ]))
