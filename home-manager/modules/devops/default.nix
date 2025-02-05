@@ -22,8 +22,10 @@ in
       hubble # cilium hubble
       talosctl      
       argocd
+      argo # argo workflow
       crossplane-cli
       upbound
+      
 
       # Terra
       #tenv #tf tooling
@@ -37,7 +39,7 @@ in
   ];
   home.shellAliases = {
     "k" = "kubectl";
-    "terraform" = "tofu";
+    #"terraform" = "tofu";
   };
   # home.sessionPath = [ "$HOME/.krew/bin/" ];
   # I dont know why sessionPath is not working so workarround...
