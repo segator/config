@@ -15,6 +15,9 @@
   ];
   home.packages = with pkgs; [
     neofetch    
+
+    yq
+    jq
   ];
   programs.vim.enable = true;
 }
