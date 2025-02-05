@@ -28,7 +28,8 @@ in
       inputs.home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         modules = modules ++ [  
-          inputs.sops-nix.homeManagerModules.sops        
+          inputs.sops-nix.homeManagerModules.sops      
+          inputs.krewfile.homeManagerModules.krewfile
           ../home-manager/configuration/${user}/home.nix
           ../home-manager/configuration/${user}/host/${hostname}.nix
           ];

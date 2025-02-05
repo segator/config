@@ -1,4 +1,4 @@
-{ config, pkgs,inputs, ... }:
+{ lib,config, pkgs,inputs, ... }:
 let
   krewKubectl = inputs.krew2nix.packages."x86_64-linux".kubectl;
 in
@@ -17,15 +17,13 @@ in
       kind      
       kubernetes-helm      
       kubectl
-      kubectl-linstor
       kubectx
       cilium-cli
       hubble # cilium hubble
       talosctl      
       argocd
-      #(krewKubectl.withKrewPlugins (plugins: [
-      #      plugins.oidc-login
-      #    ]))
+      crossplane-cli
+      upbound
 
       # Terra
       #tenv #tf tooling
@@ -40,6 +38,38 @@ in
   home.shellAliases = {
     "k" = "kubectl";
     "terraform" = "tofu";
+  };
+  # home.sessionPath = [ "$HOME/.krew/bin/" ];
+  # I dont know why sessionPath is not working so workarround...
+  programs.bash = lib.mkIf config.programs.bash.enable {
+    bashrcExtra = ''
+      export PATH="$PATH:$HOME/.krew/bin/"
+    '';
+    #shellAliases = [];
+  };  
+
+
+
+  programs.krewfile = {
+    enable = true;
+    upgrade = true;
+    krewPackage = pkgs.krew;
+    #indexes = { foo = "https://github.com/nilic/kubectl-netshoot.git" };
+    plugins = [
+      #"foo/some-package"
+      "explore" # nice way to see resources
+      "modify-secret" # allow to modify existing secrets
+      "neat" # extract installed objects and clean them up to yam
+      "oidc-login" # kube oidc
+      "pv-migrate" # migrate between pv
+      "stern" # tail multiple pod logs
+      "ice" # monitor and optimize container resources
+      "ktop" # like top
+      "open-svc" # like port-forward but easier
+      "resource-capacity" # see cpu/mem usage of pods
+      "linstor" # linstor plugin
+      "outdated" # print outdated images
+    ];
   };
 
   programs.k9s.enable = true;

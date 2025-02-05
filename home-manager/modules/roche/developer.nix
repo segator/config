@@ -73,7 +73,6 @@ in
   programs.bash = lib.mkIf config.programs.bash.enable {
     bashrcExtra = ''
       source ${config.home.homeDirectory}/.secrets/home-manager/secrets.bashrc
-      #export PATH=$PATH:/home/${config.home.username}/.local/bin
     '';
     shellAliases = lib.mapAttrs' (accountName: v: 
       { 

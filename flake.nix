@@ -135,5 +135,7 @@
       nixos-images.url = "github:nix-community/nixos-images";
 
       deploy-rs.url = "github:serokell/deploy-rs";
+      krewfile.url = "github:brumhard/krewfile";
+      krewfile.inputs.nixpkgs.follows = "nixpkgs";
   };
 }
