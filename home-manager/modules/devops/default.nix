@@ -17,6 +17,7 @@ in
       kind      
       kubernetes-helm      
       kubectl
+      kubectl-linstor
       kubectx
       cilium-cli
       hubble # cilium hubble
