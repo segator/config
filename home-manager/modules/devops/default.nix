@@ -19,6 +19,7 @@ in
       kubectl
       kubectx
       cilium-cli
+      hubble # cilium hubble
       talosctl      
       argocd
       #(krewKubectl.withKrewPlugins (plugins: [
