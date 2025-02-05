@@ -8,8 +8,8 @@
   sops.secrets.backup_homeassistant_webhook = {
   };
 
-  programs.ssh.knownHosts."192.168.1.200" = {         
-      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+I/vuw/urVmiFuAnYcxlt8pXbecvMsfIaumiXQz+g/";
+  programs.ssh.knownHosts."[192.168.1.200]:2222" = {         
+      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMNRFmPGM2kzIBS3ntZ1Lm7lGLEMYG9P7cNmHpOHJOHQ root@58b227ebebb1";
   };
 
   environment.systemPackages = with pkgs; [
@@ -30,7 +30,7 @@
       repositories = [
         { 
           label = "unraid-disk";
-          path = "ssh://root@192.168.1.200/mnt/user/nas_backup"; 
+          path = "ssh://borg@192.168.1.200:2222/backup/seganas"; 
         }
       ];
       exclude_patterns = [ "re:^.+\.zfs\/.+" ];

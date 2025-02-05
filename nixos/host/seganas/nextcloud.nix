@@ -10,7 +10,7 @@ let
             # Seems source page does not publish anymore 12.70 version
             #url = "https://exiftool.org/Image-ExifTool-${version}.tar.gz";
             # Nextcloud wants 12.70 otherwise does not work
-            url = "https://mirrors.sjtug.sjtu.edu.cn/cpan/authors/id/E/EX/EXIFTOOL/Image-ExifTool-${version}.tar.gz";
+            url = "https://backpan.perl.org/authors/id/E/EX/EXIFTOOL/Image-ExifTool-${version}.tar.gz";
             sha256 = "sha256:1zmg5jsdqmr9mnmxg614brdgr9ddmspcc11rs4xkygnc8lj55cjc";  # Update the hash accordingly
         };
     }); 
