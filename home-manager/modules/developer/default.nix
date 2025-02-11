@@ -7,6 +7,8 @@
     ./dotnet.nix
     ./java.nix
     ./c.nix
+    ./python.nix
+
     ./node.nix
   ];
 
