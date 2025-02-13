@@ -1,7 +1,9 @@
 default_server:="localhost"
 default_arch:="x86_64"
+default_homeconfiguration:=`echo $(whoami)@$(hostname)`
 default:
   @just --choose
+
 
 build_bootstrap_iso arch=default_arch:
     nix build -L .#packages.{{arch}}-linux.bootstrap-iso -o build/bootstrap-iso
@@ -25,6 +27,9 @@ bootstrap_apply profile server arch=default_arch:
 
 deploy server:
     deploy --auto-rollback false --skip-checks .#{{server}}
+
+apply_home homeconfiguration=default_homeconfiguration:
+    nh home switch -c {{homeconfiguration}} .
 create_age_user_key user:
     age-keygen -o "./secrets/key/age_user_{{user}}_key.txt"
     @echo "Key generated at: ./secrets/key/age_user_{{user}}_key.txt"
