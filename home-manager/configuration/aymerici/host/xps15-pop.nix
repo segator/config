@@ -3,6 +3,7 @@
   imports = [
     #../../../modules/spotify
     #../../../modules/developer
+    ../../../modules/developer/python.nix
     ../../../modules/devops
     ../../../modules/roche
     #../../../modules/work

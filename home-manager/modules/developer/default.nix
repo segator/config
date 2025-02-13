@@ -7,8 +7,7 @@
     ./dotnet.nix
     ./java.nix
     ./c.nix
-    ./python.nix
-
+    #./python.nix
     ./node.nix
   ];
 
@@ -16,10 +15,5 @@
     #jetbrains.gateway
     vscode
 
-    #Build tools
-    gnumake
-    devbox
-
-    gh
   ];
 }

@@ -14,6 +14,7 @@
     ./ai.nix
   ];
   home.packages = with pkgs; [
+    htop
     neofetch    
 
     yq

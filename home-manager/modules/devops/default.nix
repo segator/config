@@ -5,6 +5,8 @@ in
 {  
   home.packages = with pkgs; [
       devbox
+      gnumake
+      gh
       lazydocker
       
       cloudflared
@@ -43,12 +45,12 @@ in
   };
   # home.sessionPath = [ "$HOME/.krew/bin/" ];
   # I dont know why sessionPath is not working so workarround...
-  programs.bash = lib.mkIf config.programs.bash.enable {
-    bashrcExtra = ''
-      export PATH="$PATH:$HOME/.krew/bin/"
-    '';
-    #shellAliases = [];
-  };  
+  #programs.bash = lib.mkIf config.programs.bash.enable {
+  #  bashrcExtra = ''
+  #    export PATH="$PATH:$HOME/.krew/bin/"
+  #  '';
+  #  #shellAliases = [];
+  #};  
 
 
 
