@@ -57,3 +57,8 @@ creation_rules:
     key_groups:
     - age:
       - *user_segator
+  - path_regex: secrets/infra/.+$
+    key_groups:
+    - age:
+      - *user_segator
+      - *user_aymerici

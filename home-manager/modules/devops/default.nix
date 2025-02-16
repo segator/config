@@ -2,7 +2,10 @@
 let
   krewKubectl = inputs.krew2nix.packages."x86_64-linux".kubectl;
 in
-{  
+{
+  imports = [
+    ./aws.nix
+  ];
   home.packages = with pkgs; [
       devbox
       gnumake
@@ -54,7 +57,12 @@ in
   #  #shellAliases = [];
   #};  
 
-
+  programs.bash.initExtra = lib.mkIf config.programs.bash.enable  ''
+    complete -o nospace -C ${pkgs.awscli2}/bin/aws_completer aws
+    complete -o nospace -C ${pkgs.terraform}/bin/terraform terraform
+    complete -o nospace -C ${pkgs.opentofu}/bin/tofu tofu
+    source <(${pkgs.kubectl}/bin/kubectl completion bash)
+  '';
 
   programs.krewfile = {
     enable = true;

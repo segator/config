@@ -2,3 +2,7 @@ secrets/key/
 .idea
 build/
 result
+.terraform
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
