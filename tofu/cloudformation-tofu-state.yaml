@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create an S3 bucket for Tofu states
+
+Resources:
+  TofuStateBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: segator-homelab-tofu-state
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+Outputs:
+  TofuStateBucketName:
+    Description: Name of the S3 bucket for Tofu states
+    Value: !Ref TofuStateBucket
