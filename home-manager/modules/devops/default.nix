@@ -20,6 +20,7 @@ in
       kubernetes-helm      
       kubectl
       kubectx
+      fluxcd
       cilium-cli
       hubble # cilium hubble
       talosctl      
@@ -33,6 +34,7 @@ in
       #tenv #tf tooling
       #opentofu
       terraform
+      opentofu
       terragrunt
       atmos
 
@@ -73,6 +75,7 @@ in
       "resource-capacity" # see cpu/mem usage of pods
       "linstor" # linstor plugin
       "outdated" # print outdated images
+      "virt" # kubevirt
     ];
   };
 

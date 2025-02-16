@@ -70,13 +70,13 @@ in
     '';
   };
 
-  home.activation.installNavifyAwsSsoLogin = 
-    lib.hm.dag.entryAfter [ "writeBoundary" "sops-secrets" ] ''
-      export GITLAB_TOKEN=$(cat ${gitlab_token})
-      pip install navify-aws-sso-login \
-      --user --extra-index-url "https://__token__:$GITLAB_TOKEN@code.roche.com/api/v4/projects/10440/packages/pypi/simple"
-      navify-aws-sso-login
-    '';
+  # home.activation.installNavifyAwsSsoLogin = 
+  #   lib.hm.dag.entryAfter [ "writeBoundary" "sops-secrets" ] ''
+  #     export GITLAB_TOKEN=$(cat ${gitlab_token})
+  #     pip install navify-aws-sso-login \
+  #     --user --extra-index-url "https://__token__:$GITLAB_TOKEN@code.roche.com/api/v4/projects/10440/packages/pypi/simple"
+  #     navify-aws-sso-login
+  #   '';
   home.sessionPath = [ "$HOME/.local/bin/" ];
 
   programs.bash = lib.mkIf config.programs.bash.enable {
