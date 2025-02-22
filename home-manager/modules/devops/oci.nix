@@ -1,4 +1,4 @@
 { lib,config, pkgs,inputs, ... }:
 {
- home.packages = with pkgs; [ oci-cli ];
+ home.packages = [ (pkgs.callPackage ./oci-cli.nix { }) ];
 }
