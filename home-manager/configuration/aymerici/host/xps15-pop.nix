@@ -2,10 +2,10 @@
 {
   imports = [
     #../../../modules/spotify
-    #../../../modules/developer
-    ../../../modules/developer/python.nix
+    #../../../modules/developer    
     ../../../modules/devops
     ../../../modules/roche
+    ../../../modules/developer/github.nix
     #../../../modules/work
     #../../../modules/office
     #../../../modules/gnome

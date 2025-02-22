@@ -16,6 +16,33 @@ let
     "ni-qa" = "arn:aws:iam::340747948655:role/Roche/Products/NIB/NIBDevOps";
     "ni-stage" = "arn:aws:iam::957086612114:role/Roche/Products/NIB/NIBDevOps";
   };
+
+  rocheAliases = pkgs.writeShellScriptBin "roche-aliases"
+  (''
+      source ${config.home.homeDirectory}/.bashrc
+
+      export IN_ROCHE_SHELL=1
+      export NPM_AUTH_TOKEN=$(cat "${gitlab_npm_token}")
+      export GITLAB_TOKEN=$(cat "${gitlab_token}")
+      export GITHUB_TOKEN=$(cat "${github_token}")
+      export REPOSITORY_USER=$(cat "${jfrog_navify_user}")
+      export REPOSITORY_TOKEN=$(cat "${jfrog_navify_token}")
+
+      # Terraform-related variables
+      export TF_REGISTRY_TOKEN=$(cat "${gitlab_token}")
+      export TF_TOKEN_CODE_ROCHE_COM=$(cat "${gitlab_token}")
+      export TG_TF_REGISTRY_TOKEN=$(cat "${gitlab_token}")
+      ${lib.concatStringsSep "\n" (
+        lib.mapAttrsToList (accountName: v:
+          ''
+            alias aws-${accountName}="navify-aws-sso-login --login-alias ${lib.escapeShellArg accountName} --username \$(cat ${lib.escapeShellArg roche_user_path}) --password \$(cat ${lib.escapeShellArg roche_pass_path}) --write-credentials ${lib.escapeShellArg accountName} && export AWS_PROFILE=${lib.escapeShellArg accountName}"
+          ''
+        ) roche_aws_account_alias
+      )}
+    '');
+  rocheShell = pkgs.writeShellScriptBin "roche-shell" ''
+     exec ${pkgs.bashInteractive}/bin/bash --rcfile ${rocheAliases}/bin/roche-aliases "$@"
+   '';
 in
 {
   sops.secrets.gitlab_token = {
@@ -40,35 +67,19 @@ in
     path = roche_pass_path;
   };
 
+  home.packages = [ rocheShell ];
 
-  home.file.".secrets/home-manager/secrets.bashrc" = lib.mkIf config.programs.bash.enable {
-    text=''
-    NPM_AUTH_TOKEN=$(cat ${gitlab_npm_token})
-    GITLAB_TOKEN=$(cat ${gitlab_token})
-    GITHUB_TOKEN=$(cat ${github_token})
-    REPOSITORY_USER=$(cat ${jfrog_navify_user})
-    REPOSITORY_TOKEN=$(cat ${jfrog_navify_token})
 
-    #NI especific
-    TF_REGISTRY_TOKEN=$(cat ${gitlab_token})
-    TF_TOKEN_CODE_ROCHE_COM=$(cat ${gitlab_token})
-    TG_TF_REGISTRY_TOKEN=$(cat ${gitlab_token})
-    '';
-  };
-
-  home.file.".secrets/home-manager/secrets.fish" = lib.mkIf config.programs.fish.enable {
-    text=''
-    set -gx NPM_AUTH_TOKEN $(cat ${gitlab_npm_token})
-    set -gx GITLAB_TOKEN $(cat ${gitlab_token})
-    set -gx GITHUB_TOKEN $(cat ${github_token})
-    set -gx REPOSITORY_USER $(cat ${jfrog_navify_user})
-    set -gx REPOSITORY_TOKEN $(cat ${jfrog_navify_token})
-
-    #NI especific
-    set -gx TF_TOKEN_CODE_ROCHE_COM $(cat ${gitlab_token})
-    set -gx TG_TF_REGISTRY_TOKEN $(cat ${gitlab_token})
-    '';
-  };
+ programs.starship = lib.mkIf config.programs.starship.enable {
+    settings = {
+      custom.roche_shell = {
+        when = "[[ -n $IN_ROCHE_SHELL ]]";
+        symbol = "🏥";
+        style = "bold blue";
+        format = "[$symbol roche-shell]($style)";
+      };
+    };
+ };
 
   # home.activation.installNavifyAwsSsoLogin = 
   #   lib.hm.dag.entryAfter [ "writeBoundary" "sops-secrets" ] ''
@@ -80,29 +91,11 @@ in
   home.sessionPath = [ "$HOME/.local/bin/" ];
 
   programs.bash = lib.mkIf config.programs.bash.enable {
-    bashrcExtra = ''
-      source ${config.home.homeDirectory}/.secrets/home-manager/secrets.bashrc
-    '';
-    shellAliases = lib.mapAttrs' (accountName: v: 
-      { 
-        name = "aws-${accountName}"; 
-        value="navify-aws-sso-login --login-alias ${accountName} --username $(cat ${roche_user_path}) --password $(cat ${roche_pass_path})  --write-credentials ${accountName} && export AWS_PROFILE=${accountName}";
-      }
-    ) roche_aws_account_alias;
-  };  
-
-  programs.fish = lib.mkIf config.programs.fish.enable {
-    shellInit = ''
-      source ${config.home.homeDirectory}/.secrets/home-manager/secrets.fish
-      set -gx PATH $PATH:/home/aymerici/.local/bin
-    '';
-    shellAliases = lib.mapAttrs' (accountName: v: 
-      { 
-        name = "aws-${accountName}"; 
-        value="navify-aws-sso-login --login-alias ${accountName} --username $(cat ${roche_user_path}) --password $(cat ${roche_pass_path})  --write-credentials ${accountName} && set -gx AWS_PROFILE=${accountName}";
-      }
-    ) roche_aws_account_alias;
+    shellAliases = {
+        "rs" = "roche-shell";
+      };
   };
+
 
   # Navify AWS SSO alias file
   home.file.".navify/aws-sso.yml".  text = ''
