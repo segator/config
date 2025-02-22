@@ -5,6 +5,7 @@ in
 {
   imports = [
     ./aws.nix
+    ./oci.nix
   ];
   home.packages = with pkgs; [
       devbox
