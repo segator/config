@@ -29,6 +29,7 @@ let
       export REPOSITORY_TOKEN=$(cat "${jfrog_navify_token}")
 
       # Terraform-related variables
+      export TF_VAR_git_token=$(cat "${config.sops.secrets.github_personal_token.path}")
       export TF_REGISTRY_TOKEN=$(cat "${gitlab_token}")
       export TF_TOKEN_CODE_ROCHE_COM=$(cat "${gitlab_token}")
       export TG_TF_REGISTRY_TOKEN=$(cat "${gitlab_token}")
