@@ -35,7 +35,14 @@ spec:
     controller:
       kind: DaemonSet
       service:
-        annotations:
+#        annotations:
 #          oci.oraclecloud.com/load-balancer-type: "nlb"  # Specify NLB, not the classic LB
-#          oci.oraclecloud.com/nlb-id: "${external_nlb_ocid}" # OCID of your *existing* NLB
+#          oci.oraclecloud.com/nlb-id: "${}" # OCID of your *existing* NLB
 #          service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "None"
+        targetPorts:
+          http: 80
+          https: 443
+        type: NodePort
+        nodePorts:
+          http: ${http_nodeport}
+          https: ${https_nodeport}
