@@ -37,10 +37,10 @@ spec:
       service:
         targetPorts:
           http: 80
-          https: 80
+          https: 443
         type: NodePort
         nodePorts:
           http: ${http_nodeport}
           https: ${https_nodeport}
         externalIPs:
-          - ${external_nlb_ip}
+          - "${external_nlb_ip}"
