@@ -17,6 +17,7 @@ spec:
   postBuild:
     substitute:
       external_nlb_ip: "89.168.58.158"
+      external_nlb_ocid: "ocid1.networkloadbalancer.oc1.eu-paris-1.amaaaaaarkjabdyavavo6pf7gddpblyk7z5qzw2dssxxunrlr46jgqasfmeq"
       http_nodeport: "32020"
       https_nodeport: "30134"
 ---
@@ -40,5 +41,6 @@ spec:
   postBuild:
     substitute:
       external_nlb_ip: "89.168.58.158"
+      external_nlb_ocid: "ocid1.networkloadbalancer.oc1.eu-paris-1.amaaaaaarkjabdyavavo6pf7gddpblyk7z5qzw2dssxxunrlr46jgqasfmeq"
       http_nodeport: "32020"
       https_nodeport: "30134"
