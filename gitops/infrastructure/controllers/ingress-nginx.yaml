@@ -42,5 +42,3 @@ spec:
         nodePorts:
           http: ${http_nodeport}
           https: ${https_nodeport}
-        externalIPs:
-          - "${external_nlb_ip}"
