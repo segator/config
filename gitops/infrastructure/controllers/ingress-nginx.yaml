@@ -36,6 +36,6 @@ spec:
       kind: DaemonSet
       service:
         annotations:
-          oci.oraclecloud.com/load-balancer-type: "nlb"  # Specify NLB, not the classic LB
-          oci.oraclecloud.com/nlb-id: "${external_nlb_ocid}" # OCID of your *existing* NLB
-          service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "None"
+#          oci.oraclecloud.com/load-balancer-type: "nlb"  # Specify NLB, not the classic LB
+#          oci.oraclecloud.com/nlb-id: "${external_nlb_ocid}" # OCID of your *existing* NLB
+#          service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "None"
