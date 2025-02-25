@@ -35,7 +35,9 @@ spec:
     controller:
       kind: DaemonSet
       service:
-        enabled: true
+        targetPorts:
+          http: 80
+          https: 80
         type: NodePort
         nodePorts:
           http: ${http_nodeport}
