@@ -24,6 +24,7 @@ in
       kubernetes-helm      
       kubectl
       kubectx
+      kubeswitch
       fluxcd
       cilium-cli
       hubble # cilium hubble
