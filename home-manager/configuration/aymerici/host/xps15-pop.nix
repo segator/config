@@ -6,7 +6,6 @@
     ../../../modules/devops
     ../../../modules/roche
     ../../../modules/developer/github.nix
-    ../../../modules/developer/cloudflare.nix
     #../../../modules/work
     #../../../modules/office
     #../../../modules/gnome

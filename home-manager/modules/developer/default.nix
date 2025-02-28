@@ -8,6 +8,7 @@
     ./java.nix
     ./c.nix
     ./github.nix
+    ./hetzner.nix
     #./python.nix
     ./node.nix
   ];

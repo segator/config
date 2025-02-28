@@ -6,6 +6,8 @@ in
   imports = [
     ./aws.nix
     ./oci.nix
+    ./cloudflare.nix
+    ./hetzner.nix
   ];
   home.packages = with pkgs; [
       devbox
