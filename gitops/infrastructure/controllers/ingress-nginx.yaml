@@ -12,7 +12,7 @@ metadata:
   name: ingress-nginx
   namespace: ingress-nginx
 spec:
-  interval: 24h
+  interval: 1h
   url: https://kubernetes.github.io/ingress-nginx
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
@@ -30,15 +30,11 @@ spec:
         kind: HelmRepository
         name: ingress-nginx
         namespace: ingress-nginx
-      interval: 12h
+      interval: 1h
   values:
     controller:
       kind: DaemonSet
       service:
-#        annotations:
-#          oci.oraclecloud.com/load-balancer-type: "nlb"  # Specify NLB, not the classic LB
-#          oci.oraclecloud.com/nlb-id: "${}" # OCID of your *existing* NLB
-#          service.beta.kubernetes.io/oci-load-balancer-security-list-management-mode: "None"
         targetPorts:
           http: 80
           https: 443
