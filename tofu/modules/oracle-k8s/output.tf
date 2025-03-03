@@ -16,12 +16,17 @@ output "kube_config" {
 output "cluster_name" {
   value = oci_containerengine_cluster.k8s_cluster.name
 }
+output "base_domain" {
+  value = local.base_domain
+}
 
-output "nlb_details" {
-  value = {
-    ocid         = oci_network_load_balancer_network_load_balancer.oke_nlb.id
-    ip_address = local.nlb_public_ip
-    node_ports   = local.ports
-    base_domain  = local.base_domain
-  }
+output "nlb_node_ports" {
+  value = local.ports
+}
+output "nlb_public_ip" {
+  value =  local.nlb_public_ip
+}
+
+output "nlb_ocid" {
+  value = oci_network_load_balancer_network_load_balancer.oke_nlb.id
 }

@@ -2,7 +2,7 @@ terraform {
 
   backend "s3" {
     bucket = "segator-homelab-tofu-state"
-    key    = "kubernetes/free-oraclecloud.tfstate"
+    key    = "kubernetes/free-oraclecloud-flux.tfstate"
     region = "eu-central-1"
     profile = "segator"
   }
@@ -44,7 +44,7 @@ provider "cloudflare" {
 
 provider "helm" {
   kubernetes {
-    config_path = "${path.module}/oci.kubeconfig"
+    config_path = "./oci.kubeconfig"
   }
 }
 
@@ -52,5 +52,5 @@ provider "github" {
 }
 
 provider "kubernetes" {
-  config_path    = local_file.k8s_cluster_config.filename
+  config_path    = "./oci.kubeconfig"
 }

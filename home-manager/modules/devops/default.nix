@@ -39,10 +39,11 @@ in
 
       # Terra
       #tenv #tf tooling
-      #opentofu
       terraform
       opentofu
       terragrunt
+      terramate
+      terraspace
       atmos
 
       

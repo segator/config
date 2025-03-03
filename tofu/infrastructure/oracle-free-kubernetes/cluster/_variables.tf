@@ -15,15 +15,6 @@ variable "cluster_name" {
   type        = string
 }
 
-variable "github_org" {
-  description = "The github organization or username if not an org"
-  type        = string
-}
-
-variable "github_reponame" {
-  description = "The name of the GitHub gitops repo"
-  type        = string
-}
 
 variable "ssh_public_key" {
   description = "SSH Public Key used to access all instances"

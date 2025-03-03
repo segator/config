@@ -1,0 +1,7 @@
+compartment_id = "ocid1.tenancy.oc1..aaaaaaaa632rwujtjzylpjcumkk5jxcsivcfryhcqxg7dhqaqlddu25x5vea"
+region = "eu-paris-1"
+cluster_name = "k8s-cluster"
+github_org = "segator"
+github_reponame = "config"
+mail = "2348131+segator@users.noreply.github.com"
+cloudflare_zone_id = "7067af02e515b608f80b4c816fdef44c"
