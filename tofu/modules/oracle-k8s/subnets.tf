@@ -12,9 +12,9 @@ locals {
 }
 resource "oci_core_subnet" "vcn_private_subnet" {
   compartment_id             = var.compartment_id
-  vcn_id                     = module.vcn.vcn_id
+  vcn_id                     = var.vcn_id
   cidr_block                 = "10.0.1.0/24"
-  route_table_id             = module.vcn.nat_route_id
+  route_table_id             = var.vcn_nat_route_id
   security_list_ids          = [oci_core_security_list.private_subnet_sl.id]
   display_name               = "k8s-private-subnet"
   prohibit_public_ip_on_vnic = true
@@ -22,16 +22,16 @@ resource "oci_core_subnet" "vcn_private_subnet" {
 
 resource "oci_core_subnet" "vcn_public_subnet" {
   compartment_id    = var.compartment_id
-  vcn_id            = module.vcn.vcn_id
+  vcn_id            = var.vcn_id
   cidr_block        = "10.0.0.0/24"
-  route_table_id    = module.vcn.ig_route_id
+  route_table_id    = var.vcn_ig_route_id
   security_list_ids = [oci_core_security_list.public_subnet_sl.id]
   display_name      = "k8s-public-subnet"
 }
 
 resource "oci_core_security_list" "private_subnet_sl" {
   compartment_id = var.compartment_id
-  vcn_id         = module.vcn.vcn_id
+  vcn_id         = var.vcn_id
   display_name   = "k8s-private-subnet-sl"
 
   # egress everywhere
@@ -64,7 +64,7 @@ resource "oci_core_security_list" "private_subnet_sl" {
 
 resource "oci_core_security_list" "public_subnet_sl" {
   compartment_id = var.compartment_id
-  vcn_id         = module.vcn.vcn_id
+  vcn_id         = var.vcn_id
   display_name   = "k8s-public-subnet-sl"
 
   # egress everywhere

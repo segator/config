@@ -14,7 +14,7 @@ in
       gnumake
       gh
       lazydocker
-      
+      packer
       cloudflared
       qemu
 
@@ -45,6 +45,10 @@ in
       terramate
       terraspace
       atmos
+      pulumi
+      pulumiPackages.pulumi-language-go
+      pulumiPackages.pulumi-language-nodejs
+      nodejs
 
       
       ansible

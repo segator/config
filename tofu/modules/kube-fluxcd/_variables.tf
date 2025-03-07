@@ -15,7 +15,7 @@ variable "cluster_name" {
     }
 
 variable "kube_config" {
-    description = "The kubeconfig file"
+    description = "The kubeconfig file content"
     type        = string
 }
 

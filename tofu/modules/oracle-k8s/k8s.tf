@@ -2,7 +2,7 @@ resource "oci_containerengine_cluster" "k8s_cluster" {
   compartment_id     = var.compartment_id
   kubernetes_version = var.kubernetes_version
   name               = var.cluster_name
-  vcn_id             = module.vcn.vcn_id
+  vcn_id             = var.vcn_id
   cluster_pod_network_options {
     cni_type = "FLANNEL_OVERLAY"
   }

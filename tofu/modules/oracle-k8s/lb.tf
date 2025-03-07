@@ -42,22 +42,20 @@ resource "oci_network_load_balancer_backend_set" "oke_nlb_backend_set" {
   }
 }
 
-
-
 resource "oci_network_load_balancer_backend" "oke_nlb_backend" {
   for_each = merge([
-    for node in oci_containerengine_node_pool.k8s_node_pool.nodes :
+    for node_idx in range(var.kubernetes_worker_nodes):
     {
       for p in local.ports :
-      "${node.name}_${p.name}" => merge(p,{
-        node_id     = node.id
+      "${node_idx}_${p.name}" => merge(p,{
+      node_idx     = node_idx
       })
     }
   ]...)
   backend_set_name         = oci_network_load_balancer_backend_set.oke_nlb_backend_set[each.value.name].name
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.oke_nlb.id
   port                     = each.value.backendPort
-  target_id                = each.value.node_id
+  target_id                = oci_containerengine_node_pool.k8s_node_pool.nodes[each.value.node_idx].id
   is_backup                = false
   is_drain                 = false
   is_offline               = false

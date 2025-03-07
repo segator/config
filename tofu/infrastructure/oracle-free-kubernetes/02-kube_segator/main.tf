@@ -10,7 +10,7 @@ module "flux" {
   github_org = var.github_org
   cluster_name = var.cluster_name
   gitops_repo = var.github_reponame
-  kube_config = "./oci.kubeconfig"
+  kube_config = var.kube_config
   cluster_context = merge(
     { for port in var.nlb_node_ports : "${port.name}_nodeport" => port.backendPort },
     {

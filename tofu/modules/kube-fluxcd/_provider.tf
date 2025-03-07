@@ -19,9 +19,14 @@ terraform {
   }
 }
 
+resource "local_sensitive_file" "kubeconfig" {
+    content  = var.kube_config
+  filename = "/tmp/kubeconfig"
+}
+
 provider "flux" {
   kubernetes = {
-    config_path = var.kube_config
+    config_path = "/tmp/kubeconfig"
   }
   git = {
     url = "ssh://git@github.com/${var.github_org}/${var.gitops_repo}.git"

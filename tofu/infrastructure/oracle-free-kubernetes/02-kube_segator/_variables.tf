@@ -1,3 +1,7 @@
+variable "kube_config" {
+  description = "The kubeconfig file"
+  type        = string
+}
 variable "compartment_id" {
   type        = string
   description = "The compartment to create the resources in"
@@ -31,22 +35,7 @@ variable "mail" {
   type        = string
 }
 
-variable "cloudflare_zone_id" {
-  type        = string
-  description = "The ID of the Cloudflare zone"
-}
 
-variable "k8s_cluster_id" {
-  type = string
-}
-
-variable "public_subnet_id" {
-  type = string
-}
-
-variable "node_pool_id" {
-  type = string
-}
 
 variable "base_domain" {
   type = string

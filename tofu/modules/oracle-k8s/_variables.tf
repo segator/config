@@ -3,11 +3,19 @@ variable "compartment_id" {
   description = "The compartment to create the resources in"
 }
 
-variable "region" {
-  description = "OCI region"
+variable "vcn_id" {
   type        = string
+  description = "The OCID of the VCN where to deploy kube"
+}
 
-  default = "eu-frankfurt-1"
+variable "vcn_nat_route_id" {
+    type        = string
+    description = "The OCID of the NAT route"
+}
+
+variable "vcn_ig_route_id" {
+    type        = string
+    description = "The OCID of the IG route"
 }
 
 variable "cluster_name" {
