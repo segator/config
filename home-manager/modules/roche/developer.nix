@@ -33,6 +33,13 @@ let
       export TF_REGISTRY_TOKEN=$(cat "${gitlab_token}")
       export TF_TOKEN_CODE_ROCHE_COM=$(cat "${gitlab_token}")
       export TG_TF_REGISTRY_TOKEN=$(cat "${gitlab_token}")
+
+      # Navify aws sso
+      if ! pip3 list | awk '/^navify-aws-sso-login[[:space:]]/{found=1; exit} END{exit !found}'; then
+        echo "navify-aws-sso-login is not installed. Installing..."
+        pip3 install --user --break-system-packages navify-aws-sso-login --extra-index-url "https://__token__:$GITLAB_TOKEN@code.roche.com/api/v4/projects/10440/packages/pypi/simple"
+      fi
+
       ${lib.concatStringsSep "\n" (
         lib.mapAttrsToList (accountName: v:
           ''
@@ -82,13 +89,13 @@ in
     };
  };
 
-  # home.activation.installNavifyAwsSsoLogin = 
-  #   lib.hm.dag.entryAfter [ "writeBoundary" "sops-secrets" ] ''
-  #     export GITLAB_TOKEN=$(cat ${gitlab_token})
-  #     pip install navify-aws-sso-login \
-  #     --user --extra-index-url "https://__token__:$GITLAB_TOKEN@code.roche.com/api/v4/projects/10440/packages/pypi/simple"
-  #     navify-aws-sso-login
-  #   '';
+#   home.activation.installNavifyAwsSsoLogin =
+#     lib.hm.dag.entryAfter [ "writeBoundary" "sops-secrets" ] ''
+#       export GITLAB_TOKEN=$(cat ${gitlab_token})
+#       pip install navify-aws-sso-login \
+#       --user --extra-index-url "https://__token__:$GITLAB_TOKEN@code.roche.com/api/v4/projects/10440/packages/pypi/simple"
+#       navify-aws-sso-login
+#     '';
   home.sessionPath = [ "$HOME/.local/bin/" ];
 
   programs.bash = lib.mkIf config.programs.bash.enable {
