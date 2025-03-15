@@ -27,10 +27,12 @@ in
       kubectl
       kubectx
       kubeswitch
+      kubeseal
       fluxcd
       cilium-cli
       hubble # cilium hubble
-      talosctl      
+      talosctl
+      omnictl
       argocd
       argo # argo workflow
       crossplane-cli
