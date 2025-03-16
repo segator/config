@@ -12,6 +12,7 @@
     ./starship.nix
     ./tmux.nix
     ./ai.nix
+    ./mise.nix
   ];
   home.packages = with pkgs; [
     htop
