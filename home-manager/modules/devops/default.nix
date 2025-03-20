@@ -95,6 +95,7 @@ in
       "linstor" # linstor plugin
       "outdated" # print outdated images
       "virt" # kubevirt
+      "shell" # feature rich pod shell for debugging
     ];
   };
 
