@@ -24,7 +24,7 @@ locals {
   eks = {
     name                 = "isaac-kube-test"
     instance_type        = "t4g.small"
-    ami_id            = "ami-0d7782fd3a7bb0c5f"
+    ami_id            = "ami-0e0fdf6665785a83b" #"ami-03379cd655712e6f1"
     desired_capacity     = 1
     min_size             = 1
     max_size             = 2

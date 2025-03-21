@@ -40,6 +40,7 @@ resource "flux_bootstrap_git" "this" {
   disable_secret_creation = true
   embedded_manifests      = true
   path                    = local.gitops_path
+
 }
 
 resource "github_repository_file" "values" {

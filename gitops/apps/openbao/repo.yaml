@@ -1,0 +1,15 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: openbao
+spec:
+  interval: 1h
+  url: https://openbao.github.io/openbao-helm
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: pytoshka-vault-autounseal
+spec:
+  interval: 1h
+  url: https://pytoshka.github.io/vault-autounseal

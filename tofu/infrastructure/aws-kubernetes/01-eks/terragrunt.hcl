@@ -17,7 +17,6 @@ dependency "network" {
   mock_outputs = {
     vpc_id = "mock-vcn"
     private_subnet_ids = ["10.10.10.0/24"]
-
   }
 }
 

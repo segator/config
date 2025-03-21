@@ -66,6 +66,7 @@ resource "oci_containerengine_node_pool" "k8s_node_pool" {
 }
 
 data "oci_containerengine_cluster_kube_config" "k8s_cluster" {
+  depends_on = [oci_containerengine_cluster.k8s_cluster]
   cluster_id = oci_containerengine_cluster.k8s_cluster.id
 }
 

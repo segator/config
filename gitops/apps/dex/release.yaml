@@ -1,0 +1,56 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: dex
+  namespace: dex
+spec:
+  releaseName: dex
+  chart:
+    spec:
+      chart: dex
+      version: "0.14.0"
+      sourceRef:
+        kind: HelmRepository
+        name: dex
+        namespace: flux-system
+  interval: 1h
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  values:
+    rbac:
+      createClusterScoped: true
+    config:
+      issuer: https://dex.${DOMAIN}
+      storage:
+        type: kubernetes
+        config:
+          inCluster: true
+      web:
+        http: 0.0.0.0:5556
+      connectors:
+        - type: mockCallback
+          id: mock
+          name: Example
+      staticClients:
+        - id: example-app
+          redirectURIs:
+            - 'http://127.0.0.1:5555/callback'
+          name: 'Example App'
+          secret: ZXhhbXBsZS1hcHAtc2VjcmV0
+    resources:
+      requests:
+        memory: 50Mi
+    ingress:
+      enabled: true
+      className: "nginx"
+      annotations:
+        external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+        external-dns.alpha.kubernetes.io/hostname: dex.${DOMAIN}
+        external-dns.alpha.kubernetes.io/target: ${TUNNEL_ID}.cfargotunnel.com
+      hosts:
+        - host: dex.${DOMAIN}
+          paths:
+            - path: /
+              pathType: ImplementationSpecific

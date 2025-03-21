@@ -1,0 +1,18 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: ingress-cloudflare
+spec:
+  rules:
+    - name: force-dns-tunnel-cname
+      match:
+        any:
+          - resources:
+              kinds:
+                - Ingress
+      mutate:
+        patchStrategicMerge:
+          metadata:
+            annotations:
+              +(external-dns.alpha.kubernetes.io/target): "${CLOUDFLARE_TUNNEL_ID}.cfargotunnel.com"
+              +(external-dns.alpha.kubernetes.io/cloudflare-proxied): "true"

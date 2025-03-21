@@ -1,9 +1,9 @@
 
-module "vault" {
-  source         = "../../../modules/oracle-vault"
-  compartment_id = var.compartment_id
-  vault_name     = "k8s-vault"
-}
+# module "vault" {
+#   source         = "../../../modules/oracle-vault"
+#   compartment_id = var.compartment_id
+#   vault_name     = "k8s-vault"
+# }
 
 module "flux" {
   source = "../../../modules/kube-fluxcd"
