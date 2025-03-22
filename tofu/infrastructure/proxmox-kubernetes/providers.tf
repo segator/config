@@ -31,16 +31,16 @@ terraform {
 }
 
 data "sops_file" "secrets" {
-  source_file = "../../secrets/infra/secrets.yaml"
+  source_file = "../../secrets/infra/proxmox/secrets.yaml"
 }
 
 provider "proxmox" {
   # Configure your Proxmox connection details
-  endpoint = data.sops_file.secrets.data["proxmox.host"]
+  endpoint = data.sops_file.secrets.data["host"]
   #PROXMOX_VE_USERNAME
   #pm_user = data.sops_file.secrets.data["user"]
   #PROXMOX_VE_PASSWORD
-  api_token = data.sops_file.secrets.data["proxmox.token"]
+  api_token = data.sops_file.secrets.data["token"]
   insecure = true
 }
 

@@ -11,13 +11,11 @@ module "flux" {
   cluster_name = var.cluster_name
   gitops_repo = var.github_reponame
   kube_config = var.kube_config
-  cluster_context = merge(
-    { for port in var.nlb_node_ports : "${port.name}_nodeport" => port.backendPort },
+  cluster_context =
     {
       base_domain = var.base_domain
-      external_nlb_ocid = var.nlb_ocid
       external_nlb_ip = var.nlb_public_ip
-    })
+    }
 }
 #
 # module "kube-external-secrets" {

@@ -13,4 +13,4 @@ sudo pveum aclmod / -user terraform@pve -role Terraform
 sudo pveum user token add terraform@pve provider --privsep=0
 ```
 
-Then you can save the token into sops `secrets/infra/secrets.yaml`
+Then you can save the token into sops `secrets/infra/hetzner/secrets.yaml`

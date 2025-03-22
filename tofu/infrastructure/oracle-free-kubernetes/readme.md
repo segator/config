@@ -7,11 +7,14 @@ terragrunt run-all apply
 
 ## Connect to cluster
 ```bash
-terragrunt output --raw kube_config >  $HOME/.kube/oci.config
+terragrunt output --raw kube_config > ~/.kube/oci.config
+export KUBECONFIG=~/.kube/oci.config 
+k9s
 ```
 
-After install everything some pods are not handled by cilium until restart
-to fix this.
+
+## Post Install
+1. After install everything some pods are not handled by cilium until restart to fix this.
 
 ```bash
 curl -sLO https://raw.githubusercontent.com/cilium/cilium/master/contrib/k8s/k8s-unmanaged.sh
@@ -30,3 +33,11 @@ kubectl delete ds -n kube-system kube-flannel-ds
 # delete kubeproxy
 kubectl delete ds -n kube-system kube-proxy
 ```
+
+2. We need to create cluster secrets.
+
+```bash
+just create_age_k8s_key <cluster_name>
+```
+Then update .sops.yaml with the new pubkey and create the secrets
+within `/gitops/clusters/<cluster_name>/secrets/`

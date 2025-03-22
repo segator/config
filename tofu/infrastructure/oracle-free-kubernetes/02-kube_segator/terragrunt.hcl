@@ -5,15 +5,7 @@ dependency "cluster" {
     kube_config_path = "./kubefake.config"
     cluster_name = "cluster_name"
     base_domain = "mock.com"
-    nlb_node_ports = [
-      {
-        name        = "http"
-        port        = 80
-        backendPort = 1000
-      }
-    ]
     nlb_public_ip = "127.0.0.1"
-    nlb_ocid = "nlb-ocid"
   }
 }
 
@@ -39,11 +31,7 @@ inputs = {
   cluster_name = dependency.cluster.outputs.cluster_name
 
   base_domain = dependency.cluster.outputs.base_domain
-  nlb_node_ports = dependency.cluster.outputs.nlb_node_ports
   nlb_public_ip = dependency.cluster.outputs.nlb_public_ip
-  nlb_ocid = dependency.cluster.outputs.nlb_ocid
-
-
 }
 
 

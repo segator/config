@@ -62,3 +62,23 @@ creation_rules:
     - age:
       - *user_segator
       - *user_aymerici
+  - path_regex: secrets/infra/proxmox/.+$
+    key_groups:
+      - age:
+          - *user_segator
+          - *user_aymerici
+  - path_regex: secrets/infra/aws/.+$
+    key_groups:
+      - age:
+          - *user_segator
+          - *user_aymerici
+  - path_regex: secrets/infra/cloudflare/.+$
+    key_groups:
+      - age:
+          - *user_segator
+          - *user_aymerici
+  - path_regex: secrets/infra/hetzner/.+$
+    key_groups:
+      - age:
+          - *user_segator
+          - *user_aymerici

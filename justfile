@@ -31,17 +31,22 @@ deploy server:
 apply_home homeconfiguration=default_homeconfiguration:
     nh home switch -c {{homeconfiguration}} .
 create_age_user_key user:
-    age-keygen -o "./secrets/key/age_user_{{user}}_key.txt"
-    @echo "Key generated at: ./secrets/key/age_user_{{user}}_key.txt"
+    age-keygen -o ~/.secrets/user_{{user}}_key.txt
+    @echo "Key generated at: ~/.secrets/user_{{user}}_key.txt"
     @echo "Save this key-file in a safe place!"
     @echo "Now you can just install_user_key <user> <ssh_host> to install this key to the target servers"
 
+create_age_k8s_key cluster_name:
+    age-keygen -o ~/.secrets/k8s_{{cluster_name}}_key.txt
+    @echo "Key generated at: ~/.secrets/k8s_{{cluster_name}}_key.txt"
+    @echo "Now you can update your k8s secrets in .sops.yaml and run just update_secrets_keys"
+
 install_user_key user server=default_server:
-    rsync -arvP --mkpath --perms --chmod=600 ./secrets/key/age_user_{{user}}_key.txt {{user}}@{{server}}:~/.secrets/nix/age_user_key.txt
+    rsync -arvP --mkpath --perms --chmod=600 ~/.secrets/user_{{user}}_key.txt {{user}}@{{server}}:~/.secrets/nix/age_user_key.txt
     
 
 get_age_user_pubkey user:
-    @age-keygen -y "./secrets/key/age_user_{{user}}_key.txt"
+    @age-keygen -y "~/.secrets/user_{{user}}_key.txt"
 
 get_age_user_server_pubkey user server=default_server:
     ssh {{user}}@{{server}} 'cat ~/.secrets/nix/age_user_key.txt'

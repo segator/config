@@ -16,7 +16,7 @@ locals {
   }
 
   cluster = {
-    name = "k8s-cluster"
+    name = "oke"
     kubernetes_version = "v1.32.1"
     kubernetes_worker_nodes = 2
     ssh_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID5vRrC3yycYEP9GoKk4nm9iTf9aFMb0pAyKbp5rcEkW segator"
