@@ -70,3 +70,7 @@ data "oci_containerengine_cluster_kube_config" "k8s_cluster" {
   cluster_id = oci_containerengine_cluster.k8s_cluster.id
 }
 
+resource "local_sensitive_file" "kubeconfig" {
+  filename = "oci.kubeconfig"
+  content = data.oci_containerengine_cluster_kube_config.k8s_cluster.content
+}

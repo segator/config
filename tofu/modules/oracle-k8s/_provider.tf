@@ -18,10 +18,7 @@ terraform {
     }
   }
 }
-resource "local_sensitive_file" "kubeconfig" {
-    filename = "oci.kubeconfig"
-    content = data.oci_containerengine_cluster_kube_config.k8s_cluster.content
-}
+
 provider "helm" {
   kubernetes {
     config_path    = local_sensitive_file.kubeconfig.filename

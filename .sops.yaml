@@ -5,6 +5,7 @@ keys:
   - &machine_vps1 age1522zgqzlu559vf79p2qk6adcxalratxtqhpc30gldhvdwy8nsalsvwu4kx
   - &user_aymerici age1qw932v4nt3muyy7lf6f2k68627huql68duzqvq7qq0tljr37cp6sjq07f9
   - &user_segator age1m4scguauntyz5zwu9n44jjqfzexaymr3jq4pu3ydfcfxe3gc2pfsfdx6ke
+  - &k8s_oke age1qwplzys6pxs7n9xlc8ljpu3shutuxdaqlwcp4w2e9mst4tamzesq3kzuf0
 creation_rules:
   # common secrets for machines and users
   - path_regex: secrets/common/.+$
@@ -57,11 +58,6 @@ creation_rules:
     key_groups:
     - age:
       - *user_segator
-  - path_regex: secrets/infra/.+$
-    key_groups:
-    - age:
-      - *user_segator
-      - *user_aymerici
   - path_regex: secrets/infra/proxmox/.+$
     key_groups:
       - age:
@@ -77,6 +73,7 @@ creation_rules:
       - age:
           - *user_segator
           - *user_aymerici
+          - *k8s_oke
   - path_regex: secrets/infra/hetzner/.+$
     key_groups:
       - age:

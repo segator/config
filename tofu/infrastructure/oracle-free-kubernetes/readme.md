@@ -39,5 +39,14 @@ kubectl delete ds -n kube-system kube-proxy
 ```bash
 just create_age_k8s_key <cluster_name>
 ```
-Then update .sops.yaml with the new pubkey and create the secrets
-within `/gitops/clusters/<cluster_name>/secrets/`
+Then update .sops.yaml with the new pubkey and create the secrets.
+Create / Update secrets as needed.
+
+3. Update secrets keys so the new key is authorized to decrypt the secrets.
+```bash
+just update_secrets_keys
+```
+4. Install key into cluster
+```bash
+just install_k8s_key <cluster_name>
+```

@@ -41,6 +41,11 @@ create_age_k8s_key cluster_name:
     @echo "Key generated at: ~/.secrets/k8s_{{cluster_name}}_key.txt"
     @echo "Now you can update your k8s secrets in .sops.yaml and run just update_secrets_keys"
 
+install_k8s_key cluster_name:
+   kubectl create secret generic flux-sops-agekey \
+   --namespace flux-system \
+   --from-literal=age.agekey="$(cat ~/.secrets/k8s_{{cluster_name}}_key.txt)"
+
 install_user_key user server=default_server:
     rsync -arvP --mkpath --perms --chmod=600 ~/.secrets/user_{{user}}_key.txt {{user}}@{{server}}:~/.secrets/nix/age_user_key.txt
     
