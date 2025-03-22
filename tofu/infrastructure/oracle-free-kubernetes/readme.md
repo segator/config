@@ -26,4 +26,7 @@ cilium status
 
 # delete flannel CNI
 kubectl delete ds -n kube-system kube-flannel-ds
+
+# delete kubeproxy
+kubectl delete ds -n kube-system kube-proxy
 ```

@@ -1,3 +1,12 @@
+locals {
+  cilium_values = templatefile("${path.module}/files/helm-cilium-values.tpl.yaml",
+    {
+      loadBalancerIP = local.nlb_public_ip
+      insecureNodePort = local.ports[index(local.ports[*].name,"http")].backendPort
+      secureNodePort = local.ports[index(local.ports[*].name,"https")].backendPort
+    }
+  )
+}
 resource "helm_release" "cilium" {
   name             = "cilium"
   namespace        = "kube-system"
@@ -8,7 +17,5 @@ resource "helm_release" "cilium" {
   wait = true
   wait_for_jobs = true
 
-  values = [
-    file("${path.module}/files/helm-cilium-values.yaml")
-  ]
+  values = [local.cilium_values]
 }
