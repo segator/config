@@ -18,7 +18,7 @@ output "k8s_cluster_endpoint" {
 }
 
 output "k8s_cluster_ca_certificate" {
-  value = yamldecode(data.oci_containerengine_cluster_kube_config.k8s_cluster.content).clusters[0].cluster.certificate-authority-data
+  value = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.k8s_cluster.content).clusters[0].cluster.certificate-authority-data)
 }
 
 output "cluster_name" {

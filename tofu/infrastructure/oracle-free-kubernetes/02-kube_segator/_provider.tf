@@ -4,10 +4,7 @@ terraform {
       source  = "oracle/oci"
       version = "~> 6.27"
     }
-    cloudflare = {
-      source  = "cloudflare/cloudflare"
-      version = "~> 5"
-    }
+
     kubernetes = {
         source  = "hashicorp/kubernetes"
         version = "~> 2.35"
@@ -30,18 +27,23 @@ terraform {
 provider "oci" {
 }
 
-provider "cloudflare" {
-}
-
-provider "helm" {
-  kubernetes {
-    config_path = "~"
-  }
-}
-
 provider "github" {
 }
 
 provider "kubernetes" {
-  config_path    = var.kubeconfig_path
+  config_path = null
+  host = var.cluster_endpoint
+  cluster_ca_certificate = var.cluster_ca_certificate
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "oci"
+    args = [
+      "ce",
+      "cluster",
+      "generate-token",
+      "--cluster-id",
+      var.cluster_id
+    ]
+  }
 }

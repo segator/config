@@ -8,7 +8,7 @@ remote_state {
     profile = "segator"
   }
   generate = {
-    path      = "backend.tf"
+    path      = "_backend_gen.tf"
     if_exists = "overwrite_terragrunt"
   }
 }

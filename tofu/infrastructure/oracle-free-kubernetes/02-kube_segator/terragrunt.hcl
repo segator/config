@@ -28,6 +28,9 @@ inputs = {
   mail = include.vars.locals.github.mail
   # dependencies
   kube_config = dependency.cluster.outputs.kube_config
+  cluster_endpoint = dependency.cluster.outputs.k8s_cluster_endpoint
+  cluster_ca_certificate = dependency.cluster.outputs.k8s_cluster_ca_certificate
+  cluster_id = dependency.cluster.outputs.k8s_cluster_id
   cluster_name = dependency.cluster.outputs.cluster_name
 
   base_domain = dependency.cluster.outputs.base_domain

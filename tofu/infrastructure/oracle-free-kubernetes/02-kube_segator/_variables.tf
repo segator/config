@@ -2,6 +2,21 @@ variable "kube_config" {
   description = "The kubeconfig file"
   type        = string
 }
+
+variable "cluster_endpoint" {
+    description = "The endpoint of the k8s cluster"
+    type        = string
+}
+
+variable "cluster_ca_certificate" {
+    description = "The certificate of the k8s cluster"
+    type        = string
+}
+variable "cluster_id" {
+    description = "The id of the k8s cluster"
+    type        = string
+}
+
 variable "compartment_id" {
   type        = string
   description = "The compartment to create the resources in"
@@ -35,24 +50,10 @@ variable "mail" {
   type        = string
 }
 
-
-
 variable "base_domain" {
   type = string
 }
 
-variable "nlb_node_ports" {
-    type = list(object({
-        name        = string
-        port = number
-        backendPort = number
-    }))
-}
-
 variable "nlb_public_ip" {
-  type = string
-}
-
-variable "nlb_ocid" {
   type = string
 }

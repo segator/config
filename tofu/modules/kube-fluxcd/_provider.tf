@@ -16,6 +16,10 @@ terraform {
       source  = "hashicorp/tls"
       version = ">= 4.0"
     }
+    age = {
+      source = "clementblaise/age"
+      version = ">= 0.1"
+    }
   }
 }
 

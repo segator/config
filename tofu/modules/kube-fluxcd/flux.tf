@@ -11,7 +11,10 @@ resource "kubernetes_namespace" "flux_system" {
   }
 
   lifecycle {
-    ignore_changes = [metadata]
+    ignore_changes = [
+      metadata[0].labels,
+      metadata[0].annotations,
+    ]
   }
 }
 
@@ -32,6 +35,23 @@ resource "kubernetes_secret" "ssh_keypair" {
   depends_on = [kubernetes_namespace.flux_system]
 }
 
+resource "age_secret_key" "this" {}
+
+resource "kubernetes_secret" "sops_age" {
+  depends_on = [kubernetes_namespace.flux_system, age_secret_key.this]
+
+  metadata {
+    name      = "flux-sops-agekey"
+    namespace = local.flux_namespace
+    annotations = {
+      "app.kubernetes.io/managed-by" = "Terraform"
+    }
+  }
+
+  data = {
+    "age.agekey" = age_secret_key.this.secret_key
+  }
+}
 
 resource "flux_bootstrap_git" "this" {
   depends_on = [github_repository_deploy_key.this, kubernetes_secret.ssh_keypair]
@@ -43,12 +63,26 @@ resource "flux_bootstrap_git" "this" {
 
 }
 
-resource "github_repository_file" "values" {
+resource "github_repository_file" "cluster-config" {
   repository          = var.gitops_repo
   branch              = "main"
-  file                = format("%s/infrastructure.yaml",local.gitops_path)
-  content             = templatefile("${path.module}/files/infrastructure-kustomize.yaml", {
-    substitutions = var.cluster_context
+  file                = format("%s/cluster-config.env",local.gitops_path)
+  content             = templatefile("${path.module}/files/cluster-config.tpl.env", {
+    cluster_context = var.cluster_context
+  })
+  commit_message      = "Managed by Terraform"
+  commit_author       = "Terraform User"
+  commit_email        = "terraform@noreply.com"
+  overwrite_on_create = true
+  autocreate_branch   = false
+}
+
+resource "github_repository_file" "cluster-kustomization" {
+  repository          = var.gitops_repo
+  branch              = "main"
+  file                = format("%s/kustomization.yaml",local.gitops_path)
+  content             = templatefile("${path.module}/files/kustomization.tpl.yaml", {
+    cluster_name = var.cluster_name
   })
   commit_message      = "Managed by Terraform"
   commit_author       = "Terraform User"
