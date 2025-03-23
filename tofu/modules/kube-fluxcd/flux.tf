@@ -54,36 +54,34 @@ resource "kubernetes_secret" "sops_age" {
 }
 
 resource "flux_bootstrap_git" "this" {
-  depends_on = [github_repository_deploy_key.this, kubernetes_secret.ssh_keypair]
+  depends_on = [
+    github_repository_deploy_key.this,
+    kubernetes_secret.ssh_keypair,
+    github_repository_file.this,
+  ]
   secret_name = local.flux_git_secret_name
   components_extra     = ["image-reflector-controller", "image-automation-controller"]
   disable_secret_creation = true
   embedded_manifests      = true
+  #kustomization_override =
   path                    = local.gitops_path
-
 }
-
-resource "github_repository_file" "cluster-config" {
+locals {
+  cluster_files = {
+    "cluster-config.env" = templatefile("${path.module}/files/cluster-config.tpl.env", {
+      cluster_context = var.cluster_context
+    }),
+    "kustomization.yaml" = templatefile("${path.module}/files/kustomization.tpl.yaml", {
+      cluster_name = var.cluster_name
+    })
+  }
+}
+resource "github_repository_file" "this" {
+  for_each = local.cluster_files
   repository          = var.gitops_repo
   branch              = "main"
-  file                = format("%s/cluster-config.env",local.gitops_path)
-  content             = templatefile("${path.module}/files/cluster-config.tpl.env", {
-    cluster_context = var.cluster_context
-  })
-  commit_message      = "Managed by Terraform"
-  commit_author       = "Terraform User"
-  commit_email        = "terraform@noreply.com"
-  overwrite_on_create = true
-  autocreate_branch   = false
-}
-
-resource "github_repository_file" "cluster-kustomization" {
-  repository          = var.gitops_repo
-  branch              = "main"
-  file                = format("%s/kustomization.yaml",local.gitops_path)
-  content             = templatefile("${path.module}/files/kustomization.tpl.yaml", {
-    cluster_name = var.cluster_name
-  })
+  file                = format("%s/%s",local.gitops_path,each.key)
+  content             = each.value
   commit_message      = "Managed by Terraform"
   commit_author       = "Terraform User"
   commit_email        = "terraform@noreply.com"

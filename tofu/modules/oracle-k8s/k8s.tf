@@ -3,9 +3,9 @@ resource "oci_containerengine_cluster" "k8s_cluster" {
   kubernetes_version = var.kubernetes_version
   name               = var.cluster_name
   vcn_id             = var.vcn_id
-  cluster_pod_network_options {
-    cni_type = "FLANNEL_OVERLAY"
-  }
+  # cluster_pod_network_options {
+  #   cni_type = "OCI_VCN_IP_NATIVE"  # Use VCN-Native Pod Networking
+  # }
   endpoint_config {
     is_public_ip_enabled = true
     subnet_id            = oci_core_subnet.vcn_public_subnet.id
@@ -13,7 +13,7 @@ resource "oci_containerengine_cluster" "k8s_cluster" {
   options {
     add_ons {
       is_kubernetes_dashboard_enabled = false
-      is_tiller_enabled               = false
+      is_tiller_enabled = false
     }
     kubernetes_network_config {
       pods_cidr     = "10.244.0.0/16"
@@ -38,6 +38,10 @@ resource "oci_containerengine_node_pool" "k8s_node_pool" {
   }
 
   node_config_details {
+    # node_pool_pod_network_option_details {
+    #   cni_type = "OCI_VCN_IP_NATIVE"
+    #   pod_subnet_ids = [oci_core_subnet.vcn_private_subnet.id]
+    # }
     placement_configs {
       availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
       subnet_id           = oci_core_subnet.vcn_private_subnet.id
@@ -70,7 +74,3 @@ data "oci_containerengine_cluster_kube_config" "k8s_cluster" {
   cluster_id = oci_containerengine_cluster.k8s_cluster.id
 }
 
-resource "local_sensitive_file" "kubeconfig" {
-  filename = "oci.kubeconfig"
-  content = data.oci_containerengine_cluster_kube_config.k8s_cluster.content
-}

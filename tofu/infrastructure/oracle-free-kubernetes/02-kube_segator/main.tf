@@ -11,6 +11,7 @@ module "flux" {
   cluster_name = var.cluster_name
   gitops_repo = var.github_reponame
   kube_config = var.kube_config
+
   cluster_context = {
       base_domain = var.base_domain
       external_nlb_ip = var.nlb_public_ip

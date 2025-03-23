@@ -18,7 +18,7 @@ resource "cloudflare_dns_record" "wildcard_oke" {
   #zone_id  = "349234"
   comment = "Load balancer for ${var.cluster_name}"
   content = local.nlb_public_ip
-  name    = "*.${var.cluster_name}"
+  name    = "*.${local.base_domain}"
   proxied = false
   ttl     = 300
   type    = "A"

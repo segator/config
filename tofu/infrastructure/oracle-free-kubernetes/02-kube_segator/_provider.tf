@@ -30,6 +30,7 @@ provider "oci" {
 provider "github" {
 }
 
+
 provider "kubernetes" {
   config_path = null
   host = var.cluster_endpoint

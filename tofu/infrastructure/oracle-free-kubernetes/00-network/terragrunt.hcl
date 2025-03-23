@@ -10,7 +10,6 @@ include "vars" {
   expose = true
 }
 
-
 inputs = {
   source                       = "oracle-terraform-modules/vcn/oci"
   compartment_id               = include.vars.locals.oci.compartment_id
