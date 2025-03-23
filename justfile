@@ -36,12 +36,15 @@ create_age_user_key user:
     @echo "Save this key-file in a safe place!"
     @echo "Now you can just install_user_key <user> <ssh_host> to install this key to the target servers"
 
+# Create a k8s age key
 create_age_k8s_key cluster_name:
     age-keygen -o ~/.secrets/k8s_{{cluster_name}}_key.txt
     @echo "Key generated at: ~/.secrets/k8s_{{cluster_name}}_key.txt"
     @echo "Now you can update your k8s secrets in .sops.yaml and run just update_secrets_keys"
 
+#Install a k8s age key, ensure to create_age_k8s_key before running this
 install_k8s_key cluster_name:
+   kubectl describe ns flux-system || kubectl create ns flux-system
    kubectl create secret generic flux-sops-agekey \
    --namespace flux-system \
    --from-literal=age.agekey="$(cat ~/.secrets/k8s_{{cluster_name}}_key.txt)"
@@ -66,3 +69,30 @@ machine_age_pubkey server=default_server:
 update_secrets_keys:
     find ./secrets -type d -name key -prune -o \( -type f -not -name .gitkeep \) -exec sops updatekeys {} \;
     #find ./secrets -type d -name key -prune -o \( -type f -not -name .gitkeep \) -exec sh -c 'sops -r {} | sponge {}' \;
+
+
+# Configure kubectl with OCI cluster credentials
+configure-oke-kubectl:
+    #!/usr/bin/env bash
+    cd tofu/infrastructure/oracle-free-kubernetes/01-oracle-k8s
+    CLUSTER_ENDPOINT=$(terragrunt output -raw k8s_cluster_endpoint)
+    CLUSTER_CA_CERT=$(terragrunt output -raw k8s_cluster_ca_certificate)
+    CLUSTER_ID=$(terragrunt output -raw k8s_cluster_id)
+    CLUSTER_NAME=$(terragrunt output -raw cluster_name)
+    CA_PATH=~/.kube/${CLUSTER_NAME}.pem
+    echo "${CLUSTER_CA_CERT}" | base64 -d > $CA_PATH
+    kubectl config set-cluster ${CLUSTER_NAME} \
+        --server=${CLUSTER_ENDPOINT} \
+        --certificate-authority=${CA_PATH}
+    kubectl config set-credentials ${CLUSTER_NAME}-user \
+        --exec-api-version=client.authentication.k8s.io/v1beta1 \
+        --exec-command=oci \
+        --exec-arg=ce \
+        --exec-arg=cluster \
+        --exec-arg=generate-token \
+        --exec-arg=--cluster-id \
+        --exec-arg=${CLUSTER_ID}
+    kubectl config set-context ${CLUSTER_NAME} \
+        --cluster=${CLUSTER_NAME} \
+        --user=${CLUSTER_NAME}-user
+    kubectl config use-context ${CLUSTER_NAME}

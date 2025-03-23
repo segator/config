@@ -1,0 +1,23 @@
+hubble:
+  tls:
+    enabled: true
+  relay:
+    enabled: true
+  ui:
+    enabled: true
+ipam:
+  mode: "kubernetes"
+
+kubeProxyReplacement: true
+ingressController:
+  enabled: true
+  default: true
+  loadbalancerMode: shared
+  service:
+    type: NodePort
+    insecureNodePort: ${insecureNodePort}
+    secureNodePort: ${secureNodePort}
+    loadBalancerIP: ${loadBalancerIP}
+
+nodePort.enabled: true
+externalIPs.enabled: true
