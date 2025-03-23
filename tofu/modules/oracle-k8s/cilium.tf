@@ -109,8 +109,12 @@ resource "kubernetes_config_map_v1" "cleanup_script" {
 resource "kubernetes_job_v1" "network_cleanup" {
   depends_on = [helm_release.cilium, kubernetes_cluster_role_binding_v1.network_cleanup, kubernetes_config_map_v1.cleanup_script]
   lifecycle {
-    replace_triggered_by = [helm_release.cilium.id]
+    replace_triggered_by = [
+      helm_release.cilium.id,
+      kubernetes_config_map_v1.cleanup_script.data
+    ]
   }
+
   metadata {
     name      = "network-cleanup"
     namespace = "kube-system"
@@ -146,5 +150,6 @@ resource "kubernetes_job_v1" "network_cleanup" {
     backoff_limit = 30
     #ttl_seconds_after_finished = 900
   }
+
   wait_for_completion = true
 }

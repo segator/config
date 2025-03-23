@@ -1,7 +1,7 @@
 #!/bin/bash
 
-set -e  # Exit immediately if a command exits with a non-zero status
-set -o pipefail  # Return the exit status of the last command in the pipe that failed
+set -e
+set -o pipefail
 
 # Function to get all CiliumEndpoints (CEPs)
 function all_ceps {
@@ -18,3 +18,12 @@ unmanaged_pods=$(comm -23 <(all_pods | sort) <(all_ceps | sort))
 
 # Delete the unmanaged pods
 echo "$unmanaged_pods" | xargs -I {} bash -c 'kubectl delete pod -n $(echo {} | cut -d"/" -f1) $(echo {} | cut -d"/" -f2) --force --grace-period=0'
+
+# Delete DaemonSets if they exist
+if kubectl get ds -n kube-system kube-flannel-ds &> /dev/null; then
+  kubectl delete ds -n kube-system kube-flannel-ds
+fi
+
+if kubectl get ds -n kube-system kube-proxy &> /dev/null; then
+  kubectl delete ds -n kube-system kube-proxy
+fi
