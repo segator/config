@@ -62,15 +62,18 @@ resource "oci_containerengine_node_pool" "k8s_node_pool" {
 
     boot_volume_size_in_gbs = 100
   }
-  initial_node_labels {
-    key   = "name"
-    value = "k8s-cluster"
-  }
+
   ssh_public_key = var.ssh_public_key
 }
+
+# resource oci_containerengine_addon disabled_addon {
+#   for_each = toset(["KubeProxy","KubernetesDashboard","OciVcnIpNative"])
+#   addon_name                       = each.key
+#   cluster_id                       = oci_containerengine_cluster.k8s_cluster.id
+#   remove_addon_resources_on_delete = "true"
+# }
 
 data "oci_containerengine_cluster_kube_config" "k8s_cluster" {
   depends_on = [oci_containerengine_cluster.k8s_cluster]
   cluster_id = oci_containerengine_cluster.k8s_cluster.id
 }
-
