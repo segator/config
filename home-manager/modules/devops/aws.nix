@@ -15,7 +15,7 @@ in
     ''
     ${pkgs.awscli2}/bin/aws configure --profile ${aws_profile_name} set region eu-central-1
     ${pkgs.awscli2}/bin/aws configure --profile ${aws_profile_name} set aws_access_key_id $(cat ${config.sops.secrets."aws_access_key".path})
-    ${pkgs.awscli2}/bin/aws configure --profile ${aws_profile_name} set aws_secret_access_key $(cat ${config.sops.secrets."awssecret_access_key".path})
+    ${pkgs.awscli2}/bin/aws configure --profile ${aws_profile_name} set aws_secret_access_key $(cat ${config.sops.secrets."aws_secret_access_key".path})
     '';
 
     programs.bash = lib.mkIf config.programs.bash.enable {
