@@ -80,7 +80,7 @@ configure-oke-kubectl:
     CLUSTER_ID=$(terragrunt output -raw k8s_cluster_id)
     CLUSTER_NAME=$(terragrunt output -raw cluster_name)
     CA_PATH=~/.kube/${CLUSTER_NAME}.pem
-    echo "${CLUSTER_CA_CERT}" > $CA_PATH
+
     kubectl config set-cluster ${CLUSTER_NAME} \
         --server=${CLUSTER_ENDPOINT} \
         --certificate-authority=${CA_PATH}
@@ -96,3 +96,4 @@ configure-oke-kubectl:
         --cluster=${CLUSTER_NAME} \
         --user=${CLUSTER_NAME}-user
     kubectl config use-context ${CLUSTER_NAME}
+    echo "${CLUSTER_CA_CERT}" > $CA_PATH
