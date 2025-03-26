@@ -2,7 +2,7 @@ default_server:="localhost"
 default_arch:="x86_64"
 default_homeconfiguration:=`echo $(whoami)@$(hostname)`
 default:
-  @just --choose
+  @just -l
 
 
 build_bootstrap_iso arch=default_arch:
