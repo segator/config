@@ -15,7 +15,10 @@ let
     "ni-network" = "arn:aws:iam::897729119902:role/Roche/Products/NIBACKEND/NIBACKENDDevOps";
     "ni-qa" = "arn:aws:iam::340747948655:role/Roche/Products/NIB/NIBDevOps";
     "ni-stage" = "arn:aws:iam::957086612114:role/Roche/Products/NIB/NIBDevOps";
+    "na-qa" = "arn:aws:iam::713671398356:role/Roche/Products/NAV/NAVQADevOps";
+    "na-dev" = "arn:aws:iam::789257628895:role/Roche/Platform/Kaiser/KaiserDevOps";
   };
+
 
   rocheAliases = pkgs.writeShellScriptBin "roche-aliases"
   (''
