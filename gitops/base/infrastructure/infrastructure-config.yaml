@@ -10,7 +10,7 @@ spec:
     name: flux-system
   dependsOn:
     - name: infrastructure-core
-  path: ./infrastructure/config
+  path: ./gitops/infrastructure/config
   prune: true
   timeout: 5m
   wait: true

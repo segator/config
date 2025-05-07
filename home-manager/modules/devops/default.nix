@@ -20,6 +20,7 @@ in
 
       # Aws
       awscli2
+      eksctl
 
       # Kube
       kind      
@@ -37,6 +38,7 @@ in
       argo # argo workflow
       crossplane-cli
       upbound
+      vcluster
       
 
       # Terra

@@ -11,7 +11,7 @@ spec:
   dependsOn:
     - name: flux-system
     - name: infrastructure-repo
-  path: ./infrastructure/app
+  path: ./gitops/infrastructure/app
   patches:
     - target:
         kind: HelmRelease

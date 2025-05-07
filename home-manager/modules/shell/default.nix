@@ -20,8 +20,7 @@
 
     yq
     jq
+    dig
   ];
   programs.vim.enable = true;
 }
-
-      
