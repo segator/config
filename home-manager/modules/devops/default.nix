@@ -11,6 +11,7 @@ in
   ];
   home.packages = with pkgs; [
       devbox
+      go-task
       gnumake
       gh
       lazydocker
