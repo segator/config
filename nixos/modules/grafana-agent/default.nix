@@ -82,7 +82,7 @@ in
         };
 
         services.grafana-agent = {
-          enable = true;
+          enable = false;
           settings = 
           let
             relabelConfig-agent_hostname-instance = [
@@ -205,7 +205,7 @@ in
         };
 
 
-        systemd.services.grafana-agent = {
+        systemd.services.alloy = {
           serviceConfig = {
             DynamicUser = lib.mkForce false;
             User = "root";

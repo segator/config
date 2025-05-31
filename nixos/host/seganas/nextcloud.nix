@@ -18,23 +18,23 @@ let
   nextcloudDataDir = config.services.nextcloud.datadir + "/data";
 in
 {
-  my.monitoring.logs = [{
-      name = "nextcloud";
-      path = nextcloudDataDir + "/nextcloud.log";
-    }];
-  services.prometheus.exporters.nextcloud = {
-    enable = true;
-    username = nextcloudAdminUser;
-    passwordFile = config.sops.secrets.nextcloud_admin_password.path;
-    url = "https://${config.services.nextcloud.hostName}";
-    group = "nextcloud";
-  };
-  my.monitoring.prom-exporters = [
-    {
-      name = "nextcloud-exporter";
-      target = "127.0.0.1:${builtins.toString config.services.prometheus.exporters.nextcloud.port}";
-    }
-  ];
+#  my.monitoring.logs = [{
+#      name = "nextcloud";
+#      path = nextcloudDataDir + "/nextcloud.log";
+#    }];
+#  services.prometheus.exporters.nextcloud = {
+#    enable = true;
+#    username = nextcloudAdminUser;
+#    passwordFile = config.sops.secrets.nextcloud_admin_password.path;
+#    url = "https://${config.services.nextcloud.hostName}";
+#    group = "nextcloud";
+#  };
+#  my.monitoring.prom-exporters = [
+#    {
+#      name = "nextcloud-exporter";
+#      target = "127.0.0.1:${builtins.toString config.services.prometheus.exporters.nextcloud.port}";
+#    }
+#  ];
 
   nas.backup.sourceDirectories = [nextcloudDataDir];
 

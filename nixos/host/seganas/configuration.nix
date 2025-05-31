@@ -8,7 +8,7 @@
           ../../modules/nix-sops
           ../../modules/nix
           ../../modules/sshd
-          ../../modules/grafana-agent
+          #../../modules/grafana-agent
           ../../modules/auto-upgrade
           ../../modules/fail2ban
           ../../modules/cloudflare-dyndns
