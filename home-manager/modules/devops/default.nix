@@ -12,6 +12,7 @@ in
   home.packages = with pkgs; [
       devbox
       go-task
+      devspace
       gnumake
       gh
       lazydocker
